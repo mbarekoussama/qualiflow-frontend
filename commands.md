@@ -1,53 +1,94 @@
-# Commandes de développement
+# 🚀 Commandes utiles pour le développement
 
-## Installation initiale
+## Démarrage
 ```bash
-# Installer Angular CLI globalement (si pas déjà fait)
-npm install -g @angular/cli
-
-# Installer les dépendances du projet
-npm install
-```
-
-## Développement
-```bash
-# Lancer l'API mock (json-server) - Terminal 1
-npm run api
-
-# Lancer Angular en mode développement - Terminal 2
+# Serveur Angular (port 4200)
 npm start
+# ou
+ng serve
 
-# Ou lancer les deux en même temps
+# Serveur JSON (port 3001)
+npx json-server --watch db.json --port 3001
+
+# Les deux simultanément (si configuré)
 npm run dev
 ```
 
-## Build et production
+## Génération de code
 ```bash
-# Build pour la production
-npm run build
+# Nouveau composant
+ng generate component features/example
 
-# Build en mode watch (développement)
-npm run watch
+# Nouveau service
+ng generate service core/services/example
+
+# Nouveau guard
+ng generate guard core/guards/example
+
+# Nouveau interceptor
+ng generate interceptor core/interceptors/example
 ```
 
-## Tests
+## Build et tests
 ```bash
-# Lancer les tests unitaires
-npm test
+# Build de développement
+ng build
+
+# Build de production
+ng build --configuration production
+
+# Tests unitaires
+ng test
+
+# Tests e2e
+ng e2e
+```
+
+## Utilitaires
+```bash
+# Analyser le bundle
+ng build --stats-json
+npx webpack-bundle-analyzer dist/stats.json
+
+# Linter
+ng lint
+
+# Formater le code
+npx prettier --write "src/**/*.{ts,html,scss}"
+```
+
+## Nettoyage
+```bash
+# Nettoyer node_modules
+rm -rf node_modules package-lock.json
+npm install
+
+# Nettoyer le cache Angular
+ng cache clean
+
+# Nettoyer localStorage (pour tests auth)
+# Dans la console du navigateur :
+localStorage.clear()
 ```
 
 ## Accès à l'application
-- Application Angular: http://localhost:4200
-- API Mock (json-server): http://localhost:3000
+- **Application Angular** : http://localhost:4200
+- **API Mock (JSON Server)** : http://localhost:3001
 
 ## Compte de test
-- Email: admin@test.com
-- Mot de passe: admin123
+- **Email** : admin@test.com
+- **Mot de passe** : admin123
 
-## Structure des endpoints API
-- GET /auth - Authentification
-- GET /users - Liste des utilisateurs
-- GET /users/:id - Utilisateur par ID
-- POST /users - Créer un utilisateur
-- PUT /users/:id - Modifier un utilisateur
-- DELETE /users/:id - Supprimer un utilisateur
+## Endpoints API disponibles
+```
+GET    /auth                    # Données d'authentification
+GET    /processes              # Liste des processus
+GET    /processes/:id          # Processus par ID
+POST   /processes              # Créer processus
+PUT    /processes/:id          # Modifier processus
+DELETE /processes/:id          # Supprimer processus
+GET    /users                  # Liste des utilisateurs
+POST   /users                  # Créer utilisateur
+PUT    /users/:id              # Modifier utilisateur
+DELETE /users/:id              # Supprimer utilisateur
+```
