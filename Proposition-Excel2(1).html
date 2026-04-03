@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QualityOS — Plateforme ISO</title>
+<title>QualiFlow â€” Plateforme ISO</title>
 <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -60,7 +60,7 @@
     font-size: 13px;
   }
 
-  /* ═══ TOPBAR ═══ */
+  /* â•â•â• TOPBAR â•â•â• */
   .topbar {
     height: var(--topbar-h);
     background: var(--xl-green);
@@ -122,10 +122,10 @@
   .topbar-user-name { font-size: 12.5px; font-weight: 600; color: white; }
   .topbar-user-role { font-size: 10.5px; color: rgba(255,255,255,0.65); }
 
-  /* ═══ APP BODY ═══ */
+  /* â•â•â• APP BODY â•â•â• */
   .app-body { flex: 1; display: flex; overflow: hidden; }
 
-  /* ═══ SIDEBAR ═══ */
+  /* â•â•â• SIDEBAR â•â•â• */
   .sidebar {
     width: var(--sidebar-w);
     background: var(--bg-sidebar);
@@ -169,7 +169,7 @@
     font-size: 11px; color: var(--text-muted); text-align: center;
   }
 
-  /* ═══ CONTENT ═══ */
+  /* â•â•â• CONTENT â•â•â• */
   .content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
   .page-header-bar {
@@ -201,12 +201,12 @@
 
   .content-scroll { flex: 1; overflow-y: auto; padding: 24px; }
 
-  /* ═══ VIEWS ═══ */
+  /* â•â•â• VIEWS â•â•â• */
   .view { display: none; }
   .view.active { display: block; animation: fadeIn 0.2s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* ═══ TAGS ═══ */
+  /* â•â•â• TAGS â•â•â• */
   .tag {
     display: inline-flex; align-items: center;
     padding: 2px 8px; border-radius: 2px;
@@ -221,7 +221,7 @@
   .tag.green-t  { background: var(--s-green-bg);  color: var(--s-green);  border-color: var(--s-green-border); }
   .tag.xl       { background: var(--xl-green-xlight); color: var(--xl-green); border-color: #A8D5B8; }
 
-  /* ═══ TABLE ═══ */
+  /* â•â•â• TABLE â•â•â• */
   .table-wrap { background: var(--bg-white); border: 1px solid var(--border); margin-bottom: 20px; box-shadow: var(--shadow); }
 
   .table-toolbar {
@@ -311,7 +311,7 @@
   .page-btn:hover { border-color: var(--xl-green-mid); color: var(--xl-green); }
   .page-btn.active { background: var(--xl-green-mid); color: white; border-color: var(--xl-green-mid); }
 
-  /* ═══ PROCESS CARDS ═══ */
+  /* â•â•â• PROCESS CARDS â•â•â• */
   .proc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
   .proc-card {
     background: var(--bg-white); border: 1px solid var(--border);
@@ -342,7 +342,7 @@
   .pc-bar-fill { height: 100%; }
   .pc-footer { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 8px; }
 
-  /* ═══ FORM ═══ */
+  /* â•â•â• FORM â•â•â• */
   .form-panel { background: var(--bg-white); border: 1px solid var(--border); margin-bottom: 16px; box-shadow: var(--shadow); }
   .form-header {
     background: var(--xl-green); color: white;
@@ -468,7 +468,7 @@
   <div class="topbar-user">
     <div style="text-align:right">
       <div class="topbar-user-name">Amine Mansouri</div>
-      <div class="topbar-user-role">Responsable Qualité</div>
+      <div class="topbar-user-role">Responsable QualitÃ©</div>
     </div>
     <div class="topbar-user-av">AM</div>
   </div>
@@ -479,21 +479,21 @@
   <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="nav-section">
-      <div class="nav-section-title">Général</div>
+      <div class="nav-section-title">GÃ©nÃ©ral</div>
       <div class="nav-item active" onclick="nav(this,'dashboard')">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
         Vue d'ensemble
       </div>
     </div>
     <div class="nav-section">
-      <div class="nav-section-title">Gestion qualité</div>
+      <div class="nav-section-title">Gestion qualitÃ©</div>
       <div class="nav-item" onclick="nav(this,'processus')">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
         Processus
       </div>
       <div class="nav-item" onclick="nav(this,'dashboard')">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6"/><path d="M9 12l2 2 4-4"/></svg>
-        Procédures
+        ProcÃ©dures
       </div>
       <div class="nav-item" onclick="nav(this,'documents')">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
@@ -501,7 +501,7 @@
       </div>
       <div class="nav-item" onclick="nav(this,'dashboard')">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-        Non-Conformités
+        Non-ConformitÃ©s
         <span class="nav-badge">7</span>
       </div>
     </div>
@@ -517,10 +517,10 @@
       </div>
       <div class="nav-item" onclick="nav(this,'dashboard')">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
-        Paramètres
+        ParamÃ¨tres
       </div>
     </div>
-    <div class="sidebar-footer">QualityOS v2.1 · 28 fév. 2026</div>
+    <div class="sidebar-footer">QualiFlow v2.1 Â· 28 fÃ©v. 2026</div>
   </nav>
 
   <!-- CONTENT -->
@@ -528,7 +528,7 @@
     <div class="page-header-bar">
       <div>
         <h1 id="ph-title">Vue d'ensemble</h1>
-        <div class="sub" id="ph-sub">Système de Management de la Qualité — ISO 9001:2015</div>
+        <div class="sub" id="ph-sub">SystÃ¨me de Management de la QualitÃ© â€” ISO 9001:2015</div>
       </div>
       <div class="ph-actions" id="ph-actions"></div>
     </div>
@@ -539,36 +539,36 @@
       <div id="view-dashboard" class="view active">
         <div class="table-wrap">
           <div class="table-toolbar">
-            <span style="font-size:12.5px;font-weight:600;color:var(--text-primary)">Processus clés</span>
+            <span style="font-size:12.5px;font-weight:600;color:var(--text-primary)">Processus clÃ©s</span>
             <div style="margin-left:auto">
-              <button class="btn btn-ghost" style="font-size:11.5px;padding:4px 10px" onclick="nav(document.querySelectorAll('.nav-item')[1],'processus')">Voir tout →</button>
+              <button class="btn btn-ghost" style="font-size:11.5px;padding:4px 10px" onclick="nav(document.querySelectorAll('.nav-item')[1],'processus')">Voir tout â†’</button>
             </div>
           </div>
           <table class="word-table">
-            <thead><tr><th>Processus</th><th>Type</th><th>Conformité</th><th>Statut</th><th>Pilote</th></tr></thead>
+            <thead><tr><th>Processus</th><th>Type</th><th>ConformitÃ©</th><th>Statut</th><th>Pilote</th></tr></thead>
             <tbody>
-              <tr><td><div style="font-weight:600">Management de la qualité</div><div class="doc-ref">P-01</div></td><td style="color:var(--text-muted);font-size:12px">Pilotage</td><td><div class="prog-bar"><div class="prog-fill" style="width:94%;background:var(--s-green)"></div></div><div style="font-size:10.5px;color:var(--s-green);font-weight:700;margin-top:3px">94%</div></td><td><span class="tag conforme">● Conforme</span></td><td style="font-size:12px;color:var(--text-secondary)">A. Mansouri</td></tr>
-              <tr><td><div style="font-weight:600">Réalisation du produit</div><div class="doc-ref">P-04</div></td><td style="color:var(--text-muted);font-size:12px">Opérationnel</td><td><div class="prog-bar"><div class="prog-fill" style="width:82%;background:var(--s-green)"></div></div><div style="font-size:10.5px;color:var(--s-green);font-weight:700;margin-top:3px">82%</div></td><td><span class="tag conforme">● Conforme</span></td><td style="font-size:12px;color:var(--text-secondary)">S. Ben Ali</td></tr>
-              <tr><td><div style="font-weight:600">Achats & fournisseurs</div><div class="doc-ref">P-02</div></td><td style="color:var(--text-muted);font-size:12px">Opérationnel</td><td><div class="prog-bar"><div class="prog-fill" style="width:71%;background:var(--s-yellow)"></div></div><div style="font-size:10.5px;color:var(--s-yellow);font-weight:700;margin-top:3px">71%</div></td><td><span class="tag revision">⚠ À surveiller</span></td><td style="font-size:12px;color:var(--text-secondary)">K. Mrad</td></tr>
-              <tr><td><div style="font-weight:600">Étalonnage & métrologie</div><div class="doc-ref">P-07</div></td><td style="color:var(--text-muted);font-size:12px">Support</td><td><div class="prog-bar"><div class="prog-fill" style="width:58%;background:var(--s-red)"></div></div><div style="font-size:10.5px;color:var(--s-red);font-weight:700;margin-top:3px">58%</div></td><td><span class="tag perime">✕ Non conforme</span></td><td style="font-size:12px;color:var(--text-secondary)">R. Haddad</td></tr>
-              <tr><td><div style="font-weight:600">Satisfaction client</div><div class="doc-ref">P-11</div></td><td style="color:var(--text-muted);font-size:12px">Mesure</td><td><div class="prog-bar"><div class="prog-fill" style="width:89%;background:var(--s-green)"></div></div><div style="font-size:10.5px;color:var(--s-green);font-weight:700;margin-top:3px">89%</div></td><td><span class="tag conforme">● Conforme</span></td><td style="font-size:12px;color:var(--text-secondary)">A. Mansouri</td></tr>
+              <tr><td><div style="font-weight:600">Management de la qualitÃ©</div><div class="doc-ref">P-01</div></td><td style="color:var(--text-muted);font-size:12px">Pilotage</td><td><div class="prog-bar"><div class="prog-fill" style="width:94%;background:var(--s-green)"></div></div><div style="font-size:10.5px;color:var(--s-green);font-weight:700;margin-top:3px">94%</div></td><td><span class="tag conforme">â— Conforme</span></td><td style="font-size:12px;color:var(--text-secondary)">A. Mansouri</td></tr>
+              <tr><td><div style="font-weight:600">RÃ©alisation du produit</div><div class="doc-ref">P-04</div></td><td style="color:var(--text-muted);font-size:12px">OpÃ©rationnel</td><td><div class="prog-bar"><div class="prog-fill" style="width:82%;background:var(--s-green)"></div></div><div style="font-size:10.5px;color:var(--s-green);font-weight:700;margin-top:3px">82%</div></td><td><span class="tag conforme">â— Conforme</span></td><td style="font-size:12px;color:var(--text-secondary)">S. Ben Ali</td></tr>
+              <tr><td><div style="font-weight:600">Achats & fournisseurs</div><div class="doc-ref">P-02</div></td><td style="color:var(--text-muted);font-size:12px">OpÃ©rationnel</td><td><div class="prog-bar"><div class="prog-fill" style="width:71%;background:var(--s-yellow)"></div></div><div style="font-size:10.5px;color:var(--s-yellow);font-weight:700;margin-top:3px">71%</div></td><td><span class="tag revision">âš  Ã€ surveiller</span></td><td style="font-size:12px;color:var(--text-secondary)">K. Mrad</td></tr>
+              <tr><td><div style="font-weight:600">Ã‰talonnage & mÃ©trologie</div><div class="doc-ref">P-07</div></td><td style="color:var(--text-muted);font-size:12px">Support</td><td><div class="prog-bar"><div class="prog-fill" style="width:58%;background:var(--s-red)"></div></div><div style="font-size:10.5px;color:var(--s-red);font-weight:700;margin-top:3px">58%</div></td><td><span class="tag perime">âœ• Non conforme</span></td><td style="font-size:12px;color:var(--text-secondary)">R. Haddad</td></tr>
+              <tr><td><div style="font-weight:600">Satisfaction client</div><div class="doc-ref">P-11</div></td><td style="color:var(--text-muted);font-size:12px">Mesure</td><td><div class="prog-bar"><div class="prog-fill" style="width:89%;background:var(--s-green)"></div></div><div style="font-size:10.5px;color:var(--s-green);font-weight:700;margin-top:3px">89%</div></td><td><span class="tag conforme">â— Conforme</span></td><td style="font-size:12px;color:var(--text-secondary)">A. Mansouri</td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="table-wrap">
           <div class="table-toolbar">
-            <span style="font-size:12.5px;font-weight:600;color:var(--text-primary)">Non-Conformités ouvertes</span>
+            <span style="font-size:12.5px;font-weight:600;color:var(--text-primary)">Non-ConformitÃ©s ouvertes</span>
             <div style="margin-left:auto">
-              <button class="btn btn-ghost" style="font-size:11.5px;padding:4px 10px">Voir tout →</button>
+              <button class="btn btn-ghost" style="font-size:11.5px;padding:4px 10px">Voir tout â†’</button>
             </div>
           </div>
           <table class="word-table">
-            <thead><tr><th>Référence</th><th>Description</th><th>Processus</th><th>Priorité</th><th>Avancement</th><th>Responsable</th></tr></thead>
+            <thead><tr><th>RÃ©fÃ©rence</th><th>Description</th><th>Processus</th><th>PrioritÃ©</th><th>Avancement</th><th>Responsable</th></tr></thead>
             <tbody>
-              <tr><td style="font-family:monospace;font-size:11px;color:var(--text-muted)">NC-031</td><td style="font-weight:600">Écart de traçabilité</td><td><span class="tag xl">P-04</span></td><td><span class="tag perime">Élevée</span></td><td><div class="prog-bar"><div class="prog-fill" style="width:20%;background:var(--s-red)"></div></div><div style="font-size:10px;color:var(--text-muted);margin-top:3px">20%</div></td><td style="font-size:12px;color:var(--text-secondary)">R. Haddad</td></tr>
-              <tr><td style="font-family:monospace;font-size:11px;color:var(--text-muted)">NC-028</td><td style="font-weight:600">Calibration non conforme</td><td><span class="tag xl">P-07</span></td><td><span class="tag perime">Élevée</span></td><td><div class="prog-bar"><div class="prog-fill" style="width:55%;background:var(--s-yellow)"></div></div><div style="font-size:10px;color:var(--text-muted);margin-top:3px">55%</div></td><td style="font-size:12px;color:var(--text-secondary)">A. Mansouri</td></tr>
-              <tr><td style="font-family:monospace;font-size:11px;color:var(--text-muted)">NC-025</td><td style="font-weight:600">Délai fournisseur dépassé</td><td><span class="tag xl">P-02</span></td><td><span class="tag revision">Moyenne</span></td><td><div class="prog-bar"><div class="prog-fill" style="width:70%;background:var(--s-yellow)"></div></div><div style="font-size:10px;color:var(--text-muted);margin-top:3px">70%</div></td><td style="font-size:12px;color:var(--text-secondary)">K. Mrad</td></tr>
+              <tr><td style="font-family:monospace;font-size:11px;color:var(--text-muted)">NC-031</td><td style="font-weight:600">Ã‰cart de traÃ§abilitÃ©</td><td><span class="tag xl">P-04</span></td><td><span class="tag perime">Ã‰levÃ©e</span></td><td><div class="prog-bar"><div class="prog-fill" style="width:20%;background:var(--s-red)"></div></div><div style="font-size:10px;color:var(--text-muted);margin-top:3px">20%</div></td><td style="font-size:12px;color:var(--text-secondary)">R. Haddad</td></tr>
+              <tr><td style="font-family:monospace;font-size:11px;color:var(--text-muted)">NC-028</td><td style="font-weight:600">Calibration non conforme</td><td><span class="tag xl">P-07</span></td><td><span class="tag perime">Ã‰levÃ©e</span></td><td><div class="prog-bar"><div class="prog-fill" style="width:55%;background:var(--s-yellow)"></div></div><div style="font-size:10px;color:var(--text-muted);margin-top:3px">55%</div></td><td style="font-size:12px;color:var(--text-secondary)">A. Mansouri</td></tr>
+              <tr><td style="font-family:monospace;font-size:11px;color:var(--text-muted)">NC-025</td><td style="font-weight:600">DÃ©lai fournisseur dÃ©passÃ©</td><td><span class="tag xl">P-02</span></td><td><span class="tag revision">Moyenne</span></td><td><div class="prog-bar"><div class="prog-fill" style="width:70%;background:var(--s-yellow)"></div></div><div style="font-size:10px;color:var(--text-muted);margin-top:3px">70%</div></td><td style="font-size:12px;color:var(--text-secondary)">K. Mrad</td></tr>
               <tr><td style="font-family:monospace;font-size:11px;color:var(--text-muted)">NC-022</td><td style="font-weight:600">Formation manquante</td><td><span class="tag xl">P-11</span></td><td><span class="tag conforme">Faible</span></td><td><div class="prog-bar"><div class="prog-fill" style="width:90%;background:var(--s-green)"></div></div><div style="font-size:10px;color:var(--text-muted);margin-top:3px">90%</div></td><td style="font-size:12px;color:var(--text-secondary)">S. Ben Ali</td></tr>
             </tbody>
           </table>
@@ -579,11 +579,11 @@
       <div id="view-processus" class="view">
         <div id="proc-list">
           <div class="proc-grid">
-            <div class="proc-card clr-green"><div class="pc-header"><div class="pc-code">P-01</div><div class="pc-score" style="color:var(--s-green)">94%</div></div><div class="pc-name">Management de la qualité</div><div class="pc-type">Processus de pilotage</div><div class="pc-bar"><div class="pc-bar-fill" style="width:94%;background:var(--s-green)"></div></div><div class="pc-footer"><span>5 procédures · 3 docs</span><span style="color:var(--s-green);font-weight:700">● Conforme</span></div></div>
-            <div class="proc-card clr-green"><div class="pc-header"><div class="pc-code">P-04</div><div class="pc-score" style="color:var(--s-green)">82%</div></div><div class="pc-name">Réalisation du produit</div><div class="pc-type">Processus opérationnel</div><div class="pc-bar"><div class="pc-bar-fill" style="width:82%;background:var(--s-green)"></div></div><div class="pc-footer"><span>8 procédures · 12 docs</span><span style="color:var(--s-green);font-weight:700">● Conforme</span></div></div>
-            <div class="proc-card clr-yellow"><div class="pc-header"><div class="pc-code">P-02</div><div class="pc-score" style="color:var(--s-yellow)">71%</div></div><div class="pc-name">Achats et fournisseurs</div><div class="pc-type">Processus opérationnel</div><div class="pc-bar"><div class="pc-bar-fill" style="width:71%;background:var(--s-yellow)"></div></div><div class="pc-footer"><span>4 procédures · 6 docs</span><span style="color:var(--s-yellow);font-weight:700">⚠ À surveiller</span></div></div>
-            <div class="proc-card clr-red"><div class="pc-header"><div class="pc-code">P-07</div><div class="pc-score" style="color:var(--s-red)">58%</div></div><div class="pc-name">Étalonnage & métrologie</div><div class="pc-type">Processus support</div><div class="pc-bar"><div class="pc-bar-fill" style="width:58%;background:var(--s-red)"></div></div><div class="pc-footer"><span>3 procédures · 4 docs</span><span style="color:var(--s-red);font-weight:700">✕ Non conforme</span></div></div>
-            <div class="proc-card clr-green"><div class="pc-header"><div class="pc-code">P-11</div><div class="pc-score" style="color:var(--s-green)">89%</div></div><div class="pc-name">Satisfaction client</div><div class="pc-type">Processus de mesure</div><div class="pc-bar"><div class="pc-bar-fill" style="width:89%;background:var(--s-green)"></div></div><div class="pc-footer"><span>3 procédures · 5 docs</span><span style="color:var(--s-green);font-weight:700">● Conforme</span></div></div>
+            <div class="proc-card clr-green"><div class="pc-header"><div class="pc-code">P-01</div><div class="pc-score" style="color:var(--s-green)">94%</div></div><div class="pc-name">Management de la qualitÃ©</div><div class="pc-type">Processus de pilotage</div><div class="pc-bar"><div class="pc-bar-fill" style="width:94%;background:var(--s-green)"></div></div><div class="pc-footer"><span>5 procÃ©dures Â· 3 docs</span><span style="color:var(--s-green);font-weight:700">â— Conforme</span></div></div>
+            <div class="proc-card clr-green"><div class="pc-header"><div class="pc-code">P-04</div><div class="pc-score" style="color:var(--s-green)">82%</div></div><div class="pc-name">RÃ©alisation du produit</div><div class="pc-type">Processus opÃ©rationnel</div><div class="pc-bar"><div class="pc-bar-fill" style="width:82%;background:var(--s-green)"></div></div><div class="pc-footer"><span>8 procÃ©dures Â· 12 docs</span><span style="color:var(--s-green);font-weight:700">â— Conforme</span></div></div>
+            <div class="proc-card clr-yellow"><div class="pc-header"><div class="pc-code">P-02</div><div class="pc-score" style="color:var(--s-yellow)">71%</div></div><div class="pc-name">Achats et fournisseurs</div><div class="pc-type">Processus opÃ©rationnel</div><div class="pc-bar"><div class="pc-bar-fill" style="width:71%;background:var(--s-yellow)"></div></div><div class="pc-footer"><span>4 procÃ©dures Â· 6 docs</span><span style="color:var(--s-yellow);font-weight:700">âš  Ã€ surveiller</span></div></div>
+            <div class="proc-card clr-red"><div class="pc-header"><div class="pc-code">P-07</div><div class="pc-score" style="color:var(--s-red)">58%</div></div><div class="pc-name">Ã‰talonnage & mÃ©trologie</div><div class="pc-type">Processus support</div><div class="pc-bar"><div class="pc-bar-fill" style="width:58%;background:var(--s-red)"></div></div><div class="pc-footer"><span>3 procÃ©dures Â· 4 docs</span><span style="color:var(--s-red);font-weight:700">âœ• Non conforme</span></div></div>
+            <div class="proc-card clr-green"><div class="pc-header"><div class="pc-code">P-11</div><div class="pc-score" style="color:var(--s-green)">89%</div></div><div class="pc-name">Satisfaction client</div><div class="pc-type">Processus de mesure</div><div class="pc-bar"><div class="pc-bar-fill" style="width:89%;background:var(--s-green)"></div></div><div class="pc-footer"><span>3 procÃ©dures Â· 5 docs</span><span style="color:var(--s-green);font-weight:700">â— Conforme</span></div></div>
             <div class="proc-card add" onclick="showProcForm()">
               <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M12 4v16m8-8H4"/></svg>
               <div style="font-size:12.5px;font-weight:600">Nouveau processus</div>
@@ -597,22 +597,22 @@
               <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
               <div>
                 <div class="form-header-title">Nouveau processus</div>
-                <div class="form-header-sub">Approche processus — ISO 9001:2015</div>
+                <div class="form-header-sub">Approche processus â€” ISO 9001:2015</div>
               </div>
             </div>
             <div class="form-body">
               <div class="form-section">
-                <div class="form-section-title">Informations générales</div>
+                <div class="form-section-title">Informations gÃ©nÃ©rales</div>
                 <div class="form-grid">
                   <div class="form-group"><label>Code <span class="req">*</span></label><input type="text" id="f-code" placeholder="Ex : P-19"></div>
-                  <div class="form-group"><label>Intitulé <span class="req">*</span></label><input type="text" id="f-name" placeholder="Ex : Gestion des ressources humaines"></div>
-                  <div class="form-group"><label>Type <span class="req">*</span></label><select id="f-type"><option value="">— Sélectionner —</option><option>Processus de pilotage</option><option>Processus opérationnel</option><option>Processus support</option><option>Processus de mesure</option></select></div>
-                  <div class="form-group"><label>Clause ISO 9001</label><select><option value="">— Sélectionner —</option><option>§4 - Contexte</option><option>§5 - Leadership</option><option>§6 - Planification</option><option>§7 - Support</option><option>§8 - Réalisation</option><option>§9 - Évaluation</option><option>§10 - Amélioration</option></select></div>
-                  <div class="form-group full"><label>Objectif <span class="req">*</span></label><textarea id="f-obj" placeholder="Décrire l'objectif principal de ce processus..."></textarea></div>
+                  <div class="form-group"><label>IntitulÃ© <span class="req">*</span></label><input type="text" id="f-name" placeholder="Ex : Gestion des ressources humaines"></div>
+                  <div class="form-group"><label>Type <span class="req">*</span></label><select id="f-type"><option value="">â€” SÃ©lectionner â€”</option><option>Processus de pilotage</option><option>Processus opÃ©rationnel</option><option>Processus support</option><option>Processus de mesure</option></select></div>
+                  <div class="form-group"><label>Clause ISO 9001</label><select><option value="">â€” SÃ©lectionner â€”</option><option>Â§4 - Contexte</option><option>Â§5 - Leadership</option><option>Â§6 - Planification</option><option>Â§7 - Support</option><option>Â§8 - RÃ©alisation</option><option>Â§9 - Ã‰valuation</option><option>Â§10 - AmÃ©lioration</option></select></div>
+                  <div class="form-group full"><label>Objectif <span class="req">*</span></label><textarea id="f-obj" placeholder="DÃ©crire l'objectif principal de ce processus..."></textarea></div>
                 </div>
               </div>
               <div class="form-section">
-                <div class="form-section-title">Responsabilité</div>
+                <div class="form-section-title">ResponsabilitÃ©</div>
                 <div class="form-grid">
                   <div class="form-group"><label>Pilote <span class="req">*</span></label>
                     <div class="owner-chips">
@@ -622,23 +622,23 @@
                       <div class="owner-chip" onclick="this.classList.toggle('sel')"><div class="owner-av" style="background:#9B1C1C">RH</div>R. Haddad</div>
                     </div>
                   </div>
-                  <div class="form-group"><label>Fréquence de revue</label><select><option>Mensuelle</option><option>Trimestrielle</option><option selected>Semestrielle</option><option>Annuelle</option></select></div>
-                  <div class="form-group"><label>Date de création</label><input type="date" value="2026-02-28"></div>
+                  <div class="form-group"><label>FrÃ©quence de revue</label><select><option>Mensuelle</option><option>Trimestrielle</option><option selected>Semestrielle</option><option>Annuelle</option></select></div>
+                  <div class="form-group"><label>Date de crÃ©ation</label><input type="date" value="2026-02-28"></div>
                   <div class="form-group"><label>Prochaine revue</label><input type="date" value="2026-08-28"></div>
                 </div>
               </div>
               <div class="form-section">
                 <div class="form-section-title">Indicateurs (KPI)</div>
                 <div class="kpi-list" id="kpi-list">
-                  <div class="kpi-row"><svg fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24" style="width:12px;height:12px;flex-shrink:0"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg><input type="text" value="Taux de conformité produit"><button class="rm-btn" onclick="this.closest('.kpi-row').remove()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div>
-                  <div class="kpi-row"><svg fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24" style="width:12px;height:12px;flex-shrink:0"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg><input type="text" value="Délai moyen de traitement"><button class="rm-btn" onclick="this.closest('.kpi-row').remove()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+                  <div class="kpi-row"><svg fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24" style="width:12px;height:12px;flex-shrink:0"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg><input type="text" value="Taux de conformitÃ© produit"><button class="rm-btn" onclick="this.closest('.kpi-row').remove()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+                  <div class="kpi-row"><svg fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24" style="width:12px;height:12px;flex-shrink:0"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg><input type="text" value="DÃ©lai moyen de traitement"><button class="rm-btn" onclick="this.closest('.kpi-row').remove()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></button></div>
                 </div>
                 <button class="add-kpi" onclick="addKPI()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>Ajouter un indicateur</button>
               </div>
               <div class="form-section">
-                <div class="form-section-title">Score de conformité initial</div>
+                <div class="form-section-title">Score de conformitÃ© initial</div>
                 <div style="max-width:360px">
-                  <label style="display:block;margin-bottom:8px">Auto-évaluation du pilote</label>
+                  <label style="display:block;margin-bottom:8px">Auto-Ã©valuation du pilote</label>
                   <div class="score-row">
                     <input type="range" class="word-slider" min="0" max="100" value="75" oninput="updScore(this.value)">
                     <div class="score-val" id="score-val" style="color:var(--s-yellow)">75%</div>
@@ -649,7 +649,7 @@
             <div class="form-actions">
               <button class="btn btn-ghost" onclick="showProcList()">Annuler</button>
               <button class="btn btn-secondary">Enregistrer brouillon</button>
-              <button class="btn btn-primary" onclick="saveProc()">✓ Créer le processus</button>
+              <button class="btn btn-primary" onclick="saveProc()">âœ“ CrÃ©er le processus</button>
             </div>
           </div>
         </div>
@@ -663,7 +663,7 @@
             <div id="type-fg" style="display:flex;gap:4px">
               <button class="tb-filter active" onclick="setF(this,'t','all')">Tous</button>
               <button class="tb-filter" onclick="setF(this,'t','Manuel')">Manuels</button>
-              <button class="tb-filter" onclick="setF(this,'t','Procédure')">Procédures</button>
+              <button class="tb-filter" onclick="setF(this,'t','ProcÃ©dure')">ProcÃ©dures</button>
               <button class="tb-filter" onclick="setF(this,'t','Enregistrement')">Enregistrements</button>
               <button class="tb-filter" onclick="setF(this,'t','Formulaire')">Formulaires</button>
             </div>
@@ -671,26 +671,26 @@
               <span style="font-size:11.5px;color:var(--text-muted)">Statut :</span>
               <div id="stat-fg" style="display:flex;gap:4px">
                 <button class="tb-filter active" onclick="setF(this,'s','all')">Tous</button>
-                <button class="tb-filter" onclick="setF(this,'s','Approuvé')">Approuvés</button>
-                <button class="tb-filter" onclick="setF(this,'s','En révision')">En révision</button>
-                <button class="tb-filter" onclick="setF(this,'s','Périmé')">Périmés</button>
+                <button class="tb-filter" onclick="setF(this,'s','ApprouvÃ©')">ApprouvÃ©s</button>
+                <button class="tb-filter" onclick="setF(this,'s','En rÃ©vision')">En rÃ©vision</button>
+                <button class="tb-filter" onclick="setF(this,'s','PÃ©rimÃ©')">PÃ©rimÃ©s</button>
               </div>
             </div>
           </div>
           <table class="word-table">
-            <thead><tr><th class="sort">Document ↕</th><th>Type</th><th>Processus</th><th>Statut</th><th class="sort">Révision ↕</th><th class="sort">Mis à jour ↕</th><th>Responsable</th><th style="width:90px"></th></tr></thead>
+            <thead><tr><th class="sort">Document â†•</th><th>Type</th><th>Processus</th><th>Statut</th><th class="sort">RÃ©vision â†•</th><th class="sort">Mis Ã  jour â†•</th><th>Responsable</th><th style="width:90px"></th></tr></thead>
             <tbody id="doc-tbody"></tbody>
           </table>
           <div class="table-footer">
-            <span id="doc-lbl">Affichage 1–10 sur 47 documents</span>
+            <span id="doc-lbl">Affichage 1â€“10 sur 47 documents</span>
             <div class="page-btns">
-              <button class="page-btn">‹</button>
+              <button class="page-btn">â€¹</button>
               <button class="page-btn active">1</button>
               <button class="page-btn">2</button>
               <button class="page-btn">3</button>
               <button class="page-btn">4</button>
               <button class="page-btn">5</button>
-              <button class="page-btn">›</button>
+              <button class="page-btn">â€º</button>
             </div>
           </div>
         </div>
@@ -704,9 +704,9 @@
 
 <script>
 const pageHeaders={
-  dashboard:{title:"Vue d'ensemble",sub:"Système de Management de la Qualité — ISO 9001:2015",actions:""},
-  processus:{title:"Processus",sub:"Cartographie — 18 processus actifs",actions:`<button class="btn btn-primary" onclick="showProcForm()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M12 4v16m8-8H4"/></svg>Nouveau processus</button>`},
-  documents:{title:"Documents",sub:"Gestion documentaire — 47 documents",actions:`<button class="btn btn-ghost"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Importer</button><button class="btn btn-primary" style="margin-left:4px"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M12 4v16m8-8H4"/></svg>Nouveau document</button>`}
+  dashboard:{title:"Vue d'ensemble",sub:"SystÃ¨me de Management de la QualitÃ© â€” ISO 9001:2015",actions:""},
+  processus:{title:"Processus",sub:"Cartographie â€” 18 processus actifs",actions:`<button class="btn btn-primary" onclick="showProcForm()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M12 4v16m8-8H4"/></svg>Nouveau processus</button>`},
+  documents:{title:"Documents",sub:"Gestion documentaire â€” 47 documents",actions:`<button class="btn btn-ghost"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Importer</button><button class="btn btn-primary" style="margin-left:4px"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M12 4v16m8-8H4"/></svg>Nouveau document</button>`}
 };
 function nav(el,v){
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
@@ -725,13 +725,13 @@ function showProcForm(){
   document.getElementById('proc-form').style.display='block';
   document.getElementById('ph-title').textContent='Nouveau processus';
   document.getElementById('ph-sub').textContent='Renseignez les informations du processus';
-  document.getElementById('ph-actions').innerHTML=`<button class="btn btn-ghost" onclick="showProcList()">← Retour</button>`;
+  document.getElementById('ph-actions').innerHTML=`<button class="btn btn-ghost" onclick="showProcList()">â† Retour</button>`;
 }
 function showProcList(){
   document.getElementById('proc-list').style.display='block';
   document.getElementById('proc-form').style.display='none';
   document.getElementById('ph-title').textContent='Processus';
-  document.getElementById('ph-sub').textContent='Cartographie — 18 processus actifs';
+  document.getElementById('ph-sub').textContent='Cartographie â€” 18 processus actifs';
   document.getElementById('ph-actions').innerHTML=`<button class="btn btn-primary" onclick="showProcForm()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M12 4v16m8-8H4"/></svg>Nouveau processus</button>`;
 }
 function addKPI(){
@@ -751,72 +751,72 @@ function saveProc(){
   const name=document.getElementById('f-name').value.trim();
   const type=document.getElementById('f-type').value;
   if(!code||!name||!type){showToast('Veuillez remplir les champs obligatoires (*)',false);return;}
-  showToast(`Processus "${name}" (${code}) créé avec succès !`,true);
+  showToast(`Processus "${name}" (${code}) crÃ©Ã© avec succÃ¨s !`,true);
   setTimeout(showProcList,1500);
 }
 const docs=[
-  {ref:'MQ-001',name:'Manuel Qualité',type:'Manuel',proc:'P-01',status:'Approuvé',v:'v3.2',date:'15/01/2026',owner:'A. Mansouri'},
-  {ref:'PRO-001',name:'Maîtrise des documents',type:'Procédure',proc:'P-01',status:'Approuvé',v:'v2.0',date:'10/01/2026',owner:'A. Mansouri'},
-  {ref:'PRO-002',name:'Maîtrise des enregistrements',type:'Procédure',proc:'P-01',status:'Approuvé',v:'v1.8',date:'10/01/2026',owner:'K. Mrad'},
-  {ref:'PRO-003',name:'Audit interne',type:'Procédure',proc:'P-01',status:'En révision',v:'v2.1',date:'05/01/2026',owner:'A. Mansouri'},
-  {ref:'PRO-004',name:'Actions correctives',type:'Procédure',proc:'P-01',status:'Approuvé',v:'v3.0',date:'20/12/2025',owner:'S. Ben Ali'},
-  {ref:'PRO-005',name:'Planification qualité',type:'Procédure',proc:'P-01',status:'Approuvé',v:'v1.5',date:'15/12/2025',owner:'A. Mansouri'},
-  {ref:'PRO-006',name:'Revue de direction',type:'Procédure',proc:'P-01',status:'Approuvé',v:'v2.3',date:'10/12/2025',owner:'R. Haddad'},
-  {ref:'PRO-007',name:'Qualification fournisseurs',type:'Procédure',proc:'P-02',status:'Approuvé',v:'v1.2',date:'08/12/2025',owner:'K. Mrad'},
-  {ref:'PRO-008',name:'Gestion des fournisseurs',type:'Procédure',proc:'P-02',status:'Approuvé',v:'v1.5',date:'01/12/2025',owner:'K. Mrad'},
-  {ref:'PRO-009',name:'Évaluation fournisseurs',type:'Procédure',proc:'P-02',status:'En révision',v:'v2.0',date:'25/11/2025',owner:'K. Mrad'},
-  {ref:'PRO-010',name:"Commandes d'achat",type:'Procédure',proc:'P-02',status:'Approuvé',v:'v1.1',date:'20/11/2025',owner:'S. Ben Ali'},
-  {ref:'PRO-011',name:'Réception et inspection',type:'Procédure',proc:'P-04',status:'Approuvé',v:'v2.2',date:'15/11/2025',owner:'S. Ben Ali'},
-  {ref:'PRO-012',name:'Contrôle des équipements',type:'Procédure',proc:'P-04',status:'En révision',v:'v2.1',date:'10/11/2025',owner:'S. Ben Ali'},
-  {ref:'PRO-013',name:'Gestion des NC produits',type:'Procédure',proc:'P-04',status:'Approuvé',v:'v3.1',date:'05/11/2025',owner:'R. Haddad'},
-  {ref:'PRO-014',name:'Traçabilité produits',type:'Procédure',proc:'P-04',status:'En révision',v:'v1.9',date:'01/11/2025',owner:'R. Haddad'},
-  {ref:'PRO-015',name:'Étalonnage instruments',type:'Procédure',proc:'P-07',status:'En révision',v:'v1.3',date:'25/10/2025',owner:'A. Mansouri'},
-  {ref:'PRO-016',name:"Plan d'étalonnage annuel",type:'Procédure',proc:'P-07',status:'Approuvé',v:'v2.0',date:'20/10/2025',owner:'A. Mansouri'},
-  {ref:'PRO-017',name:'Enquête satisfaction client',type:'Procédure',proc:'P-11',status:'Approuvé',v:'v1.7',date:'15/10/2025',owner:'K. Mrad'},
-  {ref:'ENR-001',name:'Registre des audits',type:'Enregistrement',proc:'P-01',status:'Approuvé',v:'v1.0',date:'01/02/2026',owner:'A. Mansouri'},
-  {ref:'ENR-002',name:'PV revue de direction',type:'Enregistrement',proc:'P-01',status:'Approuvé',v:'v1.0',date:'28/01/2026',owner:'R. Haddad'},
-  {ref:'ENR-003',name:'Tableau de bord qualité',type:'Enregistrement',proc:'P-01',status:'En révision',v:'v2.1',date:'20/01/2026',owner:'A. Mansouri'},
-  {ref:'ENR-024',name:'Enregistrements audits internes',type:'Enregistrement',proc:'P-01',status:'Périmé',v:'v1.0',date:'15/06/2025',owner:'K. Mrad'},
-  {ref:'ENR-010',name:'Fiches NC produits',type:'Enregistrement',proc:'P-04',status:'Périmé',v:'v1.2',date:'12/05/2025',owner:'S. Ben Ali'},
-  {ref:'FOR-001',name:"Fiche d'action corrective",type:'Formulaire',proc:'P-01',status:'Approuvé',v:'v2.0',date:'01/01/2026',owner:'A. Mansouri'},
-  {ref:'FOR-002',name:'Fiche de non-conformité',type:'Formulaire',proc:'P-04',status:'Approuvé',v:'v3.0',date:'01/01/2026',owner:'S. Ben Ali'},
-  {ref:'FOR-003',name:'Bon de commande standard',type:'Formulaire',proc:'P-02',status:'En révision',v:'v1.4',date:'15/12/2025',owner:'K. Mrad'},
-  {ref:'FOR-004',name:"Rapport d'audit",type:'Formulaire',proc:'P-01',status:'Approuvé',v:'v2.1',date:'10/12/2025',owner:'A. Mansouri'},
-  {ref:'FOR-005',name:'Évaluation fournisseur',type:'Formulaire',proc:'P-02',status:'Approuvé',v:'v1.0',date:'01/11/2025',owner:'K. Mrad'},
-  {ref:'PRO-018',name:'Formation du personnel',type:'Procédure',proc:'P-07',status:'En révision',v:'v1.1',date:'15/10/2025',owner:'R. Haddad'},
-  {ref:'PRO-019',name:'Gestion des compétences',type:'Procédure',proc:'P-07',status:'Approuvé',v:'v1.3',date:'01/10/2025',owner:'R. Haddad'},
-  {ref:'FOR-006',name:"Demande d'action préventive",type:'Formulaire',proc:'P-01',status:'Approuvé',v:'v1.0',date:'01/09/2025',owner:'A. Mansouri'},
-  {ref:'PRO-020',name:'Identification des risques',type:'Procédure',proc:'P-01',status:'Approuvé',v:'v2.0',date:'01/08/2025',owner:'A. Mansouri'},
-  {ref:'FOR-007',name:'Check-list audit qualité',type:'Formulaire',proc:'P-01',status:'Approuvé',v:'v1.2',date:'01/10/2025',owner:'K. Mrad'},
-  {ref:'PRO-021',name:'Livraison et expédition',type:'Procédure',proc:'P-04',status:'Approuvé',v:'v1.0',date:'15/08/2025',owner:'S. Ben Ali'},
-  {ref:'FOR-008',name:'Ordre de travail',type:'Formulaire',proc:'P-04',status:'En révision',v:'v2.0',date:'01/12/2025',owner:'R. Haddad'},
-  {ref:'PRO-022',name:'Contrôle qualité final',type:'Procédure',proc:'P-04',status:'Approuvé',v:'v1.8',date:'01/01/2026',owner:'S. Ben Ali'},
-  {ref:'ENR-017',name:"Fiches d'inspection",type:'Enregistrement',proc:'P-04',status:'Approuvé',v:'v1.4',date:'15/01/2026',owner:'R. Haddad'},
-  {ref:'FOR-009',name:'Plan de surveillance',type:'Formulaire',proc:'P-04',status:'Approuvé',v:'v1.0',date:'01/02/2026',owner:'A. Mansouri'},
-  {ref:'PRO-023',name:'Gestion des réclamations',type:'Procédure',proc:'P-11',status:'Approuvé',v:'v2.0',date:'15/11/2025',owner:'K. Mrad'},
-  {ref:'ENR-018',name:'Registre des réclamations',type:'Enregistrement',proc:'P-11',status:'Approuvé',v:'v1.0',date:'01/12/2025',owner:'K. Mrad'},
-  {ref:'PRO-024',name:'Actions préventives',type:'Procédure',proc:'P-01',status:'Approuvé',v:'v1.2',date:'10/02/2026',owner:'A. Mansouri'},
-  {ref:'ENR-015',name:'Matrice des risques',type:'Enregistrement',proc:'P-01',status:'En révision',v:'v1.5',date:'15/09/2025',owner:'A. Mansouri'},
-  {ref:'PRO-031',name:'Satisfaction client',type:'Procédure',proc:'P-11',status:'Approuvé',v:'v2.0',date:'10/10/2025',owner:'A. Mansouri'},
-  {ref:'ENR-012',name:'Résultats satisfaction client',type:'Enregistrement',proc:'P-11',status:'Approuvé',v:'v1.5',date:'05/02/2026',owner:'K. Mrad'},
-  {ref:'ENR-013',name:'Suivi indicateurs processus',type:'Enregistrement',proc:'P-01',status:'Approuvé',v:'v1.0',date:'01/02/2026',owner:'A. Mansouri'},
-  {ref:'ENR-014',name:'Registre équipements',type:'Enregistrement',proc:'P-07',status:'Périmé',v:'v1.1',date:'15/03/2025',owner:'S. Ben Ali'},
+  {ref:'MQ-001',name:'Manuel QualitÃ©',type:'Manuel',proc:'P-01',status:'ApprouvÃ©',v:'v3.2',date:'15/01/2026',owner:'A. Mansouri'},
+  {ref:'PRO-001',name:'MaÃ®trise des documents',type:'ProcÃ©dure',proc:'P-01',status:'ApprouvÃ©',v:'v2.0',date:'10/01/2026',owner:'A. Mansouri'},
+  {ref:'PRO-002',name:'MaÃ®trise des enregistrements',type:'ProcÃ©dure',proc:'P-01',status:'ApprouvÃ©',v:'v1.8',date:'10/01/2026',owner:'K. Mrad'},
+  {ref:'PRO-003',name:'Audit interne',type:'ProcÃ©dure',proc:'P-01',status:'En rÃ©vision',v:'v2.1',date:'05/01/2026',owner:'A. Mansouri'},
+  {ref:'PRO-004',name:'Actions correctives',type:'ProcÃ©dure',proc:'P-01',status:'ApprouvÃ©',v:'v3.0',date:'20/12/2025',owner:'S. Ben Ali'},
+  {ref:'PRO-005',name:'Planification qualitÃ©',type:'ProcÃ©dure',proc:'P-01',status:'ApprouvÃ©',v:'v1.5',date:'15/12/2025',owner:'A. Mansouri'},
+  {ref:'PRO-006',name:'Revue de direction',type:'ProcÃ©dure',proc:'P-01',status:'ApprouvÃ©',v:'v2.3',date:'10/12/2025',owner:'R. Haddad'},
+  {ref:'PRO-007',name:'Qualification fournisseurs',type:'ProcÃ©dure',proc:'P-02',status:'ApprouvÃ©',v:'v1.2',date:'08/12/2025',owner:'K. Mrad'},
+  {ref:'PRO-008',name:'Gestion des fournisseurs',type:'ProcÃ©dure',proc:'P-02',status:'ApprouvÃ©',v:'v1.5',date:'01/12/2025',owner:'K. Mrad'},
+  {ref:'PRO-009',name:'Ã‰valuation fournisseurs',type:'ProcÃ©dure',proc:'P-02',status:'En rÃ©vision',v:'v2.0',date:'25/11/2025',owner:'K. Mrad'},
+  {ref:'PRO-010',name:"Commandes d'achat",type:'ProcÃ©dure',proc:'P-02',status:'ApprouvÃ©',v:'v1.1',date:'20/11/2025',owner:'S. Ben Ali'},
+  {ref:'PRO-011',name:'RÃ©ception et inspection',type:'ProcÃ©dure',proc:'P-04',status:'ApprouvÃ©',v:'v2.2',date:'15/11/2025',owner:'S. Ben Ali'},
+  {ref:'PRO-012',name:'ContrÃ´le des Ã©quipements',type:'ProcÃ©dure',proc:'P-04',status:'En rÃ©vision',v:'v2.1',date:'10/11/2025',owner:'S. Ben Ali'},
+  {ref:'PRO-013',name:'Gestion des NC produits',type:'ProcÃ©dure',proc:'P-04',status:'ApprouvÃ©',v:'v3.1',date:'05/11/2025',owner:'R. Haddad'},
+  {ref:'PRO-014',name:'TraÃ§abilitÃ© produits',type:'ProcÃ©dure',proc:'P-04',status:'En rÃ©vision',v:'v1.9',date:'01/11/2025',owner:'R. Haddad'},
+  {ref:'PRO-015',name:'Ã‰talonnage instruments',type:'ProcÃ©dure',proc:'P-07',status:'En rÃ©vision',v:'v1.3',date:'25/10/2025',owner:'A. Mansouri'},
+  {ref:'PRO-016',name:"Plan d'Ã©talonnage annuel",type:'ProcÃ©dure',proc:'P-07',status:'ApprouvÃ©',v:'v2.0',date:'20/10/2025',owner:'A. Mansouri'},
+  {ref:'PRO-017',name:'EnquÃªte satisfaction client',type:'ProcÃ©dure',proc:'P-11',status:'ApprouvÃ©',v:'v1.7',date:'15/10/2025',owner:'K. Mrad'},
+  {ref:'ENR-001',name:'Registre des audits',type:'Enregistrement',proc:'P-01',status:'ApprouvÃ©',v:'v1.0',date:'01/02/2026',owner:'A. Mansouri'},
+  {ref:'ENR-002',name:'PV revue de direction',type:'Enregistrement',proc:'P-01',status:'ApprouvÃ©',v:'v1.0',date:'28/01/2026',owner:'R. Haddad'},
+  {ref:'ENR-003',name:'Tableau de bord qualitÃ©',type:'Enregistrement',proc:'P-01',status:'En rÃ©vision',v:'v2.1',date:'20/01/2026',owner:'A. Mansouri'},
+  {ref:'ENR-024',name:'Enregistrements audits internes',type:'Enregistrement',proc:'P-01',status:'PÃ©rimÃ©',v:'v1.0',date:'15/06/2025',owner:'K. Mrad'},
+  {ref:'ENR-010',name:'Fiches NC produits',type:'Enregistrement',proc:'P-04',status:'PÃ©rimÃ©',v:'v1.2',date:'12/05/2025',owner:'S. Ben Ali'},
+  {ref:'FOR-001',name:"Fiche d'action corrective",type:'Formulaire',proc:'P-01',status:'ApprouvÃ©',v:'v2.0',date:'01/01/2026',owner:'A. Mansouri'},
+  {ref:'FOR-002',name:'Fiche de non-conformitÃ©',type:'Formulaire',proc:'P-04',status:'ApprouvÃ©',v:'v3.0',date:'01/01/2026',owner:'S. Ben Ali'},
+  {ref:'FOR-003',name:'Bon de commande standard',type:'Formulaire',proc:'P-02',status:'En rÃ©vision',v:'v1.4',date:'15/12/2025',owner:'K. Mrad'},
+  {ref:'FOR-004',name:"Rapport d'audit",type:'Formulaire',proc:'P-01',status:'ApprouvÃ©',v:'v2.1',date:'10/12/2025',owner:'A. Mansouri'},
+  {ref:'FOR-005',name:'Ã‰valuation fournisseur',type:'Formulaire',proc:'P-02',status:'ApprouvÃ©',v:'v1.0',date:'01/11/2025',owner:'K. Mrad'},
+  {ref:'PRO-018',name:'Formation du personnel',type:'ProcÃ©dure',proc:'P-07',status:'En rÃ©vision',v:'v1.1',date:'15/10/2025',owner:'R. Haddad'},
+  {ref:'PRO-019',name:'Gestion des compÃ©tences',type:'ProcÃ©dure',proc:'P-07',status:'ApprouvÃ©',v:'v1.3',date:'01/10/2025',owner:'R. Haddad'},
+  {ref:'FOR-006',name:"Demande d'action prÃ©ventive",type:'Formulaire',proc:'P-01',status:'ApprouvÃ©',v:'v1.0',date:'01/09/2025',owner:'A. Mansouri'},
+  {ref:'PRO-020',name:'Identification des risques',type:'ProcÃ©dure',proc:'P-01',status:'ApprouvÃ©',v:'v2.0',date:'01/08/2025',owner:'A. Mansouri'},
+  {ref:'FOR-007',name:'Check-list audit qualitÃ©',type:'Formulaire',proc:'P-01',status:'ApprouvÃ©',v:'v1.2',date:'01/10/2025',owner:'K. Mrad'},
+  {ref:'PRO-021',name:'Livraison et expÃ©dition',type:'ProcÃ©dure',proc:'P-04',status:'ApprouvÃ©',v:'v1.0',date:'15/08/2025',owner:'S. Ben Ali'},
+  {ref:'FOR-008',name:'Ordre de travail',type:'Formulaire',proc:'P-04',status:'En rÃ©vision',v:'v2.0',date:'01/12/2025',owner:'R. Haddad'},
+  {ref:'PRO-022',name:'ContrÃ´le qualitÃ© final',type:'ProcÃ©dure',proc:'P-04',status:'ApprouvÃ©',v:'v1.8',date:'01/01/2026',owner:'S. Ben Ali'},
+  {ref:'ENR-017',name:"Fiches d'inspection",type:'Enregistrement',proc:'P-04',status:'ApprouvÃ©',v:'v1.4',date:'15/01/2026',owner:'R. Haddad'},
+  {ref:'FOR-009',name:'Plan de surveillance',type:'Formulaire',proc:'P-04',status:'ApprouvÃ©',v:'v1.0',date:'01/02/2026',owner:'A. Mansouri'},
+  {ref:'PRO-023',name:'Gestion des rÃ©clamations',type:'ProcÃ©dure',proc:'P-11',status:'ApprouvÃ©',v:'v2.0',date:'15/11/2025',owner:'K. Mrad'},
+  {ref:'ENR-018',name:'Registre des rÃ©clamations',type:'Enregistrement',proc:'P-11',status:'ApprouvÃ©',v:'v1.0',date:'01/12/2025',owner:'K. Mrad'},
+  {ref:'PRO-024',name:'Actions prÃ©ventives',type:'ProcÃ©dure',proc:'P-01',status:'ApprouvÃ©',v:'v1.2',date:'10/02/2026',owner:'A. Mansouri'},
+  {ref:'ENR-015',name:'Matrice des risques',type:'Enregistrement',proc:'P-01',status:'En rÃ©vision',v:'v1.5',date:'15/09/2025',owner:'A. Mansouri'},
+  {ref:'PRO-031',name:'Satisfaction client',type:'ProcÃ©dure',proc:'P-11',status:'ApprouvÃ©',v:'v2.0',date:'10/10/2025',owner:'A. Mansouri'},
+  {ref:'ENR-012',name:'RÃ©sultats satisfaction client',type:'Enregistrement',proc:'P-11',status:'ApprouvÃ©',v:'v1.5',date:'05/02/2026',owner:'K. Mrad'},
+  {ref:'ENR-013',name:'Suivi indicateurs processus',type:'Enregistrement',proc:'P-01',status:'ApprouvÃ©',v:'v1.0',date:'01/02/2026',owner:'A. Mansouri'},
+  {ref:'ENR-014',name:'Registre Ã©quipements',type:'Enregistrement',proc:'P-07',status:'PÃ©rimÃ©',v:'v1.1',date:'15/03/2025',owner:'S. Ben Ali'},
 ];
-const icons={Manuel:{cls:'manuel',svg:'<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>'},Procédure:{cls:'proc',svg:'<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6m-3 4v6m-3-3h6"/>'},Enregistrement:{cls:'enreg',svg:'<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>'},Formulaire:{cls:'form',svg:'<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6m-5 6l2 2 4-4"/>'}};
-const stTag={'Approuvé':'<span class="tag conforme">● Approuvé</span>','En révision':'<span class="tag revision">⏳ En révision</span>','Périmé':'<span class="tag perime">✕ Périmé</span>'};
-const tCls={Manuel:'purple',Procédure:'blue',Enregistrement:'orange',Formulaire:'green-t'};
+const icons={Manuel:{cls:'manuel',svg:'<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>'},ProcÃ©dure:{cls:'proc',svg:'<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6m-3 4v6m-3-3h6"/>'},Enregistrement:{cls:'enreg',svg:'<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>'},Formulaire:{cls:'form',svg:'<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6m-5 6l2 2 4-4"/>'}};
+const stTag={'ApprouvÃ©':'<span class="tag conforme">â— ApprouvÃ©</span>','En rÃ©vision':'<span class="tag revision">â³ En rÃ©vision</span>','PÃ©rimÃ©':'<span class="tag perime">âœ• PÃ©rimÃ©</span>'};
+const tCls={Manuel:'purple',ProcÃ©dure:'blue',Enregistrement:'orange',Formulaire:'green-t'};
 const avCol={'A. Mansouri':'var(--xl-green-mid)','K. Mrad':'#6C3483','S. Ben Ali':'#1A5276','R. Haddad':'#9B1C1C'};
 let flt={t:'all',s:'all',q:''};
 function renderDocs(){
   const filtered=docs.filter(d=>(flt.t==='all'||d.type===flt.t)&&(flt.s==='all'||d.status===flt.s)&&(!flt.q||d.name.toLowerCase().includes(flt.q)||d.ref.toLowerCase().includes(flt.q)));
   const shown=filtered.slice(0,10);
   document.getElementById('doc-tbody').innerHTML=shown.map(d=>{
-    const ic=icons[d.type]||icons['Procédure'];
+    const ic=icons[d.type]||icons['ProcÃ©dure'];
     const init=d.owner.split(' ').map(n=>n[0]).join('');
     const col=avCol[d.owner]||'var(--xl-green-mid)';
-    return `<tr><td><div class="doc-cell"><div class="doc-icon ${ic.cls}"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${ic.svg}</svg></div><div><div class="doc-name">${d.name}</div><div class="doc-ref">${d.ref}</div></div></div></td><td><span class="tag ${tCls[d.type]}">${d.type}</span></td><td><span class="tag xl">${d.proc}</span></td><td>${stTag[d.status]}</td><td style="font-family:'Courier New',monospace;font-size:11.5px;color:var(--text-muted)">${d.v}</td><td style="font-size:11.5px;color:var(--text-muted)">${d.date}</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:20px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:white">${init}</div><span style="font-size:12px;color:var(--text-secondary)">${d.owner}</span></div></td><td><div class="row-actions"><button class="row-btn" title="Voir"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button><button class="row-btn" title="Modifier"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="row-btn" title="Télécharger"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button><button class="row-btn del" title="Supprimer"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></td></tr>`;
+    return `<tr><td><div class="doc-cell"><div class="doc-icon ${ic.cls}"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${ic.svg}</svg></div><div><div class="doc-name">${d.name}</div><div class="doc-ref">${d.ref}</div></div></div></td><td><span class="tag ${tCls[d.type]}">${d.type}</span></td><td><span class="tag xl">${d.proc}</span></td><td>${stTag[d.status]}</td><td style="font-family:'Courier New',monospace;font-size:11.5px;color:var(--text-muted)">${d.v}</td><td style="font-size:11.5px;color:var(--text-muted)">${d.date}</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:20px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:white">${init}</div><span style="font-size:12px;color:var(--text-secondary)">${d.owner}</span></div></td><td><div class="row-actions"><button class="row-btn" title="Voir"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button><button class="row-btn" title="Modifier"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button class="row-btn" title="TÃ©lÃ©charger"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button><button class="row-btn del" title="Supprimer"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></div></td></tr>`;
   }).join('');
-  document.getElementById('doc-lbl').textContent=`Affichage 1–${Math.min(10,filtered.length)} sur ${filtered.length} document${filtered.length>1?'s':''}`;
+  document.getElementById('doc-lbl').textContent=`Affichage 1â€“${Math.min(10,filtered.length)} sur ${filtered.length} document${filtered.length>1?'s':''}`;
 }
 function filterDocs(v){flt.q=v.toLowerCase();renderDocs();}
 function setF(btn,k,val){flt[k]=val;const gid=k==='t'?'type-fg':'stat-fg';document.querySelectorAll('#'+gid+' .tb-filter').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');renderDocs();}
@@ -824,3 +824,4 @@ function showToast(msg,ok=true){const t=document.getElementById('toast');t.style
 </script>
 </body>
 </html>
+

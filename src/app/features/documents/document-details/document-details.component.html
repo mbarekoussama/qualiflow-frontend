@@ -1,0 +1,148 @@
+<section class="document-details-page">
+  <mat-card class="header-card" *ngIf="hasData && details as model">
+    <div class="header-main">
+      <div>
+        <h1>{{ model.document.title }}</h1>
+        <p>{{ model.document.code }} · Gestion documentaire</p>
+      </div>
+
+      <div class="header-actions">
+        <button mat-stroked-button type="button" (click)="backToList()">
+          <mat-icon>arrow_back</mat-icon>
+          Retour
+        </button>
+        <button mat-stroked-button type="button" (click)="openVersions()">
+          <mat-icon>history</mat-icon>
+          Versions
+        </button>
+        <button *ngIf="canWrite" mat-stroked-button type="button" (click)="editDocument()">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="downloadCurrent()">
+          <mat-icon>download</mat-icon>
+          Telecharger
+        </button>
+      </div>
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-item">
+        <span>Type</span>
+        <strong>{{ getTypeLabel(model.document.type) }}</strong>
+      </div>
+      <div class="meta-item">
+        <span>Statut version courante</span>
+        <strong [ngClass]="'status-' + (model.currentVersion?.status || 'BROUILLON').toLowerCase()">
+          {{ getStatusLabel(model.currentVersion?.status || 'BROUILLON') }}
+        </strong>
+      </div>
+      <div class="meta-item">
+        <span>Processus</span>
+        <strong>{{ model.document.processCode || '-' }} {{ model.document.processName || '' }}</strong>
+      </div>
+      <div class="meta-item">
+        <span>Procedure</span>
+        <strong>{{ model.document.procedureCode || '-' }} {{ model.document.procedureTitle || '' }}</strong>
+      </div>
+      <div class="meta-item owner-item">
+        <span>Responsable</span>
+        <div class="owner-wrap">
+          <span class="owner-avatar">{{ getOwnerInitials(model.document.ownerFullName) }}</span>
+          <strong>{{ model.document.ownerFullName || 'Non defini' }}</strong>
+        </div>
+      </div>
+      <div class="meta-item">
+        <span>Derniere mise a jour</span>
+        <strong>{{ (model.document.updatedAt || model.document.createdAt) | date: 'dd/MM/yyyy HH:mm' }}</strong>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card *ngIf="loading" class="loading-card">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Chargement du document...</span>
+  </mat-card>
+
+  <ng-container *ngIf="!loading && details as model">
+    <mat-card class="description-card">
+      <h2>Description</h2>
+      <p>{{ model.document.description || 'Aucune description.' }}</p>
+
+      <div class="details-grid">
+        <div>
+          <span class="label">Categorie</span>
+          <strong>{{ model.document.category || 'Non definie' }}</strong>
+        </div>
+        <div>
+          <span class="label">Mots-cles</span>
+          <strong>{{ model.document.keywords || 'Aucun mot-cle' }}</strong>
+        </div>
+        <div>
+          <span class="label">Version courante</span>
+          <strong>{{ model.currentVersion?.versionNumber || 'Aucune' }}</strong>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="versions-card">
+      <div class="card-head">
+        <h2>Historique des versions</h2>
+        <button mat-stroked-button type="button" (click)="previewCurrent()" [disabled]="!model.currentVersion">
+          <mat-icon>visibility</mat-icon>
+          Previsualiser
+        </button>
+      </div>
+
+      <div class="empty-box" *ngIf="model.versions.length === 0">
+        <mat-icon>history_toggle_off</mat-icon>
+        <p>Aucune version disponible.</p>
+      </div>
+
+      <div class="table-wrapper" *ngIf="model.versions.length > 0">
+        <table mat-table [dataSource]="model.versions" class="versions-table">
+          <ng-container matColumnDef="version">
+            <th mat-header-cell *matHeaderCellDef>Version</th>
+            <td mat-cell *matCellDef="let row">{{ row.versionNumber }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="badge" [ngClass]="'status-' + row.status.toLowerCase()">
+                {{ getStatusLabel(row.status) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="file">
+            <th mat-header-cell *matHeaderCellDef>Fichier</th>
+            <td mat-cell *matCellDef="let row">{{ row.originalFileName || '-' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let row">{{ row.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="author">
+            <th mat-header-cell *matHeaderCellDef>Auteur</th>
+            <td mat-cell *matCellDef="let row">{{ row.establishedByUser || ('User #' + row.establishedByUserId) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-icon-button type="button" (click)="downloadVersion(row)" title="Telecharger">
+                <mat-icon>download</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedVersionColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedVersionColumns"></tr>
+        </table>
+      </div>
+    </mat-card>
+  </ng-container>
+</section>

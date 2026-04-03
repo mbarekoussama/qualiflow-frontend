@@ -1,0 +1,93 @@
+﻿<section class="org-details-page">
+  <mat-card *ngIf="loading" class="loading-card">
+    <mat-spinner diameter="36"></mat-spinner>
+    <span>Chargement de l organisation...</span>
+  </mat-card>
+
+  <ng-container *ngIf="!loading && organization as org">
+    <mat-card class="header-card">
+      <div class="header-top">
+        <div>
+          <h1>{{ org.name }}</h1>
+          <p>{{ org.code }}</p>
+        </div>
+
+        <div class="actions">
+          <button mat-stroked-button type="button" (click)="backToList()">
+            <mat-icon>arrow_back</mat-icon>
+            Retour
+          </button>
+
+          <button mat-flat-button color="primary" type="button" (click)="editOrganization()">
+            <mat-icon>edit</mat-icon>
+            Modifier
+          </button>
+        </div>
+      </div>
+
+      <div class="chips-row">
+        <mat-chip color="primary" highlighted>{{ getTypeLabel(org.type) }}</mat-chip>
+        <mat-chip [color]="org.status === 'ACTIF' ? 'primary' : 'warn'" highlighted>
+          {{ getStatusLabel(org.status) }}
+        </mat-chip>
+      </div>
+    </mat-card>
+
+    <mat-card class="content-card">
+      <h2>Informations generales</h2>
+      <div class="info-grid">
+        <div><strong>Description</strong><p>{{ org.description || '-' }}</p></div>
+        <div><strong>Adresse</strong><p>{{ org.address || '-' }}</p></div>
+        <div><strong>Email</strong><p>{{ org.email || '-' }}</p></div>
+        <div><strong>Telephone</strong><p>{{ org.phone || '-' }}</p></div>
+        <div><strong>Date creation</strong><p>{{ org.createdAt | date: 'dd/MM/yyyy HH:mm' }}</p></div>
+        <div><strong>Derniere modification</strong><p>{{ (org.updatedAt | date: 'dd/MM/yyyy HH:mm') || '-' }}</p></div>
+      </div>
+    </mat-card>
+
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <h3>Utilisateurs</h3>
+        <strong>{{ org.usersCount }}</strong>
+      </mat-card>
+      <mat-card class="stat-card">
+        <h3>Admins locaux</h3>
+        <strong>{{ org.adminsCount }}</strong>
+      </mat-card>
+    </div>
+
+    <mat-card class="admins-card">
+      <h2>Admins locaux</h2>
+      <div *ngIf="org.admins.length === 0" class="empty-admins">Aucun admin local.</div>
+
+      <table *ngIf="org.admins.length > 0" mat-table [dataSource]="org.admins" class="admins-table">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Nom</th>
+          <td mat-cell *matCellDef="let admin">{{ admin.firstName }} {{ admin.lastName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let admin">{{ admin.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Statut</th>
+          <td mat-cell *matCellDef="let admin">
+            <mat-chip [color]="admin.isActive ? 'primary' : 'warn'" highlighted>
+              {{ admin.isActive ? 'Actif' : 'Inactif' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Date creation</th>
+          <td mat-cell *matCellDef="let admin">{{ admin.createdAt | date: 'dd/MM/yyyy' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedAdminColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedAdminColumns"></tr>
+      </table>
+    </mat-card>
+  </ng-container>
+</section>

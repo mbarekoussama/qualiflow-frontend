@@ -1,0 +1,131 @@
+﻿<section class="process-catalog-page">
+  <mat-card class="catalog-header-card">
+    <div class="catalog-header-row">
+      <div>
+        <h1>Processus</h1>
+        <div class="catalog-subtitle">
+          <button type="button" class="link-button" (click)="openMap()">Cartographie</button>
+          <span class="dot-separator">-</span>
+          <span>{{ activeCount }} processus actifs</span>
+        </div>
+      </div>
+
+      <div class="catalog-actions">
+        <button mat-stroked-button type="button" (click)="toggleFilters()">
+          <mat-icon>tune</mat-icon>
+          Filtres
+        </button>
+
+        <button *ngIf="canWrite" mat-flat-button color="primary" type="button" (click)="createProcess()">
+          <mat-icon>add</mat-icon>
+          Nouveau processus
+        </button>
+      </div>
+    </div>
+
+    <form *ngIf="showFilters" class="filters-row" [formGroup]="filtersForm" (ngSubmit)="onSearch()">
+      <mat-form-field appearance="outline">
+        <mat-label>Recherche</mat-label>
+        <input matInput formControlName="search" placeholder="Code, nom ou description" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="">Tous</mat-option>
+          <mat-option *ngFor="let option of typeOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="">Tous</mat-option>
+          <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Pilote</mat-label>
+        <mat-select formControlName="pilotUserId">
+          <mat-option [value]="null">Tous</mat-option>
+          <mat-option *ngFor="let pilot of pilots" [value]="pilot.id">
+            {{ pilot.firstName }} {{ pilot.lastName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filter-buttons">
+        <button mat-flat-button color="primary" type="submit">Filtrer</button>
+        <button mat-stroked-button type="button" (click)="clearFilters()">Reinitialiser</button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card class="catalog-content-card">
+    <div class="loading-box" *ngIf="loading">
+      <mat-spinner diameter="38"></mat-spinner>
+      <span>Chargement des processus...</span>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div class="empty-box" *ngIf="items.length === 0">
+        <mat-icon>inbox</mat-icon>
+        <h3>Aucun processus trouve</h3>
+        <p>Ajuste les filtres ou cree un nouveau processus.</p>
+      </div>
+
+      <ng-container *ngIf="items.length > 0">
+        <div class="process-grid">
+          <article
+            class="process-card"
+            *ngFor="let item of items; trackBy: trackByProcessId"
+            [ngClass]="'tone-' + getTone(item)"
+            (click)="viewProcess(item)">
+            <div class="card-top-line"></div>
+
+            <div class="card-top-row">
+              <span class="process-code">{{ item.code }}</span>
+              <span class="process-score" [ngClass]="'tone-' + getTone(item)">{{ getScore(item) }}%</span>
+            </div>
+
+            <h3>{{ item.name }}</h3>
+            <p class="process-type">{{ getTypeDescription(item.type) }}</p>
+
+            <div class="progress-track">
+              <div class="progress-fill" [ngClass]="'tone-' + getTone(item)" [style.width.%]="getScore(item)"></div>
+            </div>
+
+            <div class="card-footer-row">
+              <span class="meta-text">{{ getMetaText(item) }}</span>
+              <span class="quality-badge" [ngClass]="'tone-' + getTone(item)">
+                {{ getToneIcon(item) }} {{ getToneLabel(item) }}
+              </span>
+            </div>
+
+            <div class="card-actions" (click)="$event.stopPropagation()">
+              <button mat-button color="primary" type="button" (click)="viewProcess(item)">Voir</button>
+              <button *ngIf="canWrite" mat-button color="primary" type="button" (click)="editProcess(item)">Modifier</button>
+              <button *ngIf="canWrite" mat-button type="button" (click)="toggleStatus(item)">Statut</button>
+              <button *ngIf="canWrite" mat-button color="warn" type="button" (click)="deleteProcess(item)">Supprimer</button>
+            </div>
+          </article>
+
+          <button *ngIf="canWrite" class="add-process-card" type="button" (click)="createProcess()">
+            <mat-icon>add</mat-icon>
+            <span>Nouveau processus</span>
+          </button>
+        </div>
+
+        <mat-paginator
+          [length]="total"
+          [pageSize]="pageSize"
+          [pageIndex]="pageNumber - 1"
+          [pageSizeOptions]="[5, 10, 20, 50]"
+          showFirstLastButtons
+          (page)="onPageChanged($event)">
+        </mat-paginator>
+      </ng-container>
+    </ng-container>
+  </mat-card>
+</section>

@@ -1,119 +1,269 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { ApiService } from './api.service';
-import { LoginRequest, LoginResponse, AuthUser } from '../../shared/models/auth.model';
+import { environment } from '../../../environments/environment';
+
+export interface LoginRequest {
+  email: string;
+  organizationCode?: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  organizationCode: string;
+  birthDate: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface RegisterResponse {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  createdAt: string;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: string;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  organizationId?: number;
+}
+
+export interface MeResponse {
+  id: number;
+  organizationId?: number;
+  organizationName?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  function?: string;
+  department?: string;
+  birthDate?: string;
+  preferredLanguage?: 'fr' | 'en' | 'ar';
+  profilePhotoPath?: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface UpdateProfileRequest {
+  firstName: string;
+  lastName: string;
+  birthDate?: string | null;
+  preferredLanguage: 'fr' | 'en' | 'ar';
+}
+
+export interface ProfilePhotoResponse {
+  userId: number;
+  profilePhotoPath?: string | null;
+  updatedAt?: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly TOKEN_KEY = 'auth_token';
-  private readonly USER_KEY = 'auth_user';
-  
-  private currentUserSubject = new BehaviorSubject<AuthUser | null>(this.getUserFromStorage());
+  private apiUrl = `${environment.apiUrl}/api/auth`;
+  private currentUserSubject = new BehaviorSubject<MeResponse | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
+  private profilePhotoRefreshSubject = new Subject<void>();
+  public profilePhotoRefresh$ = this.profilePhotoRefreshSubject.asObservable();
+  
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor(
-    private apiService: ApiService,
-    private router: Router
-  ) {}
+  constructor(private http: HttpClient, private router: Router) {
+    this.loadCurrentUser();
+  }
 
-  /**
-   * Connexion utilisateur
-   */
-  login(credentials: LoginRequest): Observable<LoginResponse> {
-    // Simulation d'une authentification avec json-server
-    return this.apiService.get<any>('auth').pipe(
-      map(authData => {
-        if (authData.email === credentials.email && authData.password === credentials.password) {
-          const response: LoginResponse = {
-            token: authData.token,
-            user: {
-              id: 1,
-              email: authData.email,
-              name: 'Admin User'
-            }
-          };
-          return response;
-        } else {
-          throw new Error('Invalid credentials');
-        }
-      }),
+  register(request: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, request);
+  }
+
+  login(request: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request).pipe(
       tap(response => {
-        this.setSession(response);
-      }),
-      catchError(error => {
-        return throwError(() => new Error('Email ou mot de passe incorrect'));
+        this.setTokens(response.accessToken, response.refreshToken);
+        this.isAuthenticatedSubject.next(true);
       })
     );
   }
 
-  /**
-   * Déconnexion utilisateur
-   */
-  logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
+  logout(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/logout`, {}).pipe(
+      // Keep UX consistent: even if API logout fails, clear local session.
+      catchError(() => of(null)),
+      tap(() => {
+        this.forceLogout();
+      })
+    );
+  }
+
+  forceLogout(): void {
+    this.clearTokens();
     this.currentUserSubject.next(null);
+    this.isAuthenticatedSubject.next(false);
+    this.applyPlatformLanguage('fr');
     this.router.navigate(['/login']);
   }
 
-  /**
-   * Vérifie si l'utilisateur est connecté
-   */
-  isAuthenticated(): boolean {
-    const token = this.getToken();
-    return !!token && !this.isTokenExpired(token);
+  refreshToken(): Observable<LoginResponse> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+    
+    return this.http.post<LoginResponse>(`${this.apiUrl}/refresh-token`, { refreshToken }).pipe(
+      tap(response => {
+        this.setTokens(response.accessToken, response.refreshToken);
+      })
+    );
   }
 
-  /**
-   * Récupère le token d'authentification
-   */
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+  changePassword(request: ChangePasswordRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-password`, request);
   }
 
-  /**
-   * Récupère l'utilisateur actuel
-   */
-  getCurrentUser(): AuthUser | null {
+  updateProfile(request: UpdateProfileRequest): Observable<MeResponse> {
+    return this.http.put<MeResponse>(`${this.apiUrl}/me`, request).pipe(
+      tap(user => {
+        this.currentUserSubject.next(user);
+        this.saveUserToStorage(user);
+        this.applyPlatformLanguage(user.preferredLanguage);
+      })
+    );
+  }
+
+  uploadProfilePhoto(file: File): Observable<ProfilePhotoResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ProfilePhotoResponse>(`${this.apiUrl}/me/photo`, formData).pipe(
+      tap(() => this.profilePhotoRefreshSubject.next())
+    );
+  }
+
+  downloadProfilePhoto(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/me/photo`, { responseType: 'blob' });
+  }
+
+  forgotPassword(request: ForgotPasswordRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgot-password`, request);
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password`, request);
+  }
+
+  getProfile(): Observable<MeResponse> {
+    return this.http.get<MeResponse>(`${this.apiUrl}/me`).pipe(
+      tap(user => {
+        this.currentUserSubject.next(user);
+        this.saveUserToStorage(user);
+        this.applyPlatformLanguage(user.preferredLanguage);
+      })
+    );
+  }
+
+  getCurrentUser(): MeResponse | null {
     return this.currentUserSubject.value;
   }
 
-  /**
-   * Définit la session utilisateur
-   */
-  private setSession(authResult: LoginResponse): void {
-    localStorage.setItem(this.TOKEN_KEY, authResult.token);
-    if (authResult.user) {
-      localStorage.setItem(this.USER_KEY, JSON.stringify(authResult.user));
-      this.currentUserSubject.next(authResult.user);
-    }
-  }
-
-  /**
-   * Récupère l'utilisateur depuis le localStorage
-   */
-  private getUserFromStorage(): AuthUser | null {
-    const userStr = localStorage.getItem(this.USER_KEY);
-    if (userStr) {
-      try {
-        return JSON.parse(userStr);
-      } catch {
-        return null;
+  private loadCurrentUser(): void {
+    if (this.hasToken()) {
+      const storedUser = this.getUserFromStorage();
+      if (storedUser) {
+        this.currentUserSubject.next(storedUser);
+        this.applyPlatformLanguage(storedUser.preferredLanguage);
+      } else {
+        this.applyPlatformLanguage('fr');
       }
+    } else {
+      this.applyPlatformLanguage('fr');
     }
-    return null;
   }
 
-  /**
-   * Vérifie si le token est expiré (simulation)
-   */
-  private isTokenExpired(token: string): boolean {
-    // Dans un vrai projet, vous devriez décoder le JWT et vérifier l'expiration
-    // Ici, on simule que le token n'expire jamais pour la démo
-    return false;
+  private setTokens(accessToken: string, refreshToken: string): void {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+  }
+
+  private clearTokens(): void {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('currentUser');
+  }
+
+  getAccessToken(): string | null {
+    return localStorage.getItem('accessToken');
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+
+  private hasToken(): boolean {
+    return !!localStorage.getItem('accessToken');
+  }
+
+  private saveUserToStorage(user: MeResponse): void {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+  }
+
+  private getUserFromStorage(): MeResponse | null {
+    const user = localStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
+  }
+
+  isAuthenticated(): boolean {
+    return this.hasToken();
+  }
+
+  hasRole(role: string | string[]): boolean {
+    const user = this.getCurrentUser();
+    if (!user) return false;
+    
+    if (Array.isArray(role)) {
+      return role.includes(user.role);
+    }
+    return user.role === role;
+  }
+
+  private applyPlatformLanguage(language?: 'fr' | 'en' | 'ar' | string): void {
+    const normalized = language === 'en' || language === 'ar' || language === 'fr' ? language : 'fr';
+    document.documentElement.lang = normalized;
+    document.documentElement.dir = normalized === 'ar' ? 'rtl' : 'ltr';
   }
 }

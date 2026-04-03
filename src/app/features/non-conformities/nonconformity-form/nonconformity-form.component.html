@@ -1,0 +1,112 @@
+<section class="nonconformity-form-page">
+  <mat-card class="hero-card">
+    <div class="hero-main">
+      <div>
+        <h1>{{ title }}</h1>
+        <p>Declare, qualifie et affecte la non-conformite a un responsable.</p>
+      </div>
+    </div>
+  </mat-card>
+
+  <div class="loading-box" *ngIf="loading">
+    <mat-spinner diameter="38"></mat-spinner>
+    <span>Chargement du formulaire...</span>
+  </div>
+
+  <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="submit()" class="form-layout">
+    <mat-card class="form-section">
+      <h2>Informations principales</h2>
+
+      <div class="section-grid two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Code</mat-label>
+          <input matInput formControlName="code" placeholder="NC-001" />
+          <mat-error *ngIf="form.controls.code.invalid">Code obligatoire.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Titre</mat-label>
+          <input matInput formControlName="title" placeholder="Titre de la non-conformite" />
+          <mat-error *ngIf="form.controls.title.invalid">Titre obligatoire.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let option of typeOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Severite</mat-label>
+          <mat-select formControlName="severity">
+            <mat-option *ngFor="let option of severityOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date detection</mat-label>
+          <input matInput type="date" formControlName="detectedDate" />
+          <mat-error *ngIf="form.controls.detectedDate.invalid">Date obligatoire.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput rows="3" formControlName="description" placeholder="Description de l'ecart constate"></textarea>
+        </mat-form-field>
+      </div>
+    </mat-card>
+
+    <mat-card class="form-section">
+      <h2>Liaisons metier</h2>
+
+      <div class="section-grid two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Processus</mat-label>
+          <mat-select formControlName="processId">
+            <mat-option [value]="null">Aucun</mat-option>
+            <mat-option *ngFor="let process of processes" [value]="process.id">
+              {{ process.code }} - {{ process.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Procedure</mat-label>
+          <mat-select formControlName="procedureId">
+            <mat-option [value]="null">Aucune</mat-option>
+            <mat-option *ngFor="let procedure of filteredProcedures" [value]="procedure.id">
+              {{ procedure.code }} - {{ procedure.title }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Responsable</mat-label>
+          <mat-select formControlName="responsibleUserId">
+            <mat-option [value]="0">Selectionner</mat-option>
+            <mat-option *ngFor="let user of users" [value]="user.id">
+              {{ user.firstName }} {{ user.lastName }} ({{ user.email }})
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.controls.responsibleUserId.invalid">Responsable obligatoire.</mat-error>
+        </mat-form-field>
+      </div>
+    </mat-card>
+
+    <div class="form-actions">
+      <button mat-stroked-button type="button" (click)="goBack()" [disabled]="saving">Annuler</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+        <mat-spinner *ngIf="saving" diameter="18"></mat-spinner>
+        <span *ngIf="!saving">{{ isEdit ? 'Enregistrer les modifications' : 'Creer la non-conformite' }}</span>
+      </button>
+    </div>
+  </form>
+</section>

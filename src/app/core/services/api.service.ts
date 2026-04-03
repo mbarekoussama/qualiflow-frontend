@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly baseUrl = environment.apiUrl;
+  private readonly baseUrl = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) {}
 
@@ -25,34 +25,39 @@ export class ApiService {
       });
     }
 
-    return this.http.get<T>(`${this.baseUrl}/${endpoint}`, { params: httpParams });
+    const normalizedEndpoint = endpoint.replace(/^\/+/, '');
+    return this.http.get<T>(`${this.baseUrl}/${normalizedEndpoint}`, { params: httpParams });
   }
 
   /**
    * Effectue une requête POST
    */
   post<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}/${endpoint}`, data);
+    const normalizedEndpoint = endpoint.replace(/^\/+/, '');
+    return this.http.post<T>(`${this.baseUrl}/${normalizedEndpoint}`, data);
   }
 
   /**
    * Effectue une requête PUT
    */
   put<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}/${endpoint}`, data);
+    const normalizedEndpoint = endpoint.replace(/^\/+/, '');
+    return this.http.put<T>(`${this.baseUrl}/${normalizedEndpoint}`, data);
   }
 
   /**
    * Effectue une requête PATCH
    */
   patch<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.patch<T>(`${this.baseUrl}/${endpoint}`, data);
+    const normalizedEndpoint = endpoint.replace(/^\/+/, '');
+    return this.http.patch<T>(`${this.baseUrl}/${normalizedEndpoint}`, data);
   }
 
   /**
    * Effectue une requête DELETE
    */
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}/${endpoint}`);
+    const normalizedEndpoint = endpoint.replace(/^\/+/, '');
+    return this.http.delete<T>(`${this.baseUrl}/${normalizedEndpoint}`);
   }
 }

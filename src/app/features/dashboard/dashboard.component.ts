@@ -1,8 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ProcessService } from '../../core/services/process.service';
-import { Process, ProcessStatus } from '../../shared/models/process.model';
+import { catchError, forkJoin, of } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
+import { DocumentStatisticsResponse } from '../documents/models/document.models';
+import { DocumentService } from '../documents/services/document.service';
+import {
+  NonConformityListItemResponse,
+  NonConformityStatisticsResponse
+} from '../non-conformities/models/nonconformity.models';
+import { NonConformityService } from '../non-conformities/services/nonconformity.service';
+import {
+  ProcessListItemResponse,
+  ProcessStatisticsResponse
+} from '../processes/models/process.models';
+import { ProcessService } from '../processes/services/process.service';
+import {
+  ProcedureListItemResponse,
+  ProcedureStatisticsResponse
+} from '../procedures/models/procedure.models';
+import { ProcedureService } from '../procedures/services/procedure.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,122 +29,225 @@ import { Process, ProcessStatus } from '../../shared/models/process.model';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  processes: Process[] = [];
-  nonConformities = [
-    {
-      ref: 'NC-031',
-      description: 'Écart de traçabilité',
-      processCode: 'P-04',
-      priority: 'Élevée',
-      progress: 20,
-      responsible: 'R. Haddad'
-    },
-    {
-      ref: 'NC-028',
-      description: 'Calibration non conforme',
-      processCode: 'P-07',
-      priority: 'Élevée',
-      progress: 55,
-      responsible: 'A. Mansouri'
-    },
-    {
-      ref: 'NC-025',
-      description: 'Délai fournisseur dépassé',
-      processCode: 'P-02',
-      priority: 'Moyenne',
-      progress: 70,
-      responsible: 'K. Mrad'
-    },
-    {
-      ref: 'NC-022',
-      description: 'Formation manquante',
-      processCode: 'P-11',
-      priority: 'Faible',
-      progress: 90,
-      responsible: 'S. Ben Ali'
-    }
-  ];
+  loading = true;
 
-  constructor(private processService: ProcessService) {}
+  canReadProcesses = false;
+  canReadProcedures = false;
+  canReadNonConformities = false;
+  canReadDocuments = false;
+  canWriteQuality = false;
+
+  processes: ProcessListItemResponse[] = [];
+  procedures: ProcedureListItemResponse[] = [];
+  nonConformities: NonConformityListItemResponse[] = [];
+
+  processStats: ProcessStatisticsResponse | null = null;
+  procedureStats: ProcedureStatisticsResponse | null = null;
+  nonConformityStats: NonConformityStatisticsResponse | null = null;
+  documentStats: DocumentStatisticsResponse | null = null;
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly processService: ProcessService,
+    private readonly procedureService: ProcedureService,
+    private readonly nonConformityService: NonConformityService,
+    private readonly documentService: DocumentService
+  ) {}
 
   ngOnInit(): void {
-    this.loadProcesses();
+    this.resolvePermissions();
+    this.loadDashboardData();
   }
 
-  loadProcesses(): void {
-    this.processService.getProcesses().subscribe({
-      next: (processes) => {
-        this.processes = processes.slice(0, 5); // Show only first 5
+  reload(): void {
+    this.loadDashboardData();
+  }
+
+  private resolvePermissions(): void {
+    this.canReadProcesses = this.authService.hasRole([
+      'ADMIN_ORG',
+      'RESPONSABLE_QUALITE',
+      'CHEF_SERVICE',
+      'AUDITEUR',
+      'UTILISATEUR'
+    ]);
+    this.canReadProcedures = this.authService.hasRole([
+      'ADMIN_ORG',
+      'RESPONSABLE_QUALITE',
+      'CHEF_SERVICE',
+      'AUDITEUR'
+    ]);
+    this.canReadNonConformities = this.authService.hasRole([
+      'ADMIN_ORG',
+      'RESPONSABLE_QUALITE',
+      'CHEF_SERVICE',
+      'AUDITEUR'
+    ]);
+    this.canReadDocuments = this.authService.hasRole([
+      'ADMIN_ORG',
+      'RESPONSABLE_QUALITE',
+      'CHEF_SERVICE',
+      'AUDITEUR'
+    ]);
+    this.canWriteQuality = this.authService.hasRole([
+      'ADMIN_ORG',
+      'RESPONSABLE_QUALITE'
+    ]);
+  }
+
+  private loadDashboardData(): void {
+    this.loading = true;
+
+    const emptyProcessPage = { total: 0, pageNumber: 1, pageSize: 5, items: [] as ProcessListItemResponse[] };
+    const emptyProcedurePage = { total: 0, pageNumber: 1, pageSize: 5, items: [] as ProcedureListItemResponse[] };
+    const emptyNonConformityPage = { total: 0, pageNumber: 1, pageSize: 5, items: [] as NonConformityListItemResponse[] };
+
+    const processPage$ = this.canReadProcesses
+      ? this.processService.getProcesses({ pageNumber: 1, pageSize: 5 }).pipe(catchError(() => of(emptyProcessPage)))
+      : of(emptyProcessPage);
+
+    const processStats$ = this.canReadProcesses
+      ? this.processService.getProcessStatistics().pipe(catchError(() => of(null)))
+      : of(null);
+
+    const procedurePage$ = this.canReadProcedures
+      ? this.procedureService.getProcedures({ pageNumber: 1, pageSize: 5 }).pipe(catchError(() => of(emptyProcedurePage)))
+      : of(emptyProcedurePage);
+
+    const procedureStats$ = this.canReadProcedures
+      ? this.procedureService.getProcedureStatistics().pipe(catchError(() => of(null)))
+      : of(null);
+
+    const nonConformityPage$ = this.canReadNonConformities
+      ? this.nonConformityService
+          .getNonConformities({ pageNumber: 1, pageSize: 5, status: 'OUVERTE' })
+          .pipe(catchError(() => of(emptyNonConformityPage)))
+      : of(emptyNonConformityPage);
+
+    const nonConformityStats$ = this.canReadNonConformities
+      ? this.nonConformityService.getStatistics().pipe(catchError(() => of(null)))
+      : of(null);
+
+    const documentStats$ = this.canReadDocuments
+      ? this.documentService.getDocumentStatistics().pipe(catchError(() => of(null)))
+      : of(null);
+
+    forkJoin({
+      processPage: processPage$,
+      processStats: processStats$,
+      procedurePage: procedurePage$,
+      procedureStats: procedureStats$,
+      nonConformityPage: nonConformityPage$,
+      nonConformityStats: nonConformityStats$,
+      documentStats: documentStats$
+    }).subscribe({
+      next: (result) => {
+        this.processes = result.processPage.items;
+        this.procedures = result.procedurePage.items;
+        this.nonConformities = result.nonConformityPage.items;
+        this.processStats = result.processStats;
+        this.procedureStats = result.procedureStats;
+        this.nonConformityStats = result.nonConformityStats;
+        this.documentStats = result.documentStats;
+        this.loading = false;
       },
-      error: (error) => {
-        console.error('Error loading processes:', error);
+      error: () => {
+        this.loading = false;
       }
     });
   }
 
-  getProcessTypeShort(type: string): string {
+  getProcessTypeLabel(type: string): string {
     switch (type) {
-      case 'Processus de pilotage':
+      case 'PILOTAGE':
         return 'Pilotage';
-      case 'Processus opérationnel':
-        return 'Opérationnel';
-      case 'Processus support':
+      case 'REALISATION':
+        return 'Realisation';
+      case 'SUPPORT':
         return 'Support';
-      case 'Processus de mesure':
-        return 'Mesure';
       default:
         return type;
     }
   }
 
-  getScoreColor(score: number): string {
-    if (score >= 80) return 'var(--s-green)';
-    if (score >= 60) return 'var(--s-yellow)';
-    return 'var(--s-red)';
+  getProcessStatusLabel(status: string): string {
+    return status === 'ACTIF' ? 'Actif' : 'Inactif';
   }
 
-  getStatusClass(status: ProcessStatus): string {
+  getProcessStatusClass(status: string): string {
+    return status === 'ACTIF' ? 'status-ok' : 'status-muted';
+  }
+
+  getProcedureStatusLabel(status: string): string {
+    return status === 'ACTIF' ? 'Active' : 'Inactive';
+  }
+
+  getProcedureStatusClass(status: string): string {
+    return status === 'ACTIF' ? 'status-ok' : 'status-muted';
+  }
+
+  getNonConformityStatusLabel(status: string): string {
     switch (status) {
-      case ProcessStatus.CONFORME:
-        return 'conforme';
-      case ProcessStatus.A_SURVEILLER:
-        return 'revision';
-      case ProcessStatus.NON_CONFORME:
-        return 'perime';
+      case 'OUVERTE':
+        return 'Ouverte';
+      case 'EN_COURS':
+        return 'En cours';
+      case 'CLOTUREE':
+        return 'Cloturee';
       default:
-        return '';
+        return status;
     }
   }
 
-  getStatusIcon(status: ProcessStatus): string {
+  getNonConformityStatusClass(status: string): string {
     switch (status) {
-      case ProcessStatus.CONFORME:
-        return '●';
-      case ProcessStatus.A_SURVEILLER:
-        return '⚠';
-      case ProcessStatus.NON_CONFORME:
-        return '✕';
+      case 'CLOTUREE':
+        return 'status-ok';
+      case 'EN_COURS':
+        return 'status-warning';
       default:
-        return '';
+        return 'status-danger';
     }
   }
 
-  getPriorityClass(priority: string): string {
-    switch (priority) {
-      case 'Élevée':
-        return 'perime';
-      case 'Moyenne':
-        return 'revision';
-      case 'Faible':
-        return 'conforme';
+  getSeverityLabel(severity: string): string {
+    switch (severity) {
+      case 'MINEURE':
+        return 'Mineure';
+      case 'MAJEURE':
+        return 'Majeure';
+      case 'CRITIQUE':
+        return 'Critique';
       default:
-        return '';
+        return severity;
     }
   }
 
-  getProgressColor(progress: number): string {
-    if (progress >= 80) return 'var(--s-green)';
-    if (progress >= 50) return 'var(--s-yellow)';
-    return 'var(--s-red)';
+  getSeverityClass(severity: string): string {
+    switch (severity) {
+      case 'CRITIQUE':
+        return 'status-danger';
+      case 'MAJEURE':
+        return 'status-warning';
+      default:
+        return 'status-muted';
+    }
+  }
+
+  formatDate(value?: string | null): string {
+    if (!value) {
+      return '-';
+    }
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return '-';
+    }
+
+    return parsed.toLocaleDateString('fr-FR');
+  }
+
+  trackById(_index: number, item: { id: number }): number {
+    return item.id;
   }
 }

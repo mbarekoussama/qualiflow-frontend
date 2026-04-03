@@ -1,39 +1,63 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatDialog } from '@angular/material/dialog';
-import { UserService } from '../services/user.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotificationService } from '../../../core/services/notification.service';
-import { User } from '../../../shared/models/user.model';
+import { UserResponse, UserRole, UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-users-list',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
-    MatChipsModule
+    MatChipsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatPaginatorModule,
+    MatTooltipModule
   ],
   templateUrl: './users-list.component.html',
   styleUrls: ['./users-list.component.scss']
 })
 export class UsersListComponent implements OnInit {
-  users: User[] = [];
-  displayedColumns: string[] = ['id', 'fullName', 'role', 'status', 'createdAt', 'actions'];
+  users: UserResponse[] = [];
+  displayedColumns: string[] = ['fullName', 'email', 'role', 'status', 'lastLoginAt', 'createdAt', 'actions'];
+
+  readonly roleOptions: Array<{ value: UserRole; label: string }> = [
+    { value: 'ADMIN_ORG', label: 'Admin org' },
+    { value: 'RESPONSABLE_QUALITE', label: 'Responsable qualite' },
+    { value: 'CHEF_SERVICE', label: 'Chef service' },
+    { value: 'AUDITEUR', label: 'Auditeur' },
+    { value: 'UTILISATEUR', label: 'Utilisateur' }
+  ];
+
+  loading = false;
+  searchTerm = '';
+  total = 0;
+  page = 1;
+  pageSize = 10;
+  pendingRoles: Record<number, UserRole> = {};
 
   constructor(
-    private userService: UserService,
-    private notificationService: NotificationService,
-    private dialog: MatDialog
+    private readonly userService: UserService,
+    private readonly notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -41,33 +65,114 @@ export class UsersListComponent implements OnInit {
   }
 
   loadUsers(): void {
-    this.userService.getUsers().subscribe({
-      next: (users) => {
-        this.users = users;
+    this.loading = true;
+
+    const request$ = this.searchTerm.trim().length > 0
+      ? this.userService.searchUsers(this.searchTerm.trim(), this.page, this.pageSize)
+      : this.userService.getUsers(this.page, this.pageSize);
+
+    request$.subscribe({
+      next: (response) => {
+        this.users = response.items;
+        this.total = response.total;
+
+        this.pendingRoles = {};
+        for (const user of this.users) {
+          this.pendingRoles[user.id] = (user.role as UserRole);
+        }
+
+        this.loading = false;
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement des utilisateurs:', error);
+      error: () => {
+        this.loading = false;
+        this.notificationService.showError('Erreur lors du chargement des utilisateurs de votre organisation.');
       }
     });
   }
 
-  deleteUser(user: User): void {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.firstName} ${user.lastName} ?`)) {
-      this.userService.deleteUser(user.id!).subscribe({
-        next: () => {
-          this.notificationService.showSuccess('Utilisateur supprimé avec succès');
-          this.loadUsers(); // Recharger la liste
-        },
-        error: (error) => {
-          console.error('Erreur lors de la suppression:', error);
-        }
-      });
+  onSearch(): void {
+    this.page = 1;
+    this.loadUsers();
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.page = 1;
+    this.loadUsers();
+  }
+
+  onPageChanged(event: PageEvent): void {
+    this.page = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+    this.loadUsers();
+  }
+
+  saveRole(user: UserResponse): void {
+    const nextRole = this.pendingRoles[user.id];
+    if (!nextRole) {
+      return;
     }
+
+    if (nextRole === user.role) {
+      this.notificationService.showInfo('Le role est deja applique.');
+      return;
+    }
+
+    this.userService.changeRole(user.id, { role: nextRole }).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Role modifie avec succes.');
+        this.loadUsers();
+      },
+      error: () => {
+        this.notificationService.showError('Modification du role impossible.');
+      }
+    });
+  }
+
+  toggleStatus(user: UserResponse): void {
+    const nextStatus = !user.isActive;
+    const actionText = nextStatus ? 'activer' : 'desactiver';
+
+    if (!confirm(`Confirmer ${actionText} ${user.firstName} ${user.lastName} ?`)) {
+      return;
+    }
+
+    this.userService.toggleStatus(user.id, nextStatus).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Statut utilisateur mis a jour.');
+        this.loadUsers();
+      },
+      error: () => {
+        this.notificationService.showError('Mise a jour du statut impossible.');
+      }
+    });
+  }
+
+  deleteUser(user: UserResponse): void {
+    if (!confirm(`Confirmer la suppression de ${user.firstName} ${user.lastName} ?`)) {
+      return;
+    }
+
+    this.userService.deleteUser(user.id).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Utilisateur desactive avec succes.');
+        this.loadUsers();
+      },
+      error: () => {
+        this.notificationService.showError('Suppression impossible.');
+      }
+    });
+  }
+
+  getRoleLabel(role: string): string {
+    return this.roleOptions.find(option => option.value === role)?.label ?? role;
   }
 
   formatDate(dateString?: string): string {
-    if (!dateString) return 'N/A';
-    
+    if (!dateString) {
+      return 'N/A';
+    }
+
     const date = new Date(dateString);
     return date.toLocaleDateString('fr-FR', {
       year: 'numeric',

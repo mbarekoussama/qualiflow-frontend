@@ -1,0 +1,189 @@
+<section class="nonconformity-list-page">
+  <mat-card class="header-card">
+    <div class="header-row">
+      <div>
+        <h1>Non-conformites</h1>
+        <p>Suivi des ecarts qualite et du traitement correctif</p>
+      </div>
+
+      <div class="header-actions">
+        <button mat-stroked-button type="button" (click)="toggleFilters()">
+          <mat-icon>tune</mat-icon>
+          Filtres
+        </button>
+
+        <button *ngIf="canWrite" mat-flat-button color="primary" type="button" (click)="createNonConformity()">
+          <mat-icon>add</mat-icon>
+          Nouvelle non-conformite
+        </button>
+      </div>
+    </div>
+
+    <div class="kpi-grid" *ngIf="statistics">
+      <div class="kpi-item">
+        <span>Total</span>
+        <strong>{{ statistics.total }}</strong>
+      </div>
+      <div class="kpi-item">
+        <span>Ouvertes</span>
+        <strong>{{ statistics.opened }}</strong>
+      </div>
+      <div class="kpi-item">
+        <span>En cours</span>
+        <strong>{{ statistics.inProgress }}</strong>
+      </div>
+      <div class="kpi-item">
+        <span>Critiques</span>
+        <strong class="critical">{{ statistics.critical }}</strong>
+      </div>
+      <div class="kpi-item">
+        <span>Actions en retard</span>
+        <strong class="critical">{{ statistics.overdueActions }}</strong>
+      </div>
+    </div>
+
+    <form *ngIf="showFilters" class="filters-row" [formGroup]="filtersForm" (ngSubmit)="onSearch()">
+      <mat-form-field appearance="outline">
+        <mat-label>Recherche</mat-label>
+        <input matInput formControlName="search" placeholder="Code, titre, description" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="">Tous</mat-option>
+          <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Severite</mat-label>
+        <mat-select formControlName="severity">
+          <mat-option value="">Toutes</mat-option>
+          <mat-option *ngFor="let option of severityOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Processus</mat-label>
+        <mat-select formControlName="processId">
+          <mat-option [value]="null">Tous</mat-option>
+          <mat-option *ngFor="let process of processes" [value]="process.id">
+            {{ process.code }} - {{ process.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Responsable</mat-label>
+        <mat-select formControlName="responsibleUserId">
+          <mat-option [value]="null">Tous</mat-option>
+          <mat-option *ngFor="let user of users" [value]="user.id">
+            {{ user.firstName }} {{ user.lastName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filter-actions">
+        <button mat-flat-button color="primary" type="submit">Filtrer</button>
+        <button mat-stroked-button type="button" (click)="clearFilters()">Reinitialiser</button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card class="content-card">
+    <div *ngIf="loading" class="loading-box">
+      <mat-spinner diameter="38"></mat-spinner>
+      <span>Chargement des non-conformites...</span>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div *ngIf="items.length === 0" class="empty-box">
+        <mat-icon>assignment_late</mat-icon>
+        <h3>Aucune non-conformite trouvee</h3>
+        <p>Ajuste les filtres ou cree une nouvelle fiche.</p>
+      </div>
+
+      <div *ngIf="items.length > 0" class="table-wrapper">
+        <table mat-table [dataSource]="items" class="nc-table">
+          <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef>Code</th>
+            <td mat-cell *matCellDef="let item">{{ item.code }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Titre</th>
+            <td mat-cell *matCellDef="let item">{{ item.title }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="severity">
+            <th mat-header-cell *matHeaderCellDef>Severite</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="badge" [ngClass]="'severity-' + item.severity.toLowerCase()">
+                {{ getSeverityLabel(item.severity) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="badge" [ngClass]="'status-' + item.status.toLowerCase()">
+                {{ getStatusLabel(item.status) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="linkedTo">
+            <th mat-header-cell *matHeaderCellDef>Liaison</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="linked-to">
+                <span>Processus: {{ item.processCode || '-' }}</span>
+                <span>Procedure: {{ item.procedureCode || '-' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="responsible">
+            <th mat-header-cell *matHeaderCellDef>Responsable</th>
+            <td mat-cell *matCellDef="let item">{{ item.responsibleFullName || '-' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="detectedDate">
+            <th mat-header-cell *matHeaderCellDef>Date detection</th>
+            <td mat-cell *matCellDef="let item">{{ item.detectedDate | date: 'dd/MM/yyyy' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="action-buttons">
+                <button mat-button color="primary" type="button" (click)="view(item)">Voir</button>
+                <button *ngIf="canWrite" mat-button color="primary" type="button" (click)="edit(item)">Modifier</button>
+                <button *ngIf="canWrite" mat-button type="button" [matMenuTriggerFor]="statusMenu">Statut</button>
+                <mat-menu #statusMenu="matMenu">
+                  <button mat-menu-item (click)="updateStatus(item, 'OUVERTE')">Ouverte</button>
+                  <button mat-menu-item (click)="updateStatus(item, 'EN_COURS')">En cours</button>
+                  <button mat-menu-item (click)="updateStatus(item, 'CLOTUREE')">Cloturee</button>
+                </mat-menu>
+                <button *ngIf="canWrite" mat-button color="warn" type="button" (click)="delete(item)">Supprimer</button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackById"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="total"
+        [pageSize]="pageSize"
+        [pageIndex]="pageNumber - 1"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        showFirstLastButtons
+        (page)="onPageChanged($event)">
+      </mat-paginator>
+    </ng-container>
+  </mat-card>
+</section>

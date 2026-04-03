@@ -1,0 +1,166 @@
+<section class="document-form-page">
+  <mat-card class="form-header-card">
+    <div class="header-top">
+      <div>
+        <h1>{{ title }}</h1>
+        <p>{{ subtitle }}</p>
+      </div>
+
+      <div class="header-actions">
+        <button mat-stroked-button type="button" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Retour
+        </button>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card *ngIf="loading" class="loading-card">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Chargement du formulaire...</span>
+  </mat-card>
+
+  <form *ngIf="!loading" [formGroup]="documentForm" (ngSubmit)="submit()">
+    <mat-card class="form-card">
+      <h2>Informations generales</h2>
+
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Code document</mat-label>
+          <input matInput formControlName="code" placeholder="DOC-001" />
+          <mat-error *ngIf="documentForm.controls.code.hasError('required')">
+            Le code est obligatoire.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Titre</mat-label>
+          <input matInput formControlName="title" placeholder="Manuel qualite" />
+          <mat-error *ngIf="documentForm.controls.title.hasError('required')">
+            Le titre est obligatoire.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+              {{ type.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categorie</mat-label>
+          <input matInput formControlName="category" placeholder="SMQ, Operations..." />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput rows="4" formControlName="description" placeholder="Resume du document"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mots-cles</mat-label>
+          <input matInput formControlName="keywords" placeholder="iso, qualite, inscription" />
+        </mat-form-field>
+      </div>
+    </mat-card>
+
+    <mat-card class="form-card">
+      <h2>Liaisons organisationnelles</h2>
+
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Processus</mat-label>
+          <mat-select formControlName="processId" (selectionChange)="onProcessChanged()">
+            <mat-option [value]="null">Aucun</mat-option>
+            <mat-option *ngFor="let process of processes" [value]="process.id">
+              {{ process.code }} - {{ process.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Procedure</mat-label>
+          <mat-select formControlName="procedureId">
+            <mat-option [value]="null">Aucune</mat-option>
+            <mat-option *ngFor="let procedure of procedures" [value]="procedure.id">
+              {{ procedure.code }} - {{ procedure.title }}
+            </mat-option>
+          </mat-select>
+          <mat-hint>La liste depend du processus selectionne.</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Responsable</mat-label>
+          <mat-select formControlName="ownerUserId">
+            <mat-option [value]="null">Non defini</mat-option>
+            <mat-option *ngFor="let owner of owners" [value]="owner.id">
+              {{ owner.firstName }} {{ owner.lastName }} ({{ owner.email }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="toggle-wrap">
+          <mat-slide-toggle formControlName="isActive">Document actif</mat-slide-toggle>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="form-card">
+      <h2>Version et fichier</h2>
+      <p class="helper">Section optionnelle. Ajoute ou remplace la version courante avec un fichier.</p>
+
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Numero de version</mat-label>
+          <input matInput formControlName="initialVersionNumber" placeholder="v1.0" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut version</mat-label>
+          <mat-select formControlName="initialVersionStatus">
+            <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+              {{ status.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date d'effet</mat-label>
+          <input matInput type="date" formControlName="initialEffectiveDate" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date d'expiration</mat-label>
+          <input matInput type="date" formControlName="initialExpiryDate" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Commentaire de revision</mat-label>
+          <textarea matInput rows="3" formControlName="initialRevisionComment" placeholder="Commentaire de revision"></textarea>
+        </mat-form-field>
+
+        <div class="upload-box full-width">
+          <label for="document-file">Fichier (PDF, DOCX, XLSX, etc.)</label>
+          <input id="document-file" type="file" (change)="onFileSelected($event)" />
+
+          <div class="file-chip" *ngIf="selectedFile">
+            <span>{{ selectedFile.name }} ({{ selectedFile.size / 1024 | number: '1.0-0' }} Ko)</span>
+            <button mat-button color="warn" type="button" (click)="clearFile()">Retirer</button>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <div class="form-actions">
+      <button mat-stroked-button type="button" (click)="goBack()">Annuler</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+        <mat-icon *ngIf="!saving">save</mat-icon>
+        <mat-spinner *ngIf="saving" diameter="18"></mat-spinner>
+        {{ isEdit ? 'Enregistrer' : 'Creer le document' }}
+      </button>
+    </div>
+  </form>
+</section>

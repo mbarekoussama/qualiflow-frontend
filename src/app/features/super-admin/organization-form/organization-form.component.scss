@@ -1,0 +1,46 @@
+﻿.org-form-page {
+  display: grid;
+}
+
+.form-card {
+  border-radius: 12px;
+}
+
+.form-header h1 {
+  margin: 0;
+}
+
+.form-header p {
+  color: #5f6368;
+  margin: 6px 0 0;
+}
+
+.form-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.admin-toggle-row {
+  margin-top: 8px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.loading-box {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+}

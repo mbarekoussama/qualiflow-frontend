@@ -1,0 +1,139 @@
+<section class="procedure-list-page">
+  <mat-card class="header-card">
+    <div class="header-row">
+      <div>
+        <h1>Procedures</h1>
+        <p>{{ activeCount }} procedures actives</p>
+      </div>
+
+      <div class="header-actions">
+        <button mat-stroked-button type="button" (click)="toggleFilters()">
+          <mat-icon>tune</mat-icon>
+          Filtres
+        </button>
+
+        <button *ngIf="canWrite" mat-flat-button color="primary" type="button" (click)="createProcedure()">
+          <mat-icon>add</mat-icon>
+          Nouvelle procedure
+        </button>
+      </div>
+    </div>
+
+    <form *ngIf="showFilters" class="filters-row" [formGroup]="filtersForm" (ngSubmit)="onSearch()">
+      <mat-form-field appearance="outline">
+        <mat-label>Recherche</mat-label>
+        <input matInput formControlName="search" placeholder="Code, titre ou description" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Processus</mat-label>
+        <mat-select formControlName="processId">
+          <mat-option [value]="null">Tous</mat-option>
+          <mat-option *ngFor="let process of processes" [value]="process.id">
+            {{ process.code }} - {{ process.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="">Tous</mat-option>
+          <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Responsable</mat-label>
+        <mat-select formControlName="responsibleUserId">
+          <mat-option [value]="null">Tous</mat-option>
+          <mat-option *ngFor="let responsible of responsibles" [value]="responsible.id">
+            {{ responsible.firstName }} {{ responsible.lastName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filter-buttons">
+        <button mat-flat-button color="primary" type="submit">Filtrer</button>
+        <button mat-stroked-button type="button" (click)="clearFilters()">Reinitialiser</button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card class="content-card">
+    <div class="loading-box" *ngIf="loading">
+      <mat-spinner diameter="38"></mat-spinner>
+      <span>Chargement des procedures...</span>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div class="empty-box" *ngIf="procedures.length === 0">
+        <mat-icon>inbox</mat-icon>
+        <h3>Aucune procedure trouvee</h3>
+        <p>Ajuste les filtres ou cree une procedure.</p>
+      </div>
+
+      <ng-container *ngIf="procedures.length > 0">
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="procedures">
+            <ng-container matColumnDef="code">
+              <th mat-header-cell *matHeaderCellDef>Code</th>
+              <td mat-cell *matCellDef="let item">{{ item.code }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef>Titre</th>
+              <td mat-cell *matCellDef="let item">{{ item.title }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="process">
+              <th mat-header-cell *matHeaderCellDef>Processus</th>
+              <td mat-cell *matCellDef="let item">{{ item.processCode }} - {{ item.processName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="responsible">
+              <th mat-header-cell *matHeaderCellDef>Responsable</th>
+              <td mat-cell *matCellDef="let item">{{ item.responsibleFullName || 'Non assigne' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <td mat-cell *matCellDef="let item">
+                <span class="status-badge" [ngClass]="item.status === 'ACTIF' ? 'status-active' : 'status-inactive'">
+                  {{ getStatusLabel(item.status) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>Creation</th>
+              <td mat-cell *matCellDef="let item">{{ item.createdAt | date: 'dd/MM/yyyy' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let item" class="actions-cell">
+                <button mat-button color="primary" type="button" (click)="viewProcedure(item)">Voir</button>
+                <button *ngIf="canWrite" mat-button color="primary" type="button" (click)="editProcedure(item)">Modifier</button>
+                <button *ngIf="canWrite" mat-button type="button" (click)="toggleStatus(item)">Statut</button>
+                <button *ngIf="canWrite" mat-button color="warn" type="button" (click)="deleteProcedure(item)">Supprimer</button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackByProcedureId"></tr>
+          </table>
+        </div>
+
+        <mat-paginator
+          [length]="total"
+          [pageSize]="pageSize"
+          [pageIndex]="pageNumber - 1"
+          [pageSizeOptions]="[5, 10, 20, 50]"
+          showFirstLastButtons
+          (page)="onPageChanged($event)">
+        </mat-paginator>
+      </ng-container>
+    </ng-container>
+  </mat-card>
+</section>

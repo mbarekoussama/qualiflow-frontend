@@ -1,0 +1,106 @@
+.procedure-list-page {
+  display: grid;
+  gap: 16px;
+}
+
+.header-card,
+.content-card {
+  border-radius: 12px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-row h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.header-row p {
+  margin: 6px 0 0;
+  color: #6f7a88;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filters-row {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.loading-box,
+.empty-box {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: #687483;
+}
+
+.empty-box mat-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.status-active {
+  background: #e8f5ec;
+  color: #157f46;
+}
+
+.status-inactive {
+  background: #fdecec;
+  color: #b32020;
+}
+
+mat-paginator {
+  margin-top: 8px;
+  border-top: 1px solid #e2e7ee;
+}
+
+@media (max-width: 900px) {
+  .filter-buttons {
+    grid-column: 1 / -1;
+  }
+}

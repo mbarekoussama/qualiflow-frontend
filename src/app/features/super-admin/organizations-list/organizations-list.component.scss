@@ -1,0 +1,63 @@
+﻿.org-list-page {
+  display: grid;
+  gap: 16px;
+}
+
+.header-card,
+.table-card {
+  border-radius: 12px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-top h1 {
+  margin: 0;
+}
+
+.header-top p {
+  margin-top: 6px;
+  color: #5f6368;
+}
+
+.filters {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.org-table {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.loading-box,
+.empty-box {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: #5f6368;
+}

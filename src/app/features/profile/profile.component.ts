@@ -1,0 +1,372 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Subscription } from 'rxjs';
+import {
+  AuthService,
+  ChangePasswordRequest,
+  UpdateProfileRequest
+} from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
+import {
+  OrganizationResponse,
+  OrganizationService,
+  UpdateOrganizationRequest
+} from '../../core/services/organization.service';
+
+@Component({
+  selector: 'app-profile',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule
+  ],
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.scss']
+})
+export class ProfileComponent implements OnInit, OnDestroy {
+  private readonly subscriptions = new Subscription();
+  readonly typeOptions = ['UNIVERSITE', 'INSTITUT', 'CENTRE', 'ENTREPRISE'];
+  readonly languageOptions: Array<{ value: 'fr' | 'en' | 'ar'; label: string }> = [
+    { value: 'fr', label: 'Francais' },
+    { value: 'en', label: 'English' },
+    { value: 'ar', label: 'Arabe' }
+  ];
+
+  readonly personalForm = this.fb.group({
+    firstName: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
+    lastName: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
+    birthDate: this.fb.control<string>(''),
+    preferredLanguage: this.fb.nonNullable.control<'fr' | 'en' | 'ar'>('fr', [Validators.required])
+  });
+
+  readonly passwordForm = this.fb.group({
+    currentPassword: this.fb.nonNullable.control('', [Validators.required]),
+    newPassword: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(8)]),
+    confirmPassword: this.fb.nonNullable.control('', [Validators.required])
+  });
+
+  readonly organizationForm = this.fb.group({
+    name: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
+    type: this.fb.nonNullable.control('INSTITUT', [Validators.required]),
+    address: this.fb.control<string>(''),
+    email: this.fb.control<string>('', Validators.email),
+    phone: this.fb.control<string>(''),
+    description: this.fb.control<string>(''),
+    status: this.fb.nonNullable.control('ACTIF')
+  });
+
+  loading = false;
+  savingProfile = false;
+  changingPassword = false;
+  uploadingProfilePhoto = false;
+  savingOrganization = false;
+  uploadingLogo = false;
+
+  organization: OrganizationResponse | null = null;
+  logoObjectUrl: string | null = null;
+  selectedLogo: File | null = null;
+
+  profilePhotoObjectUrl: string | null = null;
+  selectedProfilePhoto: File | null = null;
+
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly organizationService: OrganizationService,
+    private readonly notificationService: NotificationService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadProfile();
+    this.loadProfilePhoto();
+
+    if (this.canManageOrganization) {
+      this.loadOrganization();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+    this.revokeLogoObjectUrl();
+    this.revokeProfilePhotoObjectUrl();
+  }
+
+  get currentUser() {
+    return this.authService.getCurrentUser();
+  }
+
+  get canManageOrganization(): boolean {
+    return this.authService.hasRole('ADMIN_ORG');
+  }
+
+  get displayName(): string {
+    const user = this.currentUser;
+    if (!user) {
+      return 'Utilisateur';
+    }
+
+    const fullName = `${user.firstName} ${user.lastName}`.trim();
+    return fullName || user.email || 'Utilisateur';
+  }
+
+  get profileInitials(): string {
+    const user = this.currentUser;
+    if (!user) {
+      return 'U';
+    }
+
+    return `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase() || 'U';
+  }
+
+  savePersonalProfile(): void {
+    if (this.personalForm.invalid) {
+      this.personalForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.personalForm.getRawValue();
+    const payload: UpdateProfileRequest = {
+      firstName: raw.firstName.trim(),
+      lastName: raw.lastName.trim(),
+      birthDate: raw.birthDate ? raw.birthDate : null,
+      preferredLanguage: raw.preferredLanguage
+    };
+
+    this.savingProfile = true;
+    this.authService.updateProfile(payload).subscribe({
+      next: () => {
+        this.savingProfile = false;
+        this.notificationService.showSuccess('Profil mis a jour avec succes.');
+      },
+      error: () => {
+        this.savingProfile = false;
+        this.notificationService.showError('Mise a jour du profil impossible.');
+      }
+    });
+  }
+
+  changePassword(): void {
+    if (this.passwordForm.invalid) {
+      this.passwordForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.passwordForm.getRawValue();
+    const payload: ChangePasswordRequest = {
+      currentPassword: raw.currentPassword,
+      newPassword: raw.newPassword,
+      confirmPassword: raw.confirmPassword
+    };
+
+    this.changingPassword = true;
+    this.authService.changePassword(payload).subscribe({
+      next: () => {
+        this.changingPassword = false;
+        this.passwordForm.reset({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        this.notificationService.showSuccess('Mot de passe modifie avec succes.');
+      },
+      error: () => {
+        this.changingPassword = false;
+        this.notificationService.showError('Modification du mot de passe impossible.');
+      }
+    });
+  }
+
+  onProfilePhotoSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.selectedProfilePhoto = target.files?.[0] ?? null;
+  }
+
+  removeSelectedProfilePhoto(): void {
+    this.selectedProfilePhoto = null;
+  }
+
+  uploadProfilePhoto(): void {
+    if (!this.selectedProfilePhoto) {
+      return;
+    }
+
+    this.uploadingProfilePhoto = true;
+    this.authService.uploadProfilePhoto(this.selectedProfilePhoto).subscribe({
+      next: () => {
+        this.uploadingProfilePhoto = false;
+        this.selectedProfilePhoto = null;
+        this.notificationService.showSuccess('Photo de profil mise a jour.');
+        this.loadProfile();
+        this.loadProfilePhoto();
+      },
+      error: () => {
+        this.uploadingProfilePhoto = false;
+        this.notificationService.showError('Upload photo impossible.');
+      }
+    });
+  }
+
+  onLogoSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0] ?? null;
+    this.selectedLogo = file;
+  }
+
+  removeSelectedLogo(): void {
+    this.selectedLogo = null;
+  }
+
+  saveOrganization(): void {
+    if (!this.canManageOrganization) {
+      return;
+    }
+
+    if (this.organizationForm.invalid) {
+      this.organizationForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.organizationForm.getRawValue();
+    const payload: UpdateOrganizationRequest = {
+      name: raw.name.trim(),
+      type: raw.type.trim(),
+      address: raw.address?.trim() || null,
+      email: raw.email?.trim() || null,
+      phone: raw.phone?.trim() || null,
+      description: raw.description?.trim() || null,
+      status: raw.status
+    };
+
+    this.savingOrganization = true;
+    this.organizationService.updateMyOrganization(payload).subscribe({
+      next: () => {
+        this.savingOrganization = false;
+        this.notificationService.showSuccess('Informations organisation mises a jour.');
+        this.loadOrganization();
+      },
+      error: () => {
+        this.savingOrganization = false;
+        this.notificationService.showError('Mise a jour organisation impossible.');
+      }
+    });
+  }
+
+  uploadLogo(): void {
+    if (!this.canManageOrganization || !this.selectedLogo) {
+      return;
+    }
+
+    this.uploadingLogo = true;
+    this.organizationService.uploadMyOrganizationLogo(this.selectedLogo).subscribe({
+      next: () => {
+        this.uploadingLogo = false;
+        this.selectedLogo = null;
+        this.notificationService.showSuccess('Logo organisation mis a jour.');
+        this.organizationService.notifyLogoUpdated();
+        this.loadLogo();
+      },
+      error: () => {
+        this.uploadingLogo = false;
+        this.notificationService.showError('Upload logo impossible.');
+      }
+    });
+  }
+
+  private loadProfile(): void {
+    this.authService.getProfile().subscribe({
+      next: (profile) => {
+        this.personalForm.patchValue({
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          birthDate: profile.birthDate ? profile.birthDate.toString().substring(0, 10) : '',
+          preferredLanguage: profile.preferredLanguage || 'fr'
+        });
+      },
+      error: () => {
+        this.notificationService.showError('Impossible de charger le profil utilisateur.');
+      }
+    });
+  }
+
+  private loadProfilePhoto(): void {
+    this.revokeProfilePhotoObjectUrl();
+    this.authService.downloadProfilePhoto().subscribe({
+      next: (blob) => {
+        if (!blob || blob.size === 0) {
+          this.profilePhotoObjectUrl = null;
+          return;
+        }
+
+        this.profilePhotoObjectUrl = URL.createObjectURL(blob);
+      },
+      error: () => {
+        this.profilePhotoObjectUrl = null;
+      }
+    });
+  }
+
+  private loadOrganization(): void {
+    this.loading = true;
+    this.organizationService.getMyOrganization().subscribe({
+      next: (organization) => {
+        this.organization = organization;
+        this.organizationForm.patchValue({
+          name: organization.name,
+          type: organization.type ?? 'INSTITUT',
+          address: organization.address ?? '',
+          email: organization.email ?? '',
+          phone: organization.phone ?? '',
+          description: organization.description ?? '',
+          status: organization.status || 'ACTIF'
+        });
+        this.loading = false;
+        this.loadLogo();
+      },
+      error: () => {
+        this.loading = false;
+        this.notificationService.showError('Impossible de charger votre organisation.');
+      }
+    });
+  }
+
+  private loadLogo(): void {
+    this.revokeLogoObjectUrl();
+    this.organizationService.downloadMyOrganizationLogo().subscribe({
+      next: (blob) => {
+        this.logoObjectUrl = URL.createObjectURL(blob);
+      },
+      error: () => {
+        this.logoObjectUrl = null;
+      }
+    });
+  }
+
+  private revokeLogoObjectUrl(): void {
+    if (this.logoObjectUrl) {
+      URL.revokeObjectURL(this.logoObjectUrl);
+      this.logoObjectUrl = null;
+    }
+  }
+
+  private revokeProfilePhotoObjectUrl(): void {
+    if (this.profilePhotoObjectUrl) {
+      URL.revokeObjectURL(this.profilePhotoObjectUrl);
+      this.profilePhotoObjectUrl = null;
+    }
+  }
+}

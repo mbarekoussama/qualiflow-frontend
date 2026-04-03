@@ -1,0 +1,286 @@
+﻿.process-catalog-page {
+  display: grid;
+  gap: 16px;
+}
+
+.catalog-header-card,
+.catalog-content-card {
+  border-radius: 12px;
+}
+
+.catalog-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.catalog-header-row h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #171f2b;
+}
+
+.catalog-subtitle {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #7a8492;
+  font-size: 1rem;
+}
+
+.link-button {
+  border: 0;
+  background: transparent;
+  color: #607184;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1rem;
+}
+
+.dot-separator {
+  color: #a3acb8;
+}
+
+.catalog-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filters-row {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.loading-box,
+.empty-box {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: #687483;
+}
+
+.empty-box mat-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+}
+
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.process-card {
+  position: relative;
+  border: 1px solid #d8dee6;
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 14px 14px 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.process-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 18px rgba(10, 22, 40, 0.08);
+}
+
+.card-top-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 3px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.tone-good .card-top-line {
+  background: #157f46;
+}
+
+.tone-warning .card-top-line {
+  background: #9a7a00;
+}
+
+.tone-danger .card-top-line {
+  background: #b32020;
+}
+
+.card-top-row {
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.process-code {
+  display: inline-flex;
+  border: 1px solid #d7dde5;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-size: 0.85rem;
+  color: #7f8a97;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.process-score {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.process-score.tone-good {
+  color: #157f46;
+}
+
+.process-score.tone-warning {
+  color: #8b6b02;
+}
+
+.process-score.tone-danger {
+  color: #b32020;
+}
+
+.process-card h3 {
+  margin: 6px 0 2px;
+  font-size: 1.22rem;
+  line-height: 1.25;
+  color: #121b27;
+}
+
+.process-type {
+  margin: 0;
+  color: #6b7582;
+  font-size: 0.98rem;
+}
+
+.progress-track {
+  margin-top: 12px;
+  height: 5px;
+  border-radius: 999px;
+  background: #d8dde3;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.progress-fill.tone-good {
+  background: #157f46;
+}
+
+.progress-fill.tone-warning {
+  background: #9a7a00;
+}
+
+.progress-fill.tone-danger {
+  background: #b32020;
+}
+
+.card-footer-row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.meta-text {
+  color: #6a7684;
+  font-size: 0.95rem;
+}
+
+.quality-badge {
+  font-size: 1.05rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.quality-badge.tone-good {
+  color: #0b7a3f;
+}
+
+.quality-badge.tone-warning {
+  color: #8b6b02;
+}
+
+.quality-badge.tone-danger {
+  color: #a21a1a;
+}
+
+.card-actions {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #e2e7ee;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.add-process-card {
+  min-height: 274px;
+  border: 2px dashed #c8d0da;
+  border-radius: 6px;
+  background: #f7f9fc;
+  color: #8390a1;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.add-process-card mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.add-process-card span {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.add-process-card:hover {
+  border-color: #157f46;
+  color: #157f46;
+  background: #edf7ef;
+}
+
+mat-paginator {
+  margin-top: 12px;
+  border-top: 1px solid #e1e6ed;
+}
+
+@media (max-width: 900px) {
+  .process-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-buttons {
+    grid-column: 1 / -1;
+  }
+}

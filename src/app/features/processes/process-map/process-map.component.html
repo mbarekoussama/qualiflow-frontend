@@ -1,0 +1,105 @@
+﻿<section class="process-map-page">
+  <mat-card class="map-header-card">
+    <div class="map-header-row">
+      <div>
+        <h1>Cartographie des processus</h1>
+        <p>Vue globale des processus de pilotage, realisation et support.</p>
+      </div>
+
+      <button mat-stroked-button type="button" (click)="backToList()">
+        <mat-icon>arrow_back</mat-icon>
+        Retour liste
+      </button>
+    </div>
+
+    <div *ngIf="stats" class="stats-row">
+      <mat-chip highlighted>Total: {{ stats.total }}</mat-chip>
+      <mat-chip color="primary" highlighted>Actifs: {{ stats.active }}</mat-chip>
+      <mat-chip color="warn" highlighted>Inactifs: {{ stats.inactive }}</mat-chip>
+      <mat-chip highlighted>Avec pilote: {{ stats.withPilot }}</mat-chip>
+      <mat-chip highlighted>Sans pilote: {{ stats.withoutPilot }}</mat-chip>
+    </div>
+  </mat-card>
+
+  <mat-card *ngIf="loading" class="loading-card">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Chargement de la cartographie...</span>
+  </mat-card>
+
+  <div *ngIf="!loading && map" class="map-grid">
+    <mat-card class="map-column">
+      <div class="column-header">
+        <h2>Pilotage</h2>
+        <span>{{ map.pilotageProcesses.length }}</span>
+      </div>
+
+      <div class="empty-column" *ngIf="map.pilotageProcesses.length === 0">Aucun processus.</div>
+
+      <button
+        type="button"
+        mat-stroked-button
+        class="process-map-item"
+        *ngFor="let process of map.pilotageProcesses"
+        (click)="openDetails(process)">
+        <div class="item-top">
+          <strong>{{ process.code }}</strong>
+          <mat-chip [color]="process.status === 'ACTIF' ? 'primary' : 'warn'" highlighted>
+            {{ process.status }}
+          </mat-chip>
+        </div>
+        <div class="item-name">{{ process.name }}</div>
+        <div class="item-pilot">Pilote: {{ process.pilotFullName || 'Non assigne' }}</div>
+      </button>
+    </mat-card>
+
+    <mat-card class="map-column">
+      <div class="column-header">
+        <h2>Realisation</h2>
+        <span>{{ map.realisationProcesses.length }}</span>
+      </div>
+
+      <div class="empty-column" *ngIf="map.realisationProcesses.length === 0">Aucun processus.</div>
+
+      <button
+        type="button"
+        mat-stroked-button
+        class="process-map-item"
+        *ngFor="let process of map.realisationProcesses"
+        (click)="openDetails(process)">
+        <div class="item-top">
+          <strong>{{ process.code }}</strong>
+          <mat-chip [color]="process.status === 'ACTIF' ? 'primary' : 'warn'" highlighted>
+            {{ process.status }}
+          </mat-chip>
+        </div>
+        <div class="item-name">{{ process.name }}</div>
+        <div class="item-pilot">Pilote: {{ process.pilotFullName || 'Non assigne' }}</div>
+      </button>
+    </mat-card>
+
+    <mat-card class="map-column">
+      <div class="column-header">
+        <h2>Support</h2>
+        <span>{{ map.supportProcesses.length }}</span>
+      </div>
+
+      <div class="empty-column" *ngIf="map.supportProcesses.length === 0">Aucun processus.</div>
+
+      <button
+        type="button"
+        mat-stroked-button
+        class="process-map-item"
+        *ngFor="let process of map.supportProcesses"
+        (click)="openDetails(process)">
+        <div class="item-top">
+          <strong>{{ process.code }}</strong>
+          <mat-chip [color]="process.status === 'ACTIF' ? 'primary' : 'warn'" highlighted>
+            {{ process.status }}
+          </mat-chip>
+        </div>
+        <div class="item-name">{{ process.name }}</div>
+        <div class="item-pilot">Pilote: {{ process.pilotFullName || 'Non assigne' }}</div>
+      </button>
+    </mat-card>
+  </div>
+</section>

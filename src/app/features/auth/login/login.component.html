@@ -1,15 +1,12 @@
-
-<div class="login-wrapper">
+﻿<div class="login-wrapper">
   <div class="login-container">
     <div class="login-card">
       <div class="login-header">
         <div class="logo">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
+          <img src="assets/logo.png" alt="Logo QualiFlow" />
         </div>
         <h1>Bienvenue</h1>
-        <p>Connectez-vous à votre espace de gestion</p>
+        <p>Connectez-vous a votre espace de gestion</p>
       </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
@@ -19,9 +16,9 @@
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
             </svg>
-            <input 
+            <input
               id="email"
-              type="email" 
+              type="email"
               formControlName="email"
               placeholder="votre@email.com"
               [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
@@ -40,14 +37,15 @@
               <circle cx="12" cy="16" r="1"></circle>
               <path d="M7 11V7a5 5 0 0110 0v4"></path>
             </svg>
-            <input 
+            <input
               id="password"
               [type]="hidePassword ? 'password' : 'text'"
               formControlName="password"
               placeholder="Votre mot de passe"
               [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-            <button 
-              type="button" 
+            <button
+              title="Oublié le mot de passe?"
+              type="button"
               class="toggle-password"
               (click)="hidePassword = !hidePassword">
               <svg *ngIf="hidePassword" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -65,8 +63,8 @@
           </div>
         </div>
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           class="login-btn"
           [disabled]="loginForm.invalid || isLoading"
           [class.loading]="isLoading">
@@ -81,6 +79,11 @@
             Connexion...
           </span>
         </button>
+
+        <div class="auth-links">
+          <a routerLink="/forgot-password">Mot de passe oublie ?</a>
+          <a routerLink="/register">Creer un compte</a>
+        </div>
       </form>
 
       <div class="demo-credentials">
@@ -89,20 +92,31 @@
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M12 6v6l4 2"></path>
           </svg>
-          <span>Compte de démonstration</span>
+          <span>Comptes de demonstration</span>
         </div>
+
         <div class="credentials">
-          <div class="credential-item">
-            <strong>Email:</strong> admin&#64;test.com
-          </div>
-          <div class="credential-item">
-            <strong>Mot de passe:</strong> admin123
+          <div class="credential-item" *ngFor="let account of demoAccounts">
+            <div class="credential-main">
+              <strong>{{ account.label }}</strong>
+              <small>{{ account.role }}</small>
+            </div>
+            <div class="credential-values">
+              <span>{{ account.email }}</span>
+              <span>{{ account.password }}</span>
+            </div>
+            <button
+              type="button"
+              class="use-account-btn"
+              (click)="useDemoAccount(account)">
+              Utiliser
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
+
   <div class="login-background">
     <div class="bg-pattern"></div>
   </div>

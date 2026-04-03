@@ -4,10 +4,18 @@ import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const token = authService.getToken();
+  const token = authService.getAccessToken();
+  const publicAuthEndpoints = [
+    '/api/auth/register',
+    '/api/auth/login',
+    '/api/auth/refresh-token',
+    '/api/auth/forgot-password',
+    '/api/auth/reset-password'
+  ];
+  const isPublicAuthEndpoint = publicAuthEndpoints.some(endpoint => req.url.includes(endpoint));
 
   // Ajouter le token d'authentification si disponible
-  if (token && !req.url.includes('/auth')) {
+  if (token && !isPublicAuthEndpoint) {
     const authReq = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`)
     });

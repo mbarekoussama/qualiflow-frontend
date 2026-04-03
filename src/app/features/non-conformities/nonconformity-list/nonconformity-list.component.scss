@@ -1,0 +1,164 @@
+.nonconformity-list-page {
+  display: grid;
+  gap: 16px;
+}
+
+.header-card,
+.content-card {
+  border-radius: 12px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-row h1 {
+  margin: 0;
+  font-size: 1.9rem;
+}
+
+.header-row p {
+  margin: 6px 0 0;
+  color: #6f7a88;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kpi-grid {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.kpi-item {
+  border: 1px solid #e2e7ee;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 4px;
+}
+
+.kpi-item span {
+  color: #6f7a88;
+  font-size: 0.85rem;
+}
+
+.kpi-item strong {
+  font-size: 1.25rem;
+  color: #1f2a38;
+}
+
+.kpi-item strong.critical {
+  color: #b32020;
+}
+
+.filters-row {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.loading-box,
+.empty-box {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: #687483;
+}
+
+.empty-box mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.nc-table {
+  width: 100%;
+}
+
+.linked-to {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: #5f6f82;
+  font-size: 0.85rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.severity-mineure {
+  background: #eef4fb;
+  color: #1f5b8f;
+}
+
+.severity-majeure {
+  background: #fff7e6;
+  color: #926500;
+}
+
+.severity-critique {
+  background: #fdecec;
+  color: #b32020;
+}
+
+.status-ouverte {
+  background: #eef4fb;
+  color: #1f5b8f;
+}
+
+.status-en_cours {
+  background: #fff7e6;
+  color: #926500;
+}
+
+.status-cloturee {
+  background: #e8f5ec;
+  color: #157f46;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+mat-paginator {
+  margin-top: 8px;
+  border-top: 1px solid #e2e7ee;
+}
+
+@media (max-width: 900px) {
+  .filter-actions {
+    grid-column: 1 / -1;
+  }
+}

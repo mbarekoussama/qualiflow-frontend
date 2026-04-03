@@ -1,0 +1,96 @@
+﻿<section class="org-form-page">
+  <mat-card class="form-card">
+    <div class="form-header">
+      <h1>{{ title }}</h1>
+      <p>{{ subtitle }}</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-box">
+      <mat-spinner diameter="36"></mat-spinner>
+      <span>Chargement...</span>
+    </div>
+
+    <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="form.controls.name.touched && form.controls.name.invalid">Nom obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Code</mat-label>
+        <input matInput formControlName="code" />
+        <mat-error *ngIf="form.controls.code.touched && form.controls.code.invalid">Code obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput rows="3" formControlName="description"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option *ngFor="let option of typeOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="status">
+          <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Adresse</mat-label>
+        <input matInput formControlName="address" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" />
+        <mat-error *ngIf="form.controls.email.touched && form.controls.email.invalid">Email invalide</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Telephone</mat-label>
+        <input matInput formControlName="phone" />
+      </mat-form-field>
+
+      <div *ngIf="!isEdit" class="full-width admin-toggle-row">
+        <mat-slide-toggle formControlName="createFirstAdmin">Creer le premier ADMIN_ORG</mat-slide-toggle>
+      </div>
+
+      <ng-container *ngIf="!isEdit && form.controls.createFirstAdmin.value">
+        <mat-form-field appearance="outline">
+          <mat-label>Prenom admin</mat-label>
+          <input matInput formControlName="firstAdminFirstName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Nom admin</mat-label>
+          <input matInput formControlName="firstAdminLastName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email admin</mat-label>
+          <input matInput formControlName="firstAdminEmail" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Mot de passe temporaire</mat-label>
+          <input matInput type="password" formControlName="firstAdminTemporaryPassword" />
+        </mat-form-field>
+      </ng-container>
+
+      <div class="actions full-width">
+        <button mat-stroked-button type="button" (click)="goBack()" [disabled]="saving">Annuler</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+          <mat-spinner *ngIf="saving" diameter="18"></mat-spinner>
+          <span *ngIf="!saving">Enregistrer</span>
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</section>

@@ -1,7 +1,53 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { User, CreateUserRequest, UpdateUserRequest } from '../../../shared/models/user.model';
+
+export type UserRole = 'ADMIN_ORG' | 'RESPONSABLE_QUALITE' | 'CHEF_SERVICE' | 'UTILISATEUR' | 'AUDITEUR';
+
+export interface UserResponse {
+  id: number;
+  organizationId?: number;
+  organizationName?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  function?: string;
+  department?: string;
+  isActive: boolean;
+  lastLoginAt?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface UserListResponse {
+  total: number;
+  page: number;
+  pageSize: number;
+  items: UserResponse[];
+}
+
+export interface CreateUserRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  function?: string;
+  department?: string;
+}
+
+export interface UpdateUserRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  function?: string;
+  department?: string;
+}
+
+export interface ChangeUserRoleRequest {
+  role: UserRole;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -9,43 +55,36 @@ import { User, CreateUserRequest, UpdateUserRequest } from '../../../shared/mode
 export class UserService {
   private readonly endpoint = 'users';
 
-  constructor(private apiService: ApiService) {}
+  constructor(private readonly apiService: ApiService) {}
 
-  /**
-   * Récupère tous les utilisateurs
-   */
-  getUsers(): Observable<User[]> {
-    return this.apiService.get<User[]>(this.endpoint);
+  getUsers(page = 1, pageSize = 50): Observable<UserListResponse> {
+    return this.apiService.get<UserListResponse>(this.endpoint, { page, pageSize });
   }
 
-  /**
-   * Récupère un utilisateur par son ID
-   */
-  getUserById(id: number): Observable<User> {
-    return this.apiService.get<User>(`${this.endpoint}/${id}`);
+  searchUsers(searchTerm: string, page = 1, pageSize = 50): Observable<UserListResponse> {
+    return this.apiService.get<UserListResponse>(`${this.endpoint}/search`, { searchTerm, page, pageSize });
   }
 
-  /**
-   * Crée un nouvel utilisateur
-   */
-  createUser(user: CreateUserRequest): Observable<User> {
-    const userWithTimestamp = {
-      ...user,
-      createdAt: new Date().toISOString()
-    };
-    return this.apiService.post<User>(this.endpoint, userWithTimestamp);
+  getUserById(id: number): Observable<UserResponse> {
+    return this.apiService.get<UserResponse>(`${this.endpoint}/${id}`);
   }
 
-  /**
-   * Met à jour un utilisateur
-   */
-  updateUser(user: UpdateUserRequest): Observable<User> {
-    return this.apiService.put<User>(`${this.endpoint}/${user.id}`, user);
+  createUser(payload: CreateUserRequest): Observable<number> {
+    return this.apiService.post<number>(this.endpoint, payload);
   }
 
-  /**
-   * Supprime un utilisateur
-   */
+  updateUser(id: number, payload: UpdateUserRequest): Observable<void> {
+    return this.apiService.put<void>(`${this.endpoint}/${id}`, payload);
+  }
+
+  changeRole(id: number, payload: ChangeUserRoleRequest): Observable<void> {
+    return this.apiService.patch<void>(`${this.endpoint}/${id}/change-role`, payload);
+  }
+
+  toggleStatus(id: number, isActive: boolean): Observable<void> {
+    return this.apiService.patch<void>(`${this.endpoint}/${id}/toggle-status`, { isActive });
+  }
+
   deleteUser(id: number): Observable<void> {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);
   }

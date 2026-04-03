@@ -1,0 +1,120 @@
+<div class="auth-wrapper">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Creer un compte</h1>
+        <p>Inscription a la plateforme</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <div class="name-row">
+          <div class="form-group">
+            <label for="firstName">Prenom</label>
+            <input
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              placeholder="Votre prenom"
+              [class.error]="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched" />
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Nom</label>
+            <input
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              placeholder="Votre nom"
+              [class.error]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="votre@email.com"
+            [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" />
+          <small class="error-message" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+            Email invalide
+          </small>
+        </div>
+
+        <div class="name-row">
+          <div class="form-group">
+            <label for="organizationCode">Code organisation</label>
+            <input
+              id="organizationCode"
+              type="text"
+              formControlName="organizationCode"
+              placeholder="Ex: DEMO"
+              [class.error]="registerForm.get('organizationCode')?.invalid && registerForm.get('organizationCode')?.touched" />
+            <small class="error-message" *ngIf="registerForm.get('organizationCode')?.invalid && registerForm.get('organizationCode')?.touched">
+              Code organisation requis
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="birthDate">Date de naissance</label>
+            <input
+              id="birthDate"
+              type="date"
+              formControlName="birthDate"
+              [class.error]="registerForm.get('birthDate')?.invalid && registerForm.get('birthDate')?.touched" />
+            <small class="error-message" *ngIf="registerForm.get('birthDate')?.invalid && registerForm.get('birthDate')?.touched">
+              Date de naissance requise
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <div class="password-wrapper">
+            <input
+              id="password"
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Minimum 6 caracteres"
+              [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" />
+            <button type="button" class="toggle-btn" (click)="hidePassword = !hidePassword">
+              {{ hidePassword ? 'Afficher' : 'Masquer' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmer mot de passe</label>
+          <div class="password-wrapper">
+            <input
+              id="confirmPassword"
+              [type]="hideConfirmPassword ? 'password' : 'text'"
+              formControlName="confirmPassword"
+              placeholder="Confirmez le mot de passe"
+              [class.error]="(registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched) || passwordMismatch" />
+            <button type="button" class="toggle-btn" (click)="hideConfirmPassword = !hideConfirmPassword">
+              {{ hideConfirmPassword ? 'Afficher' : 'Masquer' }}
+            </button>
+          </div>
+          <small class="error-message" *ngIf="passwordMismatch">Les mots de passe ne correspondent pas</small>
+        </div>
+
+        <div class="error-box" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="isLoading || registerForm.invalid || passwordMismatch">
+          {{ isLoading ? 'Creation...' : 'Creer mon compte' }}
+        </button>
+
+        <div class="links">
+          <a routerLink="/login">J'ai deja un compte</a>
+          <a routerLink="/forgot-password">Mot de passe oublie ?</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="auth-background"></div>
+</div>

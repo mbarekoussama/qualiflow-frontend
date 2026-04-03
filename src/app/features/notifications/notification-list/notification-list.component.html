@@ -1,0 +1,58 @@
+<div class="notification-list-container">
+  <div *ngIf="loading" class="loading-box">
+    <mat-spinner diameter="32"></mat-spinner>
+    <span>Chargement des notifications...</span>
+  </div>
+
+  <div *ngIf="!loading && notifications.length === 0" class="empty-box">
+    <mat-icon>notifications_off</mat-icon>
+    <h3>Aucune notification</h3>
+    <p>Vous etes a jour pour le moment.</p>
+  </div>
+
+  <div *ngIf="!loading && notifications.length > 0" class="notification-list">
+    <article
+      *ngFor="let item of notifications; trackBy: trackById"
+      class="notification-item"
+      [class.unread]="!item.isRead"
+      [class.priority-high]="item.priority === 'HIGH' || item.priority === 'CRITICAL'"
+      (click)="onOpen(item)">
+      <div class="notification-icon">
+        <mat-icon>{{ getIcon(item) }}</mat-icon>
+      </div>
+
+      <div class="notification-content">
+        <div class="notification-head">
+          <h4>{{ item.title }}</h4>
+          <span class="priority-chip" [class.critical]="item.priority === 'CRITICAL'">
+            {{ getPriorityLabel(item.priority) }}
+          </span>
+        </div>
+        <p>{{ item.message }}</p>
+        <div class="notification-meta">
+          <span>{{ item.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+          <span class="status-chip" [class.read]="item.isRead">{{ item.isRead ? 'Lue' : 'Non lue' }}</span>
+        </div>
+      </div>
+
+      <div class="notification-actions">
+        <button
+          *ngIf="!item.isRead"
+          mat-icon-button
+          type="button"
+          title="Marquer comme lue"
+          (click)="onMarkRead(item, $event)">
+          <mat-icon>done</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          type="button"
+          color="warn"
+          title="Archiver"
+          (click)="onArchive(item, $event)">
+          <mat-icon>archive</mat-icon>
+        </button>
+      </div>
+    </article>
+  </div>
+</div>

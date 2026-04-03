@@ -1,0 +1,59 @@
+<button
+  mat-icon-button
+  [matMenuTriggerFor]="notificationMenu"
+  matBadgeColor="warn"
+  [matBadgeHidden]="unreadCount === 0"
+  [matBadge]="unreadCount > 99 ? '99+' : unreadCount"
+  matBadgeSize="small"
+  class="notif-button"
+  aria-label="Notifications">
+  <mat-icon>notifications</mat-icon>
+</button>
+
+<mat-menu #notificationMenu="matMenu" class="notification-menu" (menuOpened)="onMenuOpened()">
+  <div class="menu-header" (click)="$event.stopPropagation()">
+    <div>
+      <h4>Notifications</h4>
+      <span>{{ unreadCount }} non lue(s)</span>
+    </div>
+    <button mat-button type="button" (click)="markAllAsRead($event)">Tout lire</button>
+  </div>
+
+  <div class="menu-content" (click)="$event.stopPropagation()">
+    <div *ngIf="loading" class="menu-loading">
+      <mat-spinner diameter="24"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && recentNotifications.length === 0" class="menu-empty">
+      <mat-icon>notifications_off</mat-icon>
+      <p>Aucune notification recente</p>
+    </div>
+
+    <div
+      *ngFor="let item of recentNotifications; trackBy: trackById"
+      class="menu-item"
+      [class.unread]="!item.isRead"
+      (click)="openNotification(item)">
+      <div class="menu-item-icon">
+        <mat-icon>{{ getIcon(item) }}</mat-icon>
+      </div>
+      <div class="menu-item-content">
+        <strong>{{ item.title }}</strong>
+        <p>{{ item.message }}</p>
+        <span>{{ item.createdAt | date: 'dd/MM HH:mm' }}</span>
+      </div>
+      <button
+        *ngIf="!item.isRead"
+        mat-icon-button
+        type="button"
+        title="Marquer comme lue"
+        (click)="markAsRead(item, $event)">
+        <mat-icon>done</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="menu-footer" (click)="$event.stopPropagation()">
+    <button mat-stroked-button type="button" (click)="openCenter()">Voir toutes les notifications</button>
+  </div>
+</mat-menu>

@@ -1,0 +1,324 @@
+<section class="super-admin-dashboard-page">
+  <mat-card class="dashboard-header-card">
+    <div class="hero-band"></div>
+
+    <div class="header-top">
+      <div>
+        <h1>Dashboard Super Admin</h1>
+        <p>Vue globale de QualiFlow multi-organisations</p>
+      </div>
+
+      <div class="header-actions">
+        <button mat-stroked-button type="button" (click)="refresh()">
+          <mat-icon>refresh</mat-icon>
+          Rafraichir
+        </button>
+      </div>
+    </div>
+
+    <div class="header-meta">
+      <span class="meta-chip">
+        <mat-icon>schedule</mat-icon>
+        Mise a jour {{ now | date: 'dd/MM/yyyy HH:mm' }}
+      </span>
+      <span class="meta-chip subtle">
+        <mat-icon>filter_alt</mat-icon>
+        Periode {{ filterForm.getRawValue().period || '12M' }}
+      </span>
+    </div>
+
+    <form class="filter-grid" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+      <mat-form-field appearance="outline">
+        <mat-label>Periode</mat-label>
+        <mat-select formControlName="period">
+          <mat-option *ngFor="let period of periods" [value]="period.value">{{ period.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Organisation</mat-label>
+        <mat-select formControlName="organizationId">
+          <mat-option [value]="null">Toutes</mat-option>
+          <mat-option *ngFor="let organization of organizations" [value]="organization.id">
+            {{ organization.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="">Tous</mat-option>
+          <mat-option *ngFor="let status of statusOptions" [value]="status.value">{{ status.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="">Tous</mat-option>
+          <mat-option *ngFor="let type of typeOptions" [value]="type.value">{{ type.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filter-actions">
+        <button mat-flat-button color="primary" type="submit">Appliquer</button>
+        <button mat-stroked-button type="button" (click)="resetFilters()">Reinitialiser</button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card *ngIf="loading" class="loading-card">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Chargement du dashboard...</span>
+  </mat-card>
+
+  <ng-container *ngIf="!loading && dashboard as data">
+    <div class="kpi-grid">
+      <mat-card class="kpi-card" *ngFor="let card of getKpiCards(data.kpis)">
+        <div class="kpi-head">
+          <div class="kpi-icon" [ngClass]="card.tone">
+            <mat-icon>{{ card.icon }}</mat-icon>
+          </div>
+          <span class="kpi-title">{{ card.title }}</span>
+        </div>
+        <strong>{{ card.value }}</strong>
+        <small>{{ card.hint }}</small>
+      </mat-card>
+    </div>
+
+    <div class="content-grid">
+      <mat-card class="panel-card">
+        <div class="panel-title-row">
+          <h2>Organisations par statut</h2>
+          <span class="panel-chip">Distribution</span>
+        </div>
+        <div class="chart-list" *ngIf="asDataPoints(data.charts.organizationsByStatus).length > 0; else emptyStatusChart">
+          <div class="chart-row" *ngFor="let row of data.charts.organizationsByStatus; let i = index; trackBy: trackByLabel">
+            <span>{{ row.label }}</span>
+            <div class="bar-track">
+              <div
+                class="bar-fill"
+                [style.background]="chartColorPalette[i % chartColorPalette.length]"
+                [style.width.%]="getProgressWidth(row.value, getDataPointMax(data.charts.organizationsByStatus))">
+              </div>
+            </div>
+            <strong>{{ row.value }}</strong>
+          </div>
+        </div>
+        <ng-template #emptyStatusChart><p class="empty-text">Aucune donnee.</p></ng-template>
+      </mat-card>
+
+      <mat-card class="panel-card">
+        <div class="panel-title-row">
+          <h2>Organisations par type</h2>
+          <span class="panel-chip">Segmentation</span>
+        </div>
+        <div class="chart-list" *ngIf="asDataPoints(data.charts.organizationsByType).length > 0; else emptyTypeChart">
+          <div class="chart-row" *ngFor="let row of data.charts.organizationsByType; let i = index; trackBy: trackByLabel">
+            <span>{{ row.label }}</span>
+            <div class="bar-track">
+              <div
+                class="bar-fill secondary"
+                [style.background]="chartColorPalette[(i + 1) % chartColorPalette.length]"
+                [style.width.%]="getProgressWidth(row.value, getDataPointMax(data.charts.organizationsByType))">
+              </div>
+            </div>
+            <strong>{{ row.value }}</strong>
+          </div>
+        </div>
+        <ng-template #emptyTypeChart><p class="empty-text">Aucune donnee.</p></ng-template>
+      </mat-card>
+
+      <mat-card class="panel-card">
+        <h2>Utilisateurs par role</h2>
+        <div class="chart-list" *ngIf="asDataPoints(data.charts.usersByRole).length > 0; else emptyRoleChart">
+          <div class="chart-row" *ngFor="let row of data.charts.usersByRole; let i = index; trackBy: trackByLabel">
+            <span>{{ row.label }}</span>
+            <div class="bar-track">
+              <div
+                class="bar-fill secondary"
+                [style.background]="chartColorPalette[(i + 2) % chartColorPalette.length]"
+                [style.width.%]="getProgressWidth(row.value, getDataPointMax(data.charts.usersByRole))">
+              </div>
+            </div>
+            <strong>{{ row.value }}</strong>
+          </div>
+        </div>
+        <ng-template #emptyRoleChart><p class="empty-text">Aucune donnee.</p></ng-template>
+      </mat-card>
+
+      <mat-card class="panel-card">
+        <h2>Indicateurs en alerte par organisation</h2>
+        <div class="chart-list" *ngIf="asDataPoints(data.charts.alertIndicatorsByOrganization).length > 0; else emptyIndicatorsChart">
+          <div class="chart-row" *ngFor="let row of data.charts.alertIndicatorsByOrganization; let i = index; trackBy: trackByLabel">
+            <span>{{ row.label }}</span>
+            <div class="bar-track">
+              <div
+                class="bar-fill warning"
+                [style.background]="chartColorPalette[(i + 3) % chartColorPalette.length]"
+                [style.width.%]="getProgressWidth(row.value, getDataPointMax(data.charts.alertIndicatorsByOrganization))">
+              </div>
+            </div>
+            <strong>{{ row.value }}</strong>
+          </div>
+        </div>
+        <ng-template #emptyIndicatorsChart><p class="empty-text">Aucune alerte indicateur.</p></ng-template>
+      </mat-card>
+
+      <mat-card class="panel-card full-width">
+        <h2>Tendances mensuelles</h2>
+        <div class="trend-grid">
+          <div class="trend-card">
+            <h3>Organisations creees</h3>
+            <div class="trend-chart" *ngIf="asTrendPoints(data.charts.monthlyOrganizationsCreated).length > 0; else emptyOrgTrend">
+              <div class="trend-point" *ngFor="let point of data.charts.monthlyOrganizationsCreated; trackBy: trackByPeriod">
+                <span class="trend-bar" [style.height.%]="getTrendPointHeight(point.value, data.charts.monthlyOrganizationsCreated)"></span>
+                <small>{{ point.period }}</small>
+                <strong>{{ point.value }}</strong>
+              </div>
+            </div>
+            <ng-template #emptyOrgTrend><p class="empty-text">Aucune tendance.</p></ng-template>
+          </div>
+
+          <div class="trend-card">
+            <h3>Utilisateurs crees</h3>
+            <div class="trend-chart" *ngIf="asTrendPoints(data.charts.monthlyUsersCreated).length > 0; else emptyUsersTrend">
+              <div class="trend-point" *ngFor="let point of data.charts.monthlyUsersCreated; trackBy: trackByPeriod">
+                <span class="trend-bar secondary" [style.height.%]="getTrendPointHeight(point.value, data.charts.monthlyUsersCreated)"></span>
+                <small>{{ point.period }}</small>
+                <strong>{{ point.value }}</strong>
+              </div>
+            </div>
+            <ng-template #emptyUsersTrend><p class="empty-text">Aucune tendance.</p></ng-template>
+          </div>
+
+          <div class="trend-card">
+            <h3>Non-conformites</h3>
+            <div class="trend-chart" *ngIf="asTrendPoints(data.charts.monthlyNonConformities).length > 0; else emptyNcTrend">
+              <div class="trend-point" *ngFor="let point of data.charts.monthlyNonConformities; trackBy: trackByPeriod">
+                <span class="trend-bar danger" [style.height.%]="getTrendPointHeight(point.value, data.charts.monthlyNonConformities)"></span>
+                <small>{{ point.period }}</small>
+                <strong>{{ point.value }}</strong>
+              </div>
+            </div>
+            <ng-template #emptyNcTrend><p class="empty-text">Aucune tendance.</p></ng-template>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="panel-card full-width">
+        <h2>Top organisations</h2>
+
+        <div class="rankings-grid">
+          <div class="ranking-card">
+            <h3>Top utilisateurs</h3>
+            <ol>
+              <li *ngFor="let org of asTopOrganizations(data.charts.topOrganizationsByUsers); trackBy: trackByOrganization">
+                <span>{{ org.organizationName }}</span>
+                <strong>{{ org.usersCount }}</strong>
+              </li>
+            </ol>
+          </div>
+
+          <div class="ranking-card">
+            <h3>Top documents</h3>
+            <ol>
+              <li *ngFor="let org of asTopOrganizations(data.charts.topOrganizationsByDocuments); trackBy: trackByOrganization">
+                <span>{{ org.organizationName }}</span>
+                <strong>{{ org.documentsCount }}</strong>
+              </li>
+            </ol>
+          </div>
+
+          <div class="ranking-card">
+            <h3>Top non-conformites</h3>
+            <ol>
+              <li *ngFor="let org of asTopOrganizations(data.charts.topOrganizationsByNonConformities); trackBy: trackByOrganization">
+                <span>{{ org.organizationName }}</span>
+                <strong>{{ org.nonConformitiesCount }}</strong>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="table-scroll top-table-wrap" *ngIf="asTopOrganizations(data.topOrganizations).length > 0; else emptyTopOrgs">
+          <table class="top-table">
+            <thead>
+              <tr>
+                <th>Organisation</th>
+                <th>Utilisateurs</th>
+                <th>Documents</th>
+                <th>Non-conformites</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let org of data.topOrganizations; trackBy: trackByOrganization">
+                <td>{{ org.organizationName }}</td>
+                <td>{{ org.usersCount }}</td>
+                <td>{{ org.documentsCount }}</td>
+                <td>{{ org.nonConformitiesCount }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #emptyTopOrgs><p class="empty-text">Aucune organisation a afficher.</p></ng-template>
+      </mat-card>
+
+      <mat-card class="panel-card">
+        <h2>Alertes</h2>
+        <mat-list *ngIf="data.alerts.length > 0; else emptyAlerts">
+          <mat-list-item *ngFor="let alert of data.alerts" [ngClass]="getAlertClass(alert)">
+            <div class="alert-item">
+              <div>
+                <strong>
+                  <mat-icon class="severity-icon">{{ getSeverityIcon(alert) }}</mat-icon>
+                  {{ alert.title }}
+                </strong>
+                <p>{{ alert.description }}</p>
+                <small>{{ alert.createdAt | date: 'dd/MM/yyyy HH:mm' }}</small>
+              </div>
+              <mat-chip>{{ getSeverityLabel(alert) }}</mat-chip>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <ng-template #emptyAlerts><p class="empty-text">Aucune alerte actuellement.</p></ng-template>
+      </mat-card>
+
+      <mat-card class="panel-card">
+        <h2>Activites recentes</h2>
+        <mat-list *ngIf="data.recentActivities.length > 0; else emptyActivities">
+          <mat-list-item *ngFor="let activity of data.recentActivities">
+            <div class="activity-item">
+              <strong>
+                <mat-icon class="activity-icon">timeline</mat-icon>
+                {{ activity.title }}
+              </strong>
+              <p>{{ activity.description || '-' }}</p>
+              <small>{{ activity.createdAt | date: 'dd/MM/yyyy HH:mm' }} - {{ activity.actorName || 'Systeme' }}</small>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <ng-template #emptyActivities><p class="empty-text">Aucune activite recente.</p></ng-template>
+      </mat-card>
+
+      <mat-card class="panel-card full-width">
+        <h2>Actions rapides</h2>
+        <div class="quick-actions">
+          <button mat-flat-button color="primary" type="button" (click)="goToCreateOrganization()">
+            <mat-icon>add_business</mat-icon>
+            Creer organisation
+          </button>
+          <button mat-stroked-button type="button" (click)="goToOrganizations()">
+            <mat-icon>apartment</mat-icon>
+            Voir toutes les organisations
+          </button>
+          <button mat-stroked-button type="button" (click)="goToSuspendedOrganizations()">
+            <mat-icon>gpp_bad</mat-icon>
+            Voir les suspendues
+          </button>
+        </div>
+      </mat-card>
+    </div>
+  </ng-container>
+</section>

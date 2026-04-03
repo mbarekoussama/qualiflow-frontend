@@ -1,0 +1,18 @@
+- Generating browser application bundles (phase: setup)...
+D:\version.6\version.7\front\node_modules\webpack-dev-server\lib\Server.js:2557
+        throw error;
+        ^
+
+Error: listen EADDRINUSE: address already in use ::1:4200
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at GetAddrInfoReqWrap.doListen [as callback] (node:net:2139:7)
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:113:8) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::1',
+  port: 4200
+}
+
+Node.js v20.20.0

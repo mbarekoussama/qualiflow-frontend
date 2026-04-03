@@ -1,0 +1,185 @@
+<section class="profile-page">
+  <mat-card class="profile-card">
+    <div class="profile-header">
+      <div class="profile-avatar-box">
+        <img *ngIf="profilePhotoObjectUrl; else defaultUserAvatar" [src]="profilePhotoObjectUrl" alt="Photo profil" />
+        <ng-template #defaultUserAvatar>
+          <div class="avatar-fallback">{{ profileInitials }}</div>
+        </ng-template>
+      </div>
+
+      <div class="profile-meta">
+        <h1>Mon profil</h1>
+        <p>{{ displayName }} · {{ currentUser?.email }}</p>
+        <small>{{ currentUser?.role }}</small>
+      </div>
+    </div>
+
+    <div class="profile-photo-actions">
+      <label for="profile-photo-upload" class="upload-label">Changer la photo de profil</label>
+      <input id="profile-photo-upload" type="file" accept=".png,.jpg,.jpeg" (change)="onProfilePhotoSelected($event)" />
+
+      <div *ngIf="selectedProfilePhoto" class="selected-file">
+        <span>{{ selectedProfilePhoto.name }}</span>
+        <button mat-button type="button" color="warn" (click)="removeSelectedProfilePhoto()">Retirer</button>
+      </div>
+
+      <button mat-flat-button color="primary" type="button" [disabled]="!selectedProfilePhoto || uploadingProfilePhoto" (click)="uploadProfilePhoto()">
+        <mat-spinner *ngIf="uploadingProfilePhoto" diameter="18"></mat-spinner>
+        <span *ngIf="!uploadingProfilePhoto">Enregistrer photo</span>
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-card class="personal-card">
+    <h2>Informations personnelles</h2>
+    <p>Modifie ton nom, ta date de naissance et la langue de la plateforme.</p>
+
+    <form [formGroup]="personalForm" class="form-grid" (ngSubmit)="savePersonalProfile()">
+      <mat-form-field appearance="outline">
+        <mat-label>Prenom</mat-label>
+        <input matInput formControlName="firstName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="lastName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date de naissance</mat-label>
+        <input matInput type="date" formControlName="birthDate" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Langue plateforme</mat-label>
+        <mat-select formControlName="preferredLanguage">
+          <mat-option *ngFor="let language of languageOptions" [value]="language.value">{{ language.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="actions full-width">
+        <button mat-flat-button color="primary" type="submit" [disabled]="savingProfile">
+          <mat-spinner *ngIf="savingProfile" diameter="18"></mat-spinner>
+          <span *ngIf="!savingProfile">Sauvegarder profil</span>
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card class="password-card">
+    <h2>Securite</h2>
+    <p>Change ton mot de passe.</p>
+
+    <form [formGroup]="passwordForm" class="form-grid" (ngSubmit)="changePassword()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mot de passe actuel</mat-label>
+        <input matInput type="password" formControlName="currentPassword" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nouveau mot de passe</mat-label>
+        <input matInput type="password" formControlName="newPassword" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Confirmer le nouveau mot de passe</mat-label>
+        <input matInput type="password" formControlName="confirmPassword" />
+      </mat-form-field>
+
+      <div class="actions full-width">
+        <button mat-flat-button color="primary" type="submit" [disabled]="changingPassword">
+          <mat-spinner *ngIf="changingPassword" diameter="18"></mat-spinner>
+          <span *ngIf="!changingPassword">Mettre a jour mot de passe</span>
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card class="organization-card" *ngIf="canManageOrganization">
+    <div class="card-head">
+      <div>
+        <h2>Mon organisation</h2>
+        <p>En tant que ADMIN_ORG, vous pouvez mettre a jour les informations et le logo.</p>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-box">
+      <mat-spinner diameter="34"></mat-spinner>
+      <span>Chargement des informations organisation...</span>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div class="logo-section">
+        <div class="logo-preview">
+          <img *ngIf="logoObjectUrl; else defaultLogo" [src]="logoObjectUrl" alt="Logo organisation" />
+          <ng-template #defaultLogo>
+            <div class="placeholder">
+              <mat-icon>domain</mat-icon>
+              <span>Aucun logo</span>
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="logo-actions">
+          <label for="org-logo-upload" class="upload-label">Ajouter / changer logo</label>
+          <input id="org-logo-upload" type="file" accept=".png,.jpg,.jpeg" (change)="onLogoSelected($event)" />
+
+          <div *ngIf="selectedLogo" class="selected-file">
+            <span>{{ selectedLogo.name }}</span>
+            <button mat-button type="button" color="warn" (click)="removeSelectedLogo()">Retirer</button>
+          </div>
+
+          <button mat-flat-button color="primary" type="button" [disabled]="!selectedLogo || uploadingLogo" (click)="uploadLogo()">
+            <mat-spinner *ngIf="uploadingLogo" diameter="18"></mat-spinner>
+            <span *ngIf="!uploadingLogo">Enregistrer logo</span>
+          </button>
+        </div>
+      </div>
+
+      <form [formGroup]="organizationForm" class="form-grid" (ngSubmit)="saveOrganization()">
+        <mat-form-field appearance="outline">
+          <mat-label>Nom organisation</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let type of typeOptions" [value]="type">{{ type }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Adresse</mat-label>
+          <input matInput formControlName="address" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" />
+          <mat-error *ngIf="organizationForm.controls.email.touched && organizationForm.controls.email.invalid">
+            Email invalide
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Telephone</mat-label>
+          <input matInput formControlName="phone" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput rows="3" formControlName="description"></textarea>
+        </mat-form-field>
+
+        <div class="actions full-width">
+          <button mat-flat-button color="primary" type="submit" [disabled]="savingOrganization">
+            <mat-spinner *ngIf="savingOrganization" diameter="18"></mat-spinner>
+            <span *ngIf="!savingOrganization">Sauvegarder organisation</span>
+          </button>
+        </div>
+      </form>
+    </ng-container>
+  </mat-card>
+</section>

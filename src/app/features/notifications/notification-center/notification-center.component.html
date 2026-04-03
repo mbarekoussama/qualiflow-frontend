@@ -1,0 +1,96 @@
+<section class="notification-center-page">
+  <mat-card class="header-card">
+    <div class="header-row">
+      <div>
+        <h1>Centre de notifications</h1>
+        <p>Suivi des alertes et evenements de votre organisation</p>
+      </div>
+      <div class="header-actions">
+        <button mat-stroked-button type="button" (click)="clearFilters()">
+          <mat-icon>restart_alt</mat-icon>
+          Reinitialiser
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="markAllAsRead()">
+          <mat-icon>done_all</mat-icon>
+          Tout marquer comme lu
+        </button>
+      </div>
+    </div>
+
+    <div class="kpi-row" *ngIf="statistics">
+      <div class="kpi-card">
+        <span>Total</span>
+        <strong>{{ statistics.total }}</strong>
+      </div>
+      <div class="kpi-card warning">
+        <span>Non lues</span>
+        <strong>{{ statistics.unread }}</strong>
+      </div>
+      <div class="kpi-card">
+        <span>Critiques</span>
+        <strong>{{ statistics.critical }}</strong>
+      </div>
+      <div class="kpi-card">
+        <span>Priorite haute</span>
+        <strong>{{ statistics.high }}</strong>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card class="filters-card">
+    <form class="filters-grid" [formGroup]="filtersForm" (ngSubmit)="onFilter()">
+      <mat-form-field appearance="outline">
+        <mat-label>Recherche</mat-label>
+        <input matInput formControlName="search" placeholder="Titre, message, type..." />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Etat</mat-label>
+        <mat-select formControlName="isRead">
+          <mat-option value="">Tous</mat-option>
+          <mat-option value="false">Non lues</mat-option>
+          <mat-option value="true">Lues</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Categorie</mat-label>
+        <mat-select formControlName="category">
+          <mat-option value="">Toutes</mat-option>
+          <mat-option *ngFor="let option of categoryOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Priorite</mat-label>
+        <mat-select formControlName="priority">
+          <mat-option value="">Toutes</mat-option>
+          <mat-option *ngFor="let option of priorityOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filters-actions">
+        <button mat-flat-button color="primary" type="submit">Filtrer</button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card class="content-card">
+    <app-notification-list
+      [loading]="loading"
+      [notifications]="notifications"
+      (openNotification)="onOpen($event)"
+      (markRead)="onMarkRead($event)"
+      (archive)="onArchive($event)">
+    </app-notification-list>
+
+    <mat-paginator
+      [length]="total"
+      [pageSize]="pageSize"
+      [pageIndex]="pageNumber - 1"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      showFirstLastButtons
+      (page)="onPageChanged($event)">
+    </mat-paginator>
+  </mat-card>
+</section>

@@ -1,0 +1,211 @@
+﻿.process-form-page {
+  display: grid;
+  gap: 16px;
+}
+
+.hero-card,
+.form-section,
+.summary-section {
+  border-radius: 12px;
+}
+
+.hero-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-main h1 {
+  margin: 0;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #162131;
+}
+
+.hero-main p {
+  margin-top: 6px;
+  color: #6b7787;
+}
+
+.hero-stats {
+  min-width: 170px;
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+}
+
+.progress-label {
+  font-size: 0.82rem;
+  color: #738094;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hero-stats strong {
+  font-size: 1.65rem;
+  color: #157f46;
+}
+
+.hero-progress-track {
+  margin-top: 12px;
+  height: 8px;
+  border-radius: 999px;
+  background: #d9e1e8;
+  overflow: hidden;
+}
+
+.hero-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #157f46 0%, #26a861 100%);
+}
+
+.loading-box {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: #687483;
+}
+
+.form-layout {
+  display: grid;
+  gap: 16px;
+}
+
+.form-section h2,
+.summary-section h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #17202d;
+}
+
+.section-subtitle {
+  margin: 4px 0 14px;
+  color: #748092;
+}
+
+.section-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.two-columns {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.chip-sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.performance-grid {
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+}
+
+.chip-field {
+  border: 1px solid #dde3ea;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fbfcfe;
+}
+
+.chip-field-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.chip-field-head h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #172332;
+}
+
+.chip-field-head p {
+  margin: 2px 0 0;
+  font-size: 0.86rem;
+  color: #768396;
+}
+
+.chip-field-head span {
+  font-size: 0.8rem;
+  color: #157f46;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.chip-input-field {
+  width: 100%;
+}
+
+.summary-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.summary-grid div {
+  padding: 10px;
+  border-radius: 8px;
+  background: #f6f9fc;
+  border: 1px solid #e2e8ee;
+  display: grid;
+  gap: 3px;
+}
+
+.summary-grid span {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #748195;
+}
+
+.summary-grid strong {
+  font-size: 0.98rem;
+  color: #132031;
+}
+
+.summary-note {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px dashed #c8d2de;
+  background: #fcfdff;
+  color: #667384;
+  font-size: 0.9rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+@media (max-width: 720px) {
+  .chip-sections-grid,
+  .performance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}

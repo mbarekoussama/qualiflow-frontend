@@ -1,0 +1,168 @@
+.procedure-details-page {
+  display: grid;
+  gap: 16px;
+}
+
+.loading-card {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: #687483;
+}
+
+.details-header-card,
+.details-content-card,
+.instructions-card {
+  border-radius: 12px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-row h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.header-row p {
+  margin: 6px 0 0;
+  color: #6f7a88;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.header-badges {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #d6dde6;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.86rem;
+  color: #4f5e70;
+}
+
+.badge-active {
+  border-color: #b4ddc2;
+  background: #e8f5ec;
+  color: #157f46;
+}
+
+.badge-inactive {
+  border-color: #f2cccc;
+  background: #fdecec;
+  color: #b32020;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.content-grid h3 {
+  margin: 0 0 4px;
+  color: #3f4d5e;
+  font-size: 0.96rem;
+}
+
+.content-grid p {
+  margin: 0;
+  color: #1f2a38;
+}
+
+.instructions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.instructions-header h2 {
+  margin: 0;
+}
+
+.instruction-form {
+  margin-bottom: 14px;
+  border: 1px solid #e2e7ee;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.instruction-form h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.instruction-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.instruction-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.empty-box {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #6f7a88;
+}
+
+.instructions-table {
+  width: 100%;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.status-active {
+  background: #e8f5ec;
+  color: #157f46;
+}
+
+.status-inactive {
+  background: #fdecec;
+  color: #b32020;
+}
+
+@media (max-width: 900px) {
+  .instruction-actions {
+    justify-content: stretch;
+    flex-direction: column;
+  }
+}

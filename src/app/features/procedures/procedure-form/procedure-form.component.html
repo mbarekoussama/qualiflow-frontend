@@ -1,0 +1,101 @@
+<section class="procedure-form-page">
+  <mat-card class="hero-card">
+    <div class="hero-main">
+      <div>
+        <h1>{{ title }}</h1>
+        <p>Definis la procedure, son processus parent, son responsable et son cadre d'execution.</p>
+      </div>
+
+      <div class="hero-stats">
+        <span>Completion</span>
+        <strong>{{ completionPercent }}%</strong>
+      </div>
+    </div>
+
+    <div class="hero-progress-track">
+      <div class="hero-progress-fill" [style.width.%]="completionPercent"></div>
+    </div>
+  </mat-card>
+
+  <div class="loading-box" *ngIf="loading">
+    <mat-spinner diameter="38"></mat-spinner>
+    <span>Chargement du formulaire...</span>
+  </div>
+
+  <form *ngIf="!loading" [formGroup]="procedureForm" (ngSubmit)="submit()" class="form-layout">
+    <mat-card class="form-section">
+      <h2>Informations generales</h2>
+
+      <div class="section-grid two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Processus</mat-label>
+          <mat-select formControlName="processId">
+            <mat-option [value]="0">Selectionner</mat-option>
+            <mat-option *ngFor="let process of processes" [value]="process.id">
+              {{ process.code }} - {{ process.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="isInvalid('processId')">Le processus est obligatoire.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Code</mat-label>
+          <input matInput formControlName="code" placeholder="Ex: PROC-001" />
+          <mat-hint>Lettres, chiffres, tirets, underscore et slash.</mat-hint>
+          <mat-error *ngIf="isInvalid('code') && procedureForm.controls.code.errors?.['required']">Le code est obligatoire.</mat-error>
+          <mat-error *ngIf="isInvalid('code') && procedureForm.controls.code.errors?.['pattern']">Format de code invalide.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Titre</mat-label>
+          <input matInput formControlName="title" placeholder="Titre de la procedure" />
+          <mat-error *ngIf="isInvalid('title') && procedureForm.controls.title.errors?.['required']">Le titre est obligatoire.</mat-error>
+          <mat-error *ngIf="isInvalid('title') && procedureForm.controls.title.errors?.['minlength']">Minimum 3 caracteres.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Responsable</mat-label>
+          <mat-select formControlName="responsibleUserId">
+            <mat-option [value]="null">Aucun</mat-option>
+            <mat-option *ngFor="let responsible of responsibles" [value]="responsible.id">
+              {{ responsible.firstName }} {{ responsible.lastName }} ({{ responsible.email }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Objectif</mat-label>
+          <textarea matInput rows="2" formControlName="objective" placeholder="Objectif principal de la procedure"></textarea>
+          <mat-hint align="end">{{ procedureForm.controls.objective.value?.length || 0 }}/1200</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Scope / Perimetre</mat-label>
+          <textarea matInput rows="2" formControlName="scope" placeholder="Perimetre fonctionnel et organisationnel"></textarea>
+          <mat-hint align="end">{{ procedureForm.controls.scope.value?.length || 0 }}/1200</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput rows="4" formControlName="description" placeholder="Description detaillee"></textarea>
+          <mat-hint align="end">{{ procedureForm.controls.description.value?.length || 0 }}/2000</mat-hint>
+        </mat-form-field>
+      </div>
+    </mat-card>
+
+    <div class="form-actions">
+      <button mat-stroked-button type="button" (click)="goBack()" [disabled]="saving">Annuler</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+        <mat-spinner *ngIf="saving" diameter="18"></mat-spinner>
+        <span *ngIf="!saving">{{ isEdit ? 'Enregistrer les modifications' : 'Creer la procedure' }}</span>
+      </button>
+    </div>
+  </form>
+</section>
