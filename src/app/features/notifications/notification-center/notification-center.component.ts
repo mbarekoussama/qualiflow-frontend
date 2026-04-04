@@ -20,6 +20,9 @@ import {
 } from '../models/notification.models';
 import { NotificationListComponent } from '../notification-list/notification-list.component';
 import { UserNotificationService } from '../services/user-notification.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { DashboardService } from '../../super-admin/services/dashboard.service';
+import { DashboardAlertResponse } from '../../super-admin/models/dashboard.models';
 
 @Component({
   selector: 'app-notification-center',
@@ -51,8 +54,10 @@ export class NotificationCenterComponent implements OnInit {
   });
 
   notifications: NotificationListItemResponse[] = [];
+  systemAlerts: DashboardAlertResponse[] = [];
   statistics: NotificationStatisticsResponse | null = null;
   loading = false;
+  isSuperAdmin = false;
 
   total = 0;
   pageNumber = 1;
@@ -62,8 +67,12 @@ export class NotificationCenterComponent implements OnInit {
     private readonly fb: FormBuilder,
     private readonly userNotificationService: UserNotificationService,
     private readonly notificationService: NotificationService,
+    private readonly authService: AuthService,
+    private readonly dashboardService: DashboardService,
     private readonly router: Router
-  ) {}
+  ) {
+    this.isSuperAdmin = this.authService.hasRole('SUPER_ADMIN');
+  }
 
   ngOnInit(): void {
     this.loadData();
@@ -144,20 +153,29 @@ export class NotificationCenterComponent implements OnInit {
     this.loadData();
   }
 
-  private loadData(): void {
+  public loadData(): void {
     this.loading = true;
 
-    forkJoin({
+    const requests: any = {
       page: this.userNotificationService.getNotifications(this.buildQueryParams()),
       stats: this.userNotificationService.getStatistics(),
       _unread: this.userNotificationService.refreshUnreadCount()
-    }).subscribe({
-      next: ({ page, stats }) => {
-        this.notifications = page.items;
-        this.total = page.total;
-        this.pageNumber = page.pageNumber;
-        this.pageSize = page.pageSize;
-        this.statistics = stats;
+    };
+
+    if (this.isSuperAdmin) {
+      requests.systemAlerts = this.dashboardService.getDashboardAlerts();
+    }
+
+    forkJoin(requests).subscribe({
+      next: (res: any) => {
+        this.notifications = res.page.items;
+        this.total = res.page.total;
+        this.pageNumber = res.page.pageNumber;
+        this.pageSize = res.page.pageSize;
+        this.statistics = res.stats;
+        if (this.isSuperAdmin) {
+          this.systemAlerts = res.systemAlerts;
+        }
         this.loading = false;
       },
       error: () => {
@@ -165,6 +183,24 @@ export class NotificationCenterComponent implements OnInit {
         this.notificationService.showError('Erreur lors du chargement des notifications.');
       }
     });
+  }
+
+  getSeverityIcon(alert: DashboardAlertResponse): string {
+    switch (alert.severity) {
+      case 'HIGH': return 'gpp_maybe';
+      case 'MEDIUM': return 'warning_amber';
+      case 'LOW': return 'info_outline';
+      default: return 'report_problem';
+    }
+  }
+
+  getSeverityLabel(alert: DashboardAlertResponse): string {
+    switch (alert.severity) {
+      case 'HIGH': return 'Critique';
+      case 'MEDIUM': return 'Attention';
+      case 'LOW': return 'Information';
+      default: return 'Alerte';
+    }
   }
 
   private buildQueryParams(): NotificationQueryParams {

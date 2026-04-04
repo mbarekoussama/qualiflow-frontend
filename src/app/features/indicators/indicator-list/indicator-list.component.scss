@@ -1,0 +1,145 @@
+.indicator-list-page {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: calc(100vh - var(--topbar-h));
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 12px;
+
+  mat-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    span {
+      color: var(--text-secondary);
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    strong {
+      font-size: 24px;
+      color: var(--text-primary);
+    }
+
+    &.alert-card.active {
+      border-left: 4px solid #dc2626;
+      background: #fef2f2;
+    }
+  }
+}
+
+.table-card {
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.loading-box,
+.empty-box {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+}
+
+.latest-value {
+  display: flex;
+  flex-direction: column;
+
+  small {
+    color: var(--text-muted);
+    font-size: 11px;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  &.alert {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  &.ok {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  &.status {
+    background: #dcfce7;
+    color: #166534;
+
+    &.inactive {
+      background: #e5e7eb;
+      color: #374151;
+    }
+  }
+}
+
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 1100px) {
+  .filter-grid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

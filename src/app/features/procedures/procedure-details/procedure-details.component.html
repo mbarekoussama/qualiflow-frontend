@@ -1,156 +1,186 @@
 <section class="procedure-details-page">
-  <mat-card *ngIf="loading" class="loading-card">
-    <mat-spinner diameter="38"></mat-spinner>
-    <span>Chargement de la procedure...</span>
-  </mat-card>
+    <div class="loading-overlay" *ngIf="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Chargement de la procédure...</span>
+    </div>
 
-  <ng-container *ngIf="!loading && details">
-    <mat-card class="details-header-card">
-      <div class="header-row">
-        <div>
-          <h1>{{ details.procedure.code }} - {{ details.procedure.title }}</h1>
-          <p>{{ details.procedure.description || 'Aucune description.' }}</p>
+    <ng-container *ngIf="!loading && details">
+        <!-- PAGE HEADER BAR -->
+        <div class="page-header-bar">
+            <div class="page-header-left">
+                <div class="page-subtitle">
+                    <button type="button" class="link-button" (click)="backToList()">
+                        <mat-icon>arrow_back</mat-icon> Retour à la liste
+                    </button>
+                </div>
+                <h1 class="page-title">{{ details.procedure.code }} — {{ details.procedure.title }}</h1>
+            </div>
+
+            <div class="page-header-right">
+                <button *ngIf="canWrite" mat-flat-button color="primary" class="new-process-btn"
+                    (click)="editProcedure()">
+                    <mat-icon>edit</mat-icon> Modifier
+                </button>
+            </div>
         </div>
 
-        <div class="header-actions">
-          <button mat-stroked-button type="button" (click)="backToList()">
-            <mat-icon>arrow_back</mat-icon>
-            Retour
-          </button>
+        <div class="details-body">
+            <!-- SUMMARY CARDS -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <span class="sc-label">Processus Parent</span>
+                    <div class="sc-value">
+                        <mat-icon style="color: var(--xl-green-mid); margin-right: 8px;">hub</mat-icon>
+                        {{ details.procedure.processCode }}
+                    </div>
+                    <span class="sc-subtext">{{ details.procedure.processName }}</span>
+                </div>
 
-          <button *ngIf="canWrite" mat-flat-button color="primary" type="button" (click)="editProcedure()">
-            <mat-icon>edit</mat-icon>
-            Modifier
-          </button>
+                <div class="summary-card">
+                    <span class="sc-label">Responsable</span>
+                    <div class="sc-value">
+                        <div class="pilote-avatar" *ngIf="details.procedure.responsibleFullName">
+                            {{ details.procedure.responsibleFullName.charAt(0) }}
+                        </div>
+                        {{ details.procedure.responsibleFullName || 'Non assigné' }}
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <span class="sc-label">Statut Actuel</span>
+                    <div class="sc-value">
+                        <span class="tag" [ngClass]="details.procedure.status === 'ACTIF' ? 'conforme' : 'perime'">
+                            {{ getStatusLabel(details.procedure.status) }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-main-grid">
+                <!-- GENERAL INFO -->
+                <mat-card class="info-card">
+                    <div class="card-header-clean">
+                        <h2>Informations Générales</h2>
+                        <mat-icon>info</mat-icon>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item full-width">
+                            <label>Description</label>
+                            <p>{{ details.procedure.description || 'Aucune description fournie.' }}</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Objectif</label>
+                            <p>{{ details.procedure.objective || 'Non renseigné.' }}</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Scope / Périmètre</label>
+                            <p>{{ details.procedure.scope || 'Non renseigné.' }}</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Créée le</label>
+                            <p>{{ details.procedure.createdAt | date: 'dd/MM/yyyy' }}</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Dernière mise à jour</label>
+                            <p>{{ details.procedure.updatedAt ? (details.procedure.updatedAt | date: 'dd/MM/yyyy') :
+                                'Jamais' }}</p>
+                        </div>
+                    </div>
+                </mat-card>
+
+                <!-- INSTRUCTIONS -->
+                <mat-card class="info-card instructions-section">
+                    <div class="card-header-clean">
+                        <h2>Instructions ({{ details.instructions.length }})</h2>
+                        <button mat-button color="primary" *ngIf="canWrite && !editingInstructionId"
+                            (click)="instructionForm.reset({status: 'ACTIF', orderIndex: details.instructions.length + 1})">
+                            <mat-icon>add</mat-icon> Ajouter
+                        </button>
+                    </div>
+
+                    <!-- INSTRUCTION FORM (INLINE) -->
+                    <div class="quick-actor-form" *ngIf="canWrite && (instructionForm.dirty || editingInstructionId)">
+                        <form [formGroup]="instructionForm" (ngSubmit)="saveInstruction()"
+                            class="instruction-inline-form">
+                            <mat-form-field appearance="outline" style="width: 100px;">
+                                <mat-label>Ordre</mat-label>
+                                <input matInput type="number" formControlName="orderIndex" />
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" style="width: 120px;">
+                                <mat-label>Code</mat-label>
+                                <input matInput formControlName="code" />
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" style="flex: 1;">
+                                <mat-label>Titre de l'instruction</mat-label>
+                                <input matInput formControlName="title" />
+                            </mat-form-field>
+                            <div class="form-actions-inline">
+                                <button mat-icon-button color="primary" type="submit"
+                                    [disabled]="instructionForm.invalid">
+                                    <mat-icon>check_circle</mat-icon>
+                                </button>
+                                <button mat-icon-button color="warn" type="button"
+                                    (click)="cancelInstructionEdit(); instructionForm.markAsPristine()">
+                                    <mat-icon>cancel</mat-icon>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="empty-box" *ngIf="details.instructions.length === 0">
+                        <mat-icon>assignment_late</mat-icon>
+                        <span>Aucune instruction associée.</span>
+                    </div>
+
+                    <div class="table-container" *ngIf="details.instructions.length > 0">
+                        <table mat-table [dataSource]="details.instructions" class="details-word-table">
+                            <ng-container matColumnDef="orderIndex">
+                                <th mat-header-cell *matHeaderCellDef style="width: 60px;">#</th>
+                                <td mat-cell *matCellDef="let item">{{ item.orderIndex }}</td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="code">
+                                <th mat-header-cell *matHeaderCellDef style="width: 120px;">Code</th>
+                                <td mat-cell *matCellDef="let item"><strong>{{ item.code }}</strong></td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="title">
+                                <th mat-header-cell *matHeaderCellDef>Instruction</th>
+                                <td mat-cell *matCellDef="let item">{{ item.title }}</td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="status">
+                                <th mat-header-cell *matHeaderCellDef style="width: 100px;">Statut</th>
+                                <td mat-cell *matCellDef="let item">
+                                    <span class="tag" [ngClass]="item.status === 'ACTIF' ? 'conforme' : 'perime'"
+                                        style="font-size: 10px; padding: 1px 6px;">
+                                        {{ getStatusLabel(item.status) }}
+                                    </span>
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="actions">
+                                <th mat-header-cell *matHeaderCellDef style="width: 100px;"></th>
+                                <td mat-cell *matCellDef="let item">
+                                    <div class="table-actions">
+                                        <button mat-icon-button class="action-btn edit-btn"
+                                            (click)="editInstruction(item)">
+                                            <mat-icon>edit</mat-icon>
+                                        </button>
+                                        <button mat-icon-button class="action-btn delete-btn"
+                                            (click)="deleteInstruction(item)">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="displayedInstructionColumns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedInstructionColumns"></tr>
+                        </table>
+                    </div>
+                </mat-card>
+            </div>
         </div>
-      </div>
-
-      <div class="header-badges">
-        <span class="badge">Processus: {{ details.procedure.processCode }} - {{ details.procedure.processName }}</span>
-        <span class="badge">Responsable: {{ details.procedure.responsibleFullName || 'Non assigne' }}</span>
-        <span class="badge" [ngClass]="details.procedure.status === 'ACTIF' ? 'badge-active' : 'badge-inactive'">
-          {{ getStatusLabel(details.procedure.status) }}
-        </span>
-      </div>
-    </mat-card>
-
-    <mat-card class="details-content-card">
-      <h2>Informations de la procedure</h2>
-
-      <div class="content-grid">
-        <div>
-          <h3>Objectif</h3>
-          <p>{{ details.procedure.objective || 'Non renseigne.' }}</p>
-        </div>
-
-        <div>
-          <h3>Scope / Perimetre</h3>
-          <p>{{ details.procedure.scope || 'Non renseigne.' }}</p>
-        </div>
-
-        <div>
-          <h3>Creee le</h3>
-          <p>{{ details.procedure.createdAt | date: 'dd/MM/yyyy HH:mm' }}</p>
-        </div>
-
-        <div>
-          <h3>Derniere mise a jour</h3>
-          <p>{{ details.procedure.updatedAt ? (details.procedure.updatedAt | date: 'dd/MM/yyyy HH:mm') : 'Aucune' }}</p>
-        </div>
-      </div>
-    </mat-card>
-
-    <mat-card class="instructions-card">
-      <div class="instructions-header">
-        <h2>Instructions</h2>
-      </div>
-
-      <form *ngIf="canWrite" [formGroup]="instructionForm" (ngSubmit)="saveInstruction()" class="instruction-form">
-        <h3>{{ instructionFormTitle }}</h3>
-
-        <div class="instruction-form-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>Code</mat-label>
-            <input matInput formControlName="code" placeholder="Ex: INS-001" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Titre</mat-label>
-            <input matInput formControlName="title" placeholder="Titre de l'instruction" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Statut</mat-label>
-            <mat-select formControlName="status">
-              <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Ordre</mat-label>
-            <input matInput type="number" min="1" formControlName="orderIndex" placeholder="Auto" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Description</mat-label>
-            <textarea matInput rows="2" formControlName="description" placeholder="Description de l'instruction"></textarea>
-          </mat-form-field>
-        </div>
-
-        <div class="instruction-actions">
-          <button *ngIf="editingInstructionId" mat-stroked-button type="button" (click)="cancelInstructionEdit()">Annuler</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="savingInstruction">
-            <mat-spinner *ngIf="savingInstruction" diameter="18"></mat-spinner>
-            <span *ngIf="!savingInstruction">{{ editingInstructionId ? 'Mettre a jour' : 'Ajouter' }}</span>
-          </button>
-        </div>
-      </form>
-
-      <div class="empty-box" *ngIf="details.instructions.length === 0">
-        <mat-icon>assignment_late</mat-icon>
-        <span>Aucune instruction associee.</span>
-      </div>
-
-      <table *ngIf="details.instructions.length > 0" mat-table [dataSource]="details.instructions" class="instructions-table">
-        <ng-container matColumnDef="orderIndex">
-          <th mat-header-cell *matHeaderCellDef>Ordre</th>
-          <td mat-cell *matCellDef="let item">{{ item.orderIndex }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="code">
-          <th mat-header-cell *matHeaderCellDef>Code</th>
-          <td mat-cell *matCellDef="let item">{{ item.code }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="title">
-          <th mat-header-cell *matHeaderCellDef>Titre</th>
-          <td mat-cell *matCellDef="let item">{{ item.title }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Statut</th>
-          <td mat-cell *matCellDef="let item">
-            <span class="status-badge" [ngClass]="item.status === 'ACTIF' ? 'status-active' : 'status-inactive'">
-              {{ getStatusLabel(item.status) }}
-            </span>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let item">
-            <button *ngIf="canWrite" mat-icon-button color="primary" type="button" (click)="editInstruction(item)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button *ngIf="canWrite" mat-icon-button color="warn" type="button" (click)="deleteInstruction(item)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedInstructionColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedInstructionColumns; trackBy: trackByInstructionId"></tr>
-      </table>
-    </mat-card>
-  </ng-container>
+    </ng-container>
 </section>

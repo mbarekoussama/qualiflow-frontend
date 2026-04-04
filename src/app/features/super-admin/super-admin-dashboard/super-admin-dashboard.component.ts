@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
+import { MatTabsModule } from '@angular/material/tabs';
 import { NotificationService } from '../../../core/services/notification.service';
 import {
   DashboardAlertResponse,
@@ -40,7 +41,8 @@ import { OrganizationService } from '../services/organization.service';
     MatFormFieldModule,
     MatSelectModule,
     MatProgressSpinnerModule,
-    MatListModule
+    MatListModule,
+    MatTabsModule
   ],
   templateUrl: './super-admin-dashboard.component.html',
   styleUrls: ['./super-admin-dashboard.component.scss']
@@ -77,7 +79,7 @@ export class SuperAdminDashboardComponent implements OnInit {
     private readonly organizationService: OrganizationService,
     private readonly notificationService: NotificationService,
     private readonly router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadOrganizations();
@@ -266,6 +268,10 @@ export class SuperAdminDashboardComponent implements OnInit {
     }
 
     return Math.max(4, (value / max) * 100);
+  }
+
+  getOrgValue(org: TopOrganizationResponse, key: string): number {
+    return (org as any)[key] || 0;
   }
 
   getTrendPointHeight(value: number, points: DashboardMonthlyTrendPointResponse[] | undefined): number {

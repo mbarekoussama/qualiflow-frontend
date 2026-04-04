@@ -1,111 +1,146 @@
 <section class="nonconformity-form-page">
-  <mat-card class="hero-card">
-    <div class="hero-main">
-      <div>
-        <h1>{{ title }}</h1>
-        <p>Declare, qualifie et affecte la non-conformite a un responsable.</p>
+  <!-- PAGE HEADER BAR -->
+  <div class="page-header-bar">
+    <div class="page-header-left">
+      <div class="page-subtitle">
+        <button type="button" class="link-button" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon> Retour
+        </button>
       </div>
+      <h1 class="page-title">{{ title }}</h1>
     </div>
-  </mat-card>
-
-  <div class="loading-box" *ngIf="loading">
-    <mat-spinner diameter="38"></mat-spinner>
-    <span>Chargement du formulaire...</span>
+    <div class="page-header-right">
+      <span class="form-status-hint">Tous les champs avec * sont obligatoires</span>
+    </div>
   </div>
 
-  <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="submit()" class="form-layout">
-    <mat-card class="form-section">
-      <h2>Informations principales</h2>
+  <!-- PROGRESS TRACKER (Optional but good for consistency) -->
+  <div class="form-progress-bar">
+    <div class="progress-step active">
+      <div class="step-dot">1</div>
+      <span>Qualification</span>
+    </div>
+    <div class="progress-line" [class.active]="form.valid"></div>
+    <div class="progress-step" [class.active]="form.valid">
+      <div class="step-dot">2</div>
+      <span>Validation</span>
+    </div>
+  </div>
 
-      <div class="section-grid two-columns">
+  <div class="loading-overlay" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Initialisation...</span>
+  </div>
+
+  <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="submit()" class="modern-form-container">
+
+    <!-- SECTION 1: IDENTIFICATION -->
+    <mat-card class="form-section-clean">
+      <div class="section-header">
+        <mat-icon>assignment_late</mat-icon>
+        <div class="header-text">
+          <h3>Identification de l'écart</h3>
+          <p>Définissez l'origine et la nature de la non-conformité.</p>
+        </div>
+      </div>
+
+      <div class="section-content grid-2-cols">
         <mat-form-field appearance="outline">
-          <mat-label>Code</mat-label>
-          <input matInput formControlName="code" placeholder="NC-001" />
-          <mat-error *ngIf="form.controls.code.invalid">Code obligatoire.</mat-error>
+          <mat-label>Code Identification</mat-label>
+          <input matInput formControlName="code" placeholder="ex: NC-2024-001" />
+          <mat-hint>Format suggéré: NC-YYYY-XXX</mat-hint>
+          <mat-error *ngIf="form.get('code')?.invalid">Code obligatoire</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Titre</mat-label>
-          <input matInput formControlName="title" placeholder="Titre de la non-conformite" />
-          <mat-error *ngIf="form.controls.title.invalid">Titre obligatoire.</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Type</mat-label>
-          <mat-select formControlName="type">
-            <mat-option *ngFor="let option of typeOptions" [value]="option.value">{{ option.label }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Severite</mat-label>
+          <mat-label>Sévérité / Impact</mat-label>
           <mat-select formControlName="severity">
-            <mat-option *ngFor="let option of severityOptions" [value]="option.value">{{ option.label }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Date detection</mat-label>
-          <input matInput type="date" formControlName="detectedDate" />
-          <mat-error *ngIf="form.controls.detectedDate.invalid">Date obligatoire.</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Statut</mat-label>
-          <mat-select formControlName="status">
-            <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+            <mat-option *ngFor="let option of severityOptions" [value]="option.value">
+              {{ option.label }}
+            </mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Description</mat-label>
-          <textarea matInput rows="3" formControlName="description" placeholder="Description de l'ecart constate"></textarea>
+          <mat-label>Titre de la non-conformité *</mat-label>
+          <input matInput formControlName="title" placeholder="Description courte de l'écart" />
+          <mat-error *ngIf="form.get('title')?.invalid">Un titre explicite est requis</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description détaillée</mat-label>
+          <textarea matInput rows="4" formControlName="description"
+            placeholder="Expliquez ici les faits constatés, les preuves, etc."></textarea>
         </mat-form-field>
       </div>
     </mat-card>
 
-    <mat-card class="form-section">
-      <h2>Liaisons metier</h2>
+    <!-- SECTION 2: CONTEXTE & AFFECTATION -->
+    <mat-card class="form-section-clean">
+      <div class="section-header">
+        <mat-icon>share</mat-icon>
+        <div class="header-text">
+          <h3>Contexte & Affectation</h3>
+          <p>Liez l'écart à un élément métier et désignez un responsable.</p>
+        </div>
+      </div>
 
-      <div class="section-grid two-columns">
+      <div class="section-content grid-2-cols">
         <mat-form-field appearance="outline">
-          <mat-label>Processus</mat-label>
+          <mat-label>Processus impacté</mat-label>
           <mat-select formControlName="processId">
-            <mat-option [value]="null">Aucun</mat-option>
-            <mat-option *ngFor="let process of processes" [value]="process.id">
-              {{ process.code }} - {{ process.name }}
-            </mat-option>
+            <mat-option [value]="null">-- Aucun --</mat-option>
+            <mat-option *ngFor="let p of processes" [value]="p.id">{{ p.code }} - {{ p.name }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Procedure</mat-label>
+          <mat-label>Procédure concernée</mat-label>
           <mat-select formControlName="procedureId">
-            <mat-option [value]="null">Aucune</mat-option>
-            <mat-option *ngFor="let procedure of filteredProcedures" [value]="procedure.id">
-              {{ procedure.code }} - {{ procedure.title }}
-            </mat-option>
+            <mat-option [value]="null">-- Aucune --</mat-option>
+            <mat-option *ngFor="let proc of filteredProcedures" [value]="proc.id">{{ proc.code }} - {{ proc.title
+              }}</mat-option>
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Responsable</mat-label>
+        <mat-form-field appearance="outline">
+          <mat-label>Responsable du traitement *</mat-label>
           <mat-select formControlName="responsibleUserId">
-            <mat-option [value]="0">Selectionner</mat-option>
-            <mat-option *ngFor="let user of users" [value]="user.id">
-              {{ user.firstName }} {{ user.lastName }} ({{ user.email }})
-            </mat-option>
+            <mat-option [value]="0">Sélectionner un pilote...</mat-option>
+            <mat-option *ngFor="let u of users" [value]="u.id">{{ u.firstName }} {{ u.lastName }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="form.controls.responsibleUserId.invalid">Responsable obligatoire.</mat-error>
+          <mat-error *ngIf="form.get('responsibleUserId')?.invalid">Veuillez désigner un responsable</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date de détection</mat-label>
+          <input matInput type="date" formControlName="detectedDate" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Catégorie / Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let t of typeOptions" [value]="t.value">{{ t.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut Initial</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
     </mat-card>
 
-    <div class="form-actions">
-      <button mat-stroked-button type="button" (click)="goBack()" [disabled]="saving">Annuler</button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="saving">
-        <mat-spinner *ngIf="saving" diameter="18"></mat-spinner>
-        <span *ngIf="!saving">{{ isEdit ? 'Enregistrer les modifications' : 'Creer la non-conformite' }}</span>
+    <!-- FORM ACTIONS BAR -->
+    <div class="form-actions-bar">
+      <button mat-button type="button" (click)="goBack()" [disabled]="saving">Annuler</button>
+      <div class="spacer"></div>
+      <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="saving">
+        <mat-icon *ngIf="!saving">check_circle</mat-icon>
+        <mat-spinner *ngIf="saving" diameter="20"></mat-spinner>
+        <span>{{ isEdit ? 'Mettre à jour la fiche' : 'Valider la déclaration' }}</span>
       </button>
     </div>
   </form>

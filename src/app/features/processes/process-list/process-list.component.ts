@@ -12,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTableModule } from '@angular/material/table';
 import { catchError, forkJoin, of } from 'rxjs';
 import { NotificationService } from '../../../core/services/notification.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -46,7 +47,8 @@ type ProcessTone = 'good' | 'warning' | 'danger';
     MatSelectModule,
     MatPaginatorModule,
     MatDialogModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatTableModule
   ],
   templateUrl: './process-list.component.html',
   styleUrls: ['./process-list.component.scss']
@@ -229,6 +231,10 @@ export class ProcessListComponent implements OnInit {
 
   getTypeLabel(type: ProcessType): string {
     return this.typeOptions.find(option => option.value === type)?.label ?? type;
+  }
+
+  getStatusLabel(status: ProcessStatus): string {
+    return this.statusOptions.find(option => option.value === status)?.label ?? status;
   }
 
   getTypeDescription(type: ProcessType): string {

@@ -1,0 +1,102 @@
+<mat-card class="values-card">
+  <div class="card-header">
+    <div>
+      <h3>Valeurs periodiques</h3>
+      <p>Saisie et historique des mesures KPI</p>
+    </div>
+  </div>
+
+  <form *ngIf="canWrite" [formGroup]="form" class="value-form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Periode</mat-label>
+      <input matInput formControlName="periodLabel" placeholder="Ex: 2026-03 ou 2026-Q1" />
+      <mat-error *ngIf="form.controls.periodLabel.invalid">Periode obligatoire</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Valeur mesuree</mat-label>
+      <input matInput type="number" step="0.01" formControlName="measuredValue" />
+      <mat-error *ngIf="form.controls.measuredValue.invalid">Valeur obligatoire</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Date de mesure</mat-label>
+      <input matInput type="date" formControlName="measuredAt" />
+      <mat-error *ngIf="form.controls.measuredAt.invalid">Date obligatoire</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="comment-field">
+      <mat-label>Commentaire</mat-label>
+      <input matInput formControlName="comment" placeholder="Optionnel" />
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-stroked-button type="button" (click)="cancelEdit()" [disabled]="saving">
+        Reinitialiser
+      </button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="saving">
+        <mat-spinner *ngIf="saving" diameter="18"></mat-spinner>
+        <mat-icon *ngIf="!saving">{{ isEditing ? 'save' : 'add' }}</mat-icon>
+        <span>{{ isEditing ? 'Mettre a jour' : 'Ajouter valeur' }}</span>
+      </button>
+    </div>
+  </form>
+
+  <div class="loading-box" *ngIf="loading">
+    <mat-spinner diameter="34"></mat-spinner>
+    <span>Chargement des valeurs...</span>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="empty-box" *ngIf="values.length === 0">
+      <mat-icon>show_chart</mat-icon>
+      <p>Aucune valeur saisie pour le moment.</p>
+    </div>
+
+    <div class="table-wrapper" *ngIf="values.length > 0">
+      <table mat-table [dataSource]="values" [trackBy]="trackById">
+        <ng-container matColumnDef="periodLabel">
+          <th mat-header-cell *matHeaderCellDef>Periode</th>
+          <td mat-cell *matCellDef="let value">{{ value.periodLabel }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="measuredValue">
+          <th mat-header-cell *matHeaderCellDef>Valeur</th>
+          <td mat-cell *matCellDef="let value">{{ value.measuredValue }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="measuredAt">
+          <th mat-header-cell *matHeaderCellDef>Date mesure</th>
+          <td mat-cell *matCellDef="let value">{{ value.measuredAt | date: 'dd/MM/yyyy' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="comment">
+          <th mat-header-cell *matHeaderCellDef>Commentaire</th>
+          <td mat-cell *matCellDef="let value">{{ value.comment || '-' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="enteredBy">
+          <th mat-header-cell *matHeaderCellDef>Saisi par</th>
+          <td mat-cell *matCellDef="let value">{{ value.enteredByFullName || ('User ' + value.enteredByUserId) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let value">
+            <div class="row-actions">
+              <button mat-icon-button matTooltip="Modifier" (click)="edit(value)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Supprimer" (click)="delete(value)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  </ng-container>
+</mat-card>

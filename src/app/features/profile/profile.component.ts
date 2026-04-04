@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTabsModule } from '@angular/material/tabs';
 import { Subscription } from 'rxjs';
 import {
   AuthService,
@@ -33,13 +34,14 @@ import {
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTabsModule
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  private readonly subscriptions = new Subscription();
+  private readonly subscriptions = new Subscription(); // trigger
   readonly typeOptions = ['UNIVERSITE', 'INSTITUT', 'CENTRE', 'ENTREPRISE'];
   readonly languageOptions: Array<{ value: 'fr' | 'en' | 'ar'; label: string }> = [
     { value: 'fr', label: 'Francais' },
@@ -89,7 +91,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private readonly authService: AuthService,
     private readonly organizationService: OrganizationService,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadProfile();

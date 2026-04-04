@@ -194,6 +194,98 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'corrective-actions',
+        canActivate: [RoleGuard],
+        canActivateChild: [RoleGuard],
+        data: {
+          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+        },
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/corrective-actions/corrective-action-list/corrective-action-list.component').then(m => m.CorrectiveActionListComponent),
+            data: {
+              title: 'Actions correctives',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+            }
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/corrective-actions/corrective-action-form/corrective-action-form.component').then(m => m.CorrectiveActionFormComponent),
+            data: {
+              title: 'Nouvelle action corrective',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE']
+            }
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () => import('./features/corrective-actions/corrective-action-form/corrective-action-form.component').then(m => m.CorrectiveActionFormComponent),
+            data: {
+              title: 'Modifier action corrective',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE']
+            }
+          },
+          {
+            path: ':id',
+            loadComponent: () => import('./features/corrective-actions/corrective-action-details/corrective-action-details.component').then(m => m.CorrectiveActionDetailsComponent),
+            data: {
+              title: 'Detail action corrective',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+            }
+          }
+        ]
+      },
+      {
+        path: 'indicators',
+        canActivate: [RoleGuard],
+        canActivateChild: [RoleGuard],
+        data: {
+          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+        },
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/indicators/indicator-list/indicator-list.component').then(m => m.IndicatorListComponent),
+            data: {
+              title: 'Indicateurs KPI',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+            }
+          },
+          {
+            path: 'dashboard',
+            loadComponent: () => import('./features/indicators/indicator-dashboard/indicator-dashboard.component').then(m => m.IndicatorDashboardComponent),
+            data: {
+              title: 'Dashboard KPI',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+            }
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/indicators/indicator-form/indicator-form.component').then(m => m.IndicatorFormComponent),
+            data: {
+              title: 'Nouvel indicateur',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE']
+            }
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () => import('./features/indicators/indicator-form/indicator-form.component').then(m => m.IndicatorFormComponent),
+            data: {
+              title: 'Modifier indicateur',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE']
+            }
+          },
+          {
+            path: ':id',
+            loadComponent: () => import('./features/indicators/indicator-details/indicator-details.component').then(m => m.IndicatorDetailsComponent),
+            data: {
+              title: 'Detail indicateur',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+            }
+          }
+        ]
+      },
+      {
         path: 'processus',
         redirectTo: 'processes',
         pathMatch: 'full'

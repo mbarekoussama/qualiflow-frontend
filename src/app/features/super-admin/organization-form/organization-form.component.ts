@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { NotificationService } from '../../../core/services/notification.service';
 import {
   CreateOrganizationRequest,
@@ -33,7 +34,8 @@ import { OrganizationService } from '../services/organization.service';
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatIconModule
   ],
   templateUrl: './organization-form.component.html',
   styleUrls: ['./organization-form.component.scss']
@@ -69,7 +71,7 @@ export class OrganizationFormComponent implements OnInit {
     private readonly router: Router,
     private readonly organizationService: OrganizationService,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const rawId = this.route.snapshot.paramMap.get('id');
@@ -197,5 +199,16 @@ export class OrganizationFormComponent implements OnInit {
     }
 
     return payload;
+  }
+
+  getTypeLabel(type: string | null | undefined): string {
+    if (!type) {
+      return 'N/A';
+    }
+    return ORGANIZATION_TYPE_OPTIONS.find(item => item.value === type)?.label ?? type;
+  }
+
+  getStatusLabel(status: string): string {
+    return ORGANIZATION_STATUS_OPTIONS.find(item => item.value === status)?.label ?? status;
   }
 }

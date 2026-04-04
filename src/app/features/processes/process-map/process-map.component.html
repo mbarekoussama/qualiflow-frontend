@@ -1,105 +1,95 @@
-﻿<section class="process-map-page">
-  <mat-card class="map-header-card">
-    <div class="map-header-row">
-      <div>
-        <h1>Cartographie des processus</h1>
-        <p>Vue globale des processus de pilotage, realisation et support.</p>
-      </div>
+<section class="process-map-page">
+    <!-- PAGE HEADER BAR -->
+    <div class="page-header-bar">
+        <div class="page-header-left">
+            <div class="page-subtitle">
+                <button type="button" class="link-button" (click)="backToList()">
+                    <mat-icon>arrow_back</mat-icon> Retour à la liste
+                </button>
+            </div>
+            <h1 class="page-title">Cartographie des processus</h1>
+        </div>
 
-      <button mat-stroked-button type="button" (click)="backToList()">
-        <mat-icon>arrow_back</mat-icon>
-        Retour liste
-      </button>
+        <div class="page-header-right">
+            <div class="stats-pills" *ngIf="stats">
+                <div class="pill">
+                    <span class="label">Total</span>
+                    <span class="value">{{ stats.total }}</span>
+                </div>
+                <div class="pill active">
+                    <span class="label">Actifs</span>
+                    <span class="value">{{ stats.active }}</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div *ngIf="stats" class="stats-row">
-      <mat-chip highlighted>Total: {{ stats.total }}</mat-chip>
-      <mat-chip color="primary" highlighted>Actifs: {{ stats.active }}</mat-chip>
-      <mat-chip color="warn" highlighted>Inactifs: {{ stats.inactive }}</mat-chip>
-      <mat-chip highlighted>Avec pilote: {{ stats.withPilot }}</mat-chip>
-      <mat-chip highlighted>Sans pilote: {{ stats.withoutPilot }}</mat-chip>
+    <div class="map-body-container" *ngIf="!loading && map">
+        <mat-card class="catalog-content-card map-content">
+
+            <!-- 1. MANAGEMENT PROCESSES (PILOTAGE) -->
+            <div class="map-section management">
+                <div class="section-label">PILOTAGE & STRATÉGIE</div>
+                <div class="items-row">
+                    <div class="process-tile pilotage" *ngFor="let p of map.pilotageProcesses" (click)="openDetails(p)">
+                        <div class="tile-header">
+                            <span class="tile-code">{{ p.code }}</span>
+                            <span class="status-dot" [class.active]="p.status === 'ACTIF'"></span>
+                        </div>
+                        <div class="tile-name">{{ p.name }}</div>
+                        <div class="tile-footer" *ngIf="p.pilotFullName">
+                            <mat-icon>person</mat-icon> {{ p.pilotFullName }}
+                        </div>
+                    </div>
+                    <div class="empty-state-mini" *ngIf="map.pilotageProcesses.length === 0">Aucun processus de pilotage
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. CORE PROCESSES (REALISATION) -->
+            <div class="map-section core">
+                <div class="section-label">RÉALISATION / CŒUR DE MÉTIER</div>
+                <div class="chevron-flow">
+                    <div class="process-tile realisation" *ngFor="let p of map.realisationProcesses"
+                        (click)="openDetails(p)">
+                        <div class="tile-header">
+                            <span class="tile-code">{{ p.code }}</span>
+                            <span class="status-dot" [class.active]="p.status === 'ACTIF'"></span>
+                        </div>
+                        <div class="tile-name">{{ p.name }}</div>
+                        <div class="tile-footer" *ngIf="p.pilotFullName">
+                            <mat-icon>person</mat-icon> {{ p.pilotFullName }}
+                        </div>
+                    </div>
+                    <div class="empty-state-mini" *ngIf="map.realisationProcesses.length === 0">Aucun processus
+                        opérationnel</div>
+                </div>
+            </div>
+
+            <!-- 3. SUPPORT PROCESSES (SUPPORT) -->
+            <div class="map-section support">
+                <div class="section-label">SUPPORT & RESSOURCES</div>
+                <div class="items-row">
+                    <div class="process-tile support" *ngFor="let p of map.supportProcesses" (click)="openDetails(p)">
+                        <div class="tile-header">
+                            <span class="tile-code">{{ p.code }}</span>
+                            <span class="status-dot" [class.active]="p.status === 'ACTIF'"></span>
+                        </div>
+                        <div class="tile-name">{{ p.name }}</div>
+                        <div class="tile-footer" *ngIf="p.pilotFullName">
+                            <mat-icon>person</mat-icon> {{ p.pilotFullName }}
+                        </div>
+                    </div>
+                    <div class="empty-state-mini" *ngIf="map.supportProcesses.length === 0">Aucun processus support
+                    </div>
+                </div>
+            </div>
+
+        </mat-card>
     </div>
-  </mat-card>
 
-  <mat-card *ngIf="loading" class="loading-card">
-    <mat-spinner diameter="40"></mat-spinner>
-    <span>Chargement de la cartographie...</span>
-  </mat-card>
-
-  <div *ngIf="!loading && map" class="map-grid">
-    <mat-card class="map-column">
-      <div class="column-header">
-        <h2>Pilotage</h2>
-        <span>{{ map.pilotageProcesses.length }}</span>
-      </div>
-
-      <div class="empty-column" *ngIf="map.pilotageProcesses.length === 0">Aucun processus.</div>
-
-      <button
-        type="button"
-        mat-stroked-button
-        class="process-map-item"
-        *ngFor="let process of map.pilotageProcesses"
-        (click)="openDetails(process)">
-        <div class="item-top">
-          <strong>{{ process.code }}</strong>
-          <mat-chip [color]="process.status === 'ACTIF' ? 'primary' : 'warn'" highlighted>
-            {{ process.status }}
-          </mat-chip>
-        </div>
-        <div class="item-name">{{ process.name }}</div>
-        <div class="item-pilot">Pilote: {{ process.pilotFullName || 'Non assigne' }}</div>
-      </button>
-    </mat-card>
-
-    <mat-card class="map-column">
-      <div class="column-header">
-        <h2>Realisation</h2>
-        <span>{{ map.realisationProcesses.length }}</span>
-      </div>
-
-      <div class="empty-column" *ngIf="map.realisationProcesses.length === 0">Aucun processus.</div>
-
-      <button
-        type="button"
-        mat-stroked-button
-        class="process-map-item"
-        *ngFor="let process of map.realisationProcesses"
-        (click)="openDetails(process)">
-        <div class="item-top">
-          <strong>{{ process.code }}</strong>
-          <mat-chip [color]="process.status === 'ACTIF' ? 'primary' : 'warn'" highlighted>
-            {{ process.status }}
-          </mat-chip>
-        </div>
-        <div class="item-name">{{ process.name }}</div>
-        <div class="item-pilot">Pilote: {{ process.pilotFullName || 'Non assigne' }}</div>
-      </button>
-    </mat-card>
-
-    <mat-card class="map-column">
-      <div class="column-header">
-        <h2>Support</h2>
-        <span>{{ map.supportProcesses.length }}</span>
-      </div>
-
-      <div class="empty-column" *ngIf="map.supportProcesses.length === 0">Aucun processus.</div>
-
-      <button
-        type="button"
-        mat-stroked-button
-        class="process-map-item"
-        *ngFor="let process of map.supportProcesses"
-        (click)="openDetails(process)">
-        <div class="item-top">
-          <strong>{{ process.code }}</strong>
-          <mat-chip [color]="process.status === 'ACTIF' ? 'primary' : 'warn'" highlighted>
-            {{ process.status }}
-          </mat-chip>
-        </div>
-        <div class="item-name">{{ process.name }}</div>
-        <div class="item-pilot">Pilote: {{ process.pilotFullName || 'Non assigne' }}</div>
-      </button>
-    </mat-card>
-  </div>
+    <div *ngIf="loading" class="loading-overlay">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Génération de la cartographie...</span>
+    </div>
 </section>

@@ -1,0 +1,86 @@
+<section class="indicator-dashboard-page">
+  <div class="glass-header">
+    <div class="header-main">
+      <div class="title-section">
+        <h1><span class="highlight">Dashboard KPI</span></h1>
+        <p class="subtitle">Vue globale des indicateurs de performance qualite</p>
+      </div>
+      <div class="header-actions">
+        <button mat-stroked-button type="button" (click)="goToList()">
+          <mat-icon>list</mat-icon>
+          Liste des indicateurs
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-box" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Construction du dashboard KPI...</span>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="summary-grid" *ngIf="statistics">
+      <mat-card>
+        <span>Total KPI</span>
+        <strong>{{ statistics.total }}</strong>
+      </mat-card>
+      <mat-card>
+        <span>Actifs</span>
+        <strong>{{ statistics.active }}</strong>
+      </mat-card>
+      <mat-card>
+        <span>Inactifs</span>
+        <strong>{{ statistics.inactive }}</strong>
+      </mat-card>
+      <mat-card class="alert-card" [class.active]="statistics.inAlert > 0">
+        <span>En alerte</span>
+        <strong>{{ statistics.inAlert }}</strong>
+      </mat-card>
+    </div>
+
+    <div class="dashboard-grid">
+      <mat-card class="alerts-card">
+        <h3>Top indicateurs en alerte</h3>
+        <div class="empty-box" *ngIf="alerts.length === 0">
+          <mat-icon>check_circle</mat-icon>
+          <span>Aucune alerte active.</span>
+        </div>
+
+        <div class="alerts-list" *ngIf="alerts.length > 0">
+          <article *ngFor="let alert of alerts.slice(0, 8)" (click)="openIndicator(alert.indicatorId)">
+            <header>
+              <strong>{{ alert.indicatorCode || ('IND-' + alert.indicatorId) }}</strong>
+              <span>{{ alert.measuredAt | date: 'dd/MM/yyyy' }}</span>
+            </header>
+            <p>{{ alert.indicatorName }}</p>
+            <small>{{ alert.message }}</small>
+          </article>
+        </div>
+      </mat-card>
+
+      <mat-card class="trends-card">
+        <h3>Tendances KPI</h3>
+        <div class="empty-box" *ngIf="trends.length === 0">
+          <mat-icon>timeline</mat-icon>
+          <span>Aucune serie disponible.</span>
+        </div>
+
+        <div class="trends-grid" *ngIf="trends.length > 0">
+          <article *ngFor="let trend of trends" (click)="openIndicator(trend.indicator.id)">
+            <header>
+              <strong>{{ trend.indicator.code }}</strong>
+              <span [class.alert]="trend.indicator.isInAlert">
+                {{ trend.indicator.isInAlert ? 'Alerte' : 'OK' }}
+              </span>
+            </header>
+            <p>{{ trend.indicator.name }}</p>
+            <svg viewBox="0 0 100 40" preserveAspectRatio="none">
+              <polyline [attr.points]="getTrendPoints(trend.chart.values)"></polyline>
+            </svg>
+          </article>
+        </div>
+      </mat-card>
+    </div>
+  </ng-container>
+</section>

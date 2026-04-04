@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotificationService } from '../../../core/services/notification.service';
 import { UserResponse, UserRole, UserService } from '../services/user.service';
@@ -31,12 +32,13 @@ import { UserResponse, UserRole, UserService } from '../services/user.service';
     MatInputModule,
     MatSelectModule,
     MatPaginatorModule,
+    MatProgressSpinnerModule,
     MatTooltipModule
   ],
   templateUrl: './users-list.component.html',
   styleUrls: ['./users-list.component.scss']
 })
-export class UsersListComponent implements OnInit {
+export class UsersListComponent implements OnInit { // refreshed
   users: UserResponse[] = [];
   displayedColumns: string[] = ['fullName', 'email', 'role', 'status', 'lastLoginAt', 'createdAt', 'actions'];
 
@@ -58,7 +60,7 @@ export class UsersListComponent implements OnInit {
   constructor(
     private readonly userService: UserService,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadUsers();

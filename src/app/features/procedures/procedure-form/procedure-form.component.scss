@@ -1,107 +1,226 @@
 .procedure-form-page {
-  display: grid;
-  gap: 16px;
-}
-
-.hero-card,
-.form-section {
-  border-radius: 12px;
-}
-
-.hero-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.hero-main h1 {
-  margin: 0;
-  font-size: 1.9rem;
-  font-weight: 700;
-}
-
-.hero-main p {
-  margin: 6px 0 0;
-  color: #6f7a88;
-}
-
-.hero-stats {
-  text-align: right;
-  display: grid;
-  gap: 2px;
-}
-
-.hero-stats span {
-  color: #6f7a88;
-  font-size: 0.92rem;
-}
-
-.hero-stats strong {
-  font-size: 1.35rem;
-  color: #157f46;
-}
-
-.hero-progress-track {
-  margin-top: 12px;
-  height: 8px;
-  border-radius: 999px;
-  background: #dce3eb;
-  overflow: hidden;
-}
-
-.hero-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #157f46 0%, #1c9f58 100%);
-}
-
-.loading-box {
-  min-height: 240px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  color: #687483;
-}
-
-.form-layout {
-  display: grid;
-  gap: 16px;
-}
-
-.form-section h2 {
-  margin: 0 0 12px;
-  font-size: 1.2rem;
-}
-
-.section-grid {
-  display: grid;
-  gap: 12px;
-}
-
-.two-columns {
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-}
-
-.full-width {
-  grid-column: 1 / -1;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-@media (max-width: 768px) {
-  .hero-stats {
-    text-align: left;
-  }
-
-  .form-actions {
-    justify-content: stretch;
+    display: flex;
     flex-direction: column;
-  }
+    background: var(--bg-body);
+    min-height: 100vh;
+}
+
+/* ── PAGE HEADER BAR ── */
+.page-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-white);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.page-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.page-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #8f959c;
+    font-size: 0.85rem;
+
+    .link-button {
+        border: 0;
+        background: transparent;
+        color: var(--xl-green-mid);
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+        }
+
+        &:hover {
+            color: var(--xl-green);
+        }
+    }
+}
+
+.page-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cancel-btn {
+    height: 36px;
+    font-size: 0.85rem;
+    border-color: #d1d5db !important;
+    color: #374151 !important;
+}
+
+.new-process-btn {
+    background-color: var(--xl-green-mid) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    border-radius: 3px !important;
+    height: 36px;
+    padding: 0 16px;
+
+    mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        margin-right: 4px;
+    }
+}
+
+/* ── PROGRESS BAR ── */
+.form-progress-bar {
+    background: #ffffff;
+    padding: 0 24px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+
+        strong {
+            color: var(--xl-green-mid);
+        }
+    }
+
+    .progress-track {
+        height: 4px;
+        background: #e5e7eb;
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--xl-green-mid);
+        transition: width 0.3s ease;
+    }
+}
+
+/* ── FORM BODY ── */
+.form-body {
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.form-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* ── FORM SECTIONS ── */
+.form-section-clean {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .section-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+
+        mat-icon {
+            margin-top: 2px;
+            color: var(--xl-green-mid);
+            background: var(--xl-green-xlight);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        p {
+            margin: 2px 0 0;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+    }
+
+    .section-content {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+        &.grid-two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+    }
+}
+
+/* ── UTILS ── */
+.loading-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+    gap: 16px;
+    color: #666;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: #d1d5db;
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+    color: var(--xl-green-mid);
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
+    color: var(--xl-green-mid);
 }

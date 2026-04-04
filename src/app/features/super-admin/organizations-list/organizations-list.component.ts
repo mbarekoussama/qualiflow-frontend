@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import {
@@ -42,7 +43,8 @@ import { OrganizationService } from '../services/organization.service';
     MatSelectModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTooltipModule
   ],
   templateUrl: './organizations-list.component.html',
   styleUrls: ['./organizations-list.component.scss']
@@ -83,7 +85,7 @@ export class OrganizationsListComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const statusFromQuery = this.route.snapshot.queryParamMap.get('status');

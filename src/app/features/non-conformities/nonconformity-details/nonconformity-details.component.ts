@@ -11,6 +11,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -21,8 +23,10 @@ import {
   CorrectiveActionResponse,
   CorrectiveActionStatus,
   CreateCorrectiveActionRequest,
+  NON_CONFORMITY_SEVERITY_OPTIONS,
   NON_CONFORMITY_STATUS_OPTIONS,
   NonConformityDetailsResponse,
+  NonConformitySeverity,
   NonConformityStatus,
   UpdateCorrectiveActionRequest
 } from '../models/nonconformity.models';
@@ -43,13 +47,16 @@ import { NonConformityService } from '../services/nonconformity.service';
     MatSelectModule,
     MatTableModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    MatMenuModule,
+    MatTooltipModule
   ],
   templateUrl: './nonconformity-details.component.html',
   styleUrls: ['./nonconformity-details.component.scss']
 })
 export class NonconformityDetailsComponent implements OnInit {
   readonly nonConformityStatusOptions = NON_CONFORMITY_STATUS_OPTIONS;
+  readonly severityOptions = NON_CONFORMITY_SEVERITY_OPTIONS;
   readonly actionStatusOptions = CORRECTIVE_ACTION_STATUS_OPTIONS;
   readonly displayedActionColumns: string[] = ['title', 'responsible', 'dueDate', 'status', 'actions'];
 
@@ -78,7 +85,7 @@ export class NonconformityDetailsComponent implements OnInit {
     private readonly authService: AuthService,
     private readonly notificationService: NotificationService,
     private readonly dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const rawId = this.route.snapshot.paramMap.get('id');
@@ -234,6 +241,10 @@ export class NonconformityDetailsComponent implements OnInit {
 
   getStatusLabel(status: NonConformityStatus): string {
     return this.nonConformityStatusOptions.find(option => option.value === status)?.label ?? status;
+  }
+
+  getSeverityLabel(severity: NonConformitySeverity): string {
+    return this.severityOptions.find(option => option.value === severity)?.label ?? severity;
   }
 
   getActionStatusLabel(status: CorrectiveActionStatus): string {

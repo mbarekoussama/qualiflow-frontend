@@ -1,0 +1,223 @@
+<section class="indicator-list-page">
+  <div class="glass-header">
+    <div class="header-main">
+      <div class="title-section">
+        <h1><span class="highlight">Indicateurs / KPI</span></h1>
+        <p class="subtitle">Pilotage des performances qualite par organisation</p>
+      </div>
+      <div class="header-actions">
+        <button mat-stroked-button type="button" (click)="openDashboard()">
+          <mat-icon>insights</mat-icon>
+          Dashboard KPI
+        </button>
+        <button *ngIf="canWrite" mat-flat-button color="primary" type="button" (click)="create()">
+          <mat-icon>add</mat-icon>
+          Nouvel indicateur
+        </button>
+      </div>
+    </div>
+
+    <form class="glass-filters" [formGroup]="filtersForm" (ngSubmit)="onSearch()">
+      <div class="filter-grid">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Recherche</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput formControlName="search" placeholder="Code, nom, description, responsable" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Frequence</mat-label>
+          <mat-select formControlName="measurementFrequency">
+            <mat-option value="">Toutes</mat-option>
+            <mat-option *ngFor="let option of frequencyOptions" [value]="option.value">{{ option.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Processus</mat-label>
+          <mat-select formControlName="processId">
+            <mat-option [value]="null">Tous</mat-option>
+            <mat-option *ngFor="let process of processes" [value]="process.id">
+              {{ process.code }} - {{ process.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Responsable</mat-label>
+          <mat-select formControlName="responsibleUserId">
+            <mat-option [value]="null">Tous</mat-option>
+            <mat-option *ngFor="let user of users" [value]="user.id">
+              {{ user.firstName }} {{ user.lastName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Etat alerte</mat-label>
+          <mat-select formControlName="isInAlert">
+            <mat-option value="">Tous</mat-option>
+            <mat-option value="true">En alerte</mat-option>
+            <mat-option value="false">Hors alerte</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="filter-actions">
+          <button mat-flat-button color="primary" type="submit">
+            <mat-icon>filter_alt</mat-icon>
+            Filtrer
+          </button>
+          <button mat-stroked-button type="button" (click)="clearFilters()">
+            <mat-icon>restart_alt</mat-icon>
+            Reinitialiser
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="stats-grid" *ngIf="statistics">
+    <mat-card>
+      <span>Total</span>
+      <strong>{{ statistics.total }}</strong>
+    </mat-card>
+    <mat-card>
+      <span>Actifs</span>
+      <strong>{{ statistics.active }}</strong>
+    </mat-card>
+    <mat-card>
+      <span>Inactifs</span>
+      <strong>{{ statistics.inactive }}</strong>
+    </mat-card>
+    <mat-card class="alert-card" [class.active]="statistics.inAlert > 0">
+      <span>En alerte</span>
+      <strong>{{ statistics.inAlert }}</strong>
+    </mat-card>
+  </div>
+
+  <mat-card class="table-card">
+    <div class="loading-box" *ngIf="loading">
+      <mat-spinner diameter="38"></mat-spinner>
+      <span>Chargement des indicateurs...</span>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div class="empty-box" *ngIf="items.length === 0">
+        <mat-icon>show_chart</mat-icon>
+        <p>Aucun indicateur trouve avec ces filtres.</p>
+      </div>
+
+      <div class="table-wrapper" *ngIf="items.length > 0">
+        <table mat-table [dataSource]="items" [trackBy]="trackById">
+          <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef>Code</th>
+            <td mat-cell *matCellDef="let item"><strong>{{ item.code }}</strong></td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nom</th>
+            <td mat-cell *matCellDef="let item">{{ item.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="process">
+            <th mat-header-cell *matHeaderCellDef>Processus</th>
+            <td mat-cell *matCellDef="let item">{{ item.processName || ('Process ' + item.processId) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="unit">
+            <th mat-header-cell *matHeaderCellDef>Unite</th>
+            <td mat-cell *matCellDef="let item">{{ item.unit || '-' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="target">
+            <th mat-header-cell *matHeaderCellDef>Cible</th>
+            <td mat-cell *matCellDef="let item">{{ item.targetValue }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="threshold">
+            <th mat-header-cell *matHeaderCellDef>Seuil</th>
+            <td mat-cell *matCellDef="let item">{{ item.alertThreshold }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="latestValue">
+            <th mat-header-cell *matHeaderCellDef>Derniere valeur</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="latest-value">
+                <span>{{ item.latestValue ?? '-' }}</span>
+                <small>{{ item.latestMeasuredAt ? (item.latestMeasuredAt | date: 'dd/MM/yyyy') : '' }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="alert">
+            <th mat-header-cell *matHeaderCellDef>Alerte</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="badge alert" *ngIf="item.isInAlert">Alerte</span>
+              <span class="badge ok" *ngIf="!item.isInAlert">OK</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="responsible">
+            <th mat-header-cell *matHeaderCellDef>Responsable</th>
+            <td mat-cell *matCellDef="let item">{{ item.responsibleFullName || '-' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="badge status" [class.inactive]="item.status === 'INACTIF'">
+                {{ getStatusLabel(item.status) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let item">
+              <div class="row-actions">
+                <button mat-icon-button matTooltip="Voir" (click)="view(item)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button *ngIf="canWrite" mat-icon-button matTooltip="Modifier" (click)="edit(item)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button *ngIf="canWrite" mat-icon-button matTooltip="Saisir valeur" (click)="openValues(item)">
+                  <mat-icon>add_chart</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Voir graphique" (click)="openChart(item)">
+                  <mat-icon>insights</mat-icon>
+                </button>
+                <button *ngIf="canWrite" mat-icon-button matTooltip="Changer statut" (click)="toggleStatus(item)">
+                  <mat-icon>sync_alt</mat-icon>
+                </button>
+                <button *ngIf="canWrite" mat-icon-button matTooltip="Supprimer" (click)="delete(item)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <mat-paginator
+          [length]="total"
+          [pageSize]="pageSize"
+          [pageIndex]="pageNumber - 1"
+          [pageSizeOptions]="[5, 10, 20, 50]"
+          showFirstLastButtons
+          (page)="onPageChanged($event)">
+        </mat-paginator>
+      </div>
+    </ng-container>
+  </mat-card>
+</section>

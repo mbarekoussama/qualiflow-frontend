@@ -85,6 +85,24 @@ export class SidebarComponent {
     ]);
   }
 
+  get canReadCorrectiveActions(): boolean {
+    return this.authService.hasRole([
+      'ADMIN_ORG',
+      'RESPONSABLE_QUALITE',
+      'CHEF_SERVICE',
+      'AUDITEUR'
+    ]);
+  }
+
+  get canReadIndicators(): boolean {
+    return this.authService.hasRole([
+      'ADMIN_ORG',
+      'RESPONSABLE_QUALITE',
+      'CHEF_SERVICE',
+      'AUDITEUR'
+    ]);
+  }
+
   get isAdminOrg(): boolean {
     return this.authService.hasRole('ADMIN_ORG');
   }

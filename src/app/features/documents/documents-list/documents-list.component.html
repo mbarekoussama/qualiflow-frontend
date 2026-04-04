@@ -1,180 +1,237 @@
 <section class="documents-page">
-  <mat-card class="documents-header-card">
-    <div class="header-row">
-      <div>
-        <h1>Documents</h1>
-        <p>Gestion documentaire</p>
+  <!-- MODERN HEADER -->
+  <div class="glass-header shadow-sm">
+    <div class="header-main">
+      <div class="title-section">
+        <h1><span class="highlight">Documents</span></h1>
+        <p class="subtitle">Gestion du référentiel documentaire et des révisions</p>
       </div>
-
-      <div class="header-actions" *ngIf="canWrite">
-        <button mat-stroked-button type="button" (click)="openImport()">
+      <div class="header-actions">
+        <button mat-icon-button type="button" class="action-btn" (click)="refresh()" matTooltip="Rafraîchir">
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <button *ngIf="canWrite" mat-stroked-button class="btn-import" (click)="openImport()">
           <mat-icon>upload_file</mat-icon>
           Importer
         </button>
-        <button mat-flat-button color="primary" type="button" (click)="createDocument()">
+        <button *ngIf="canWrite" mat-flat-button color="primary" class="btn-create" (click)="createDocument()">
           <mat-icon>add</mat-icon>
           Nouveau document
         </button>
       </div>
     </div>
 
-    <div class="stats-row" *ngIf="statistics">
-      <div class="stats-item">
-        <span>Total</span>
-        <strong>{{ statistics.total }}</strong>
-      </div>
-      <div class="stats-item">
-        <span>Approuves</span>
-        <strong>{{ statistics.approved }}</strong>
-      </div>
-      <div class="stats-item">
-        <span>En revision</span>
-        <strong>{{ statistics.inReview }}</strong>
-      </div>
-      <div class="stats-item">
-        <span>Perimes</span>
-        <strong>{{ statistics.expired }}</strong>
-      </div>
-    </div>
-  </mat-card>
+    <!-- MODERN FILTERS -->
+    <form class="glass-filters" [formGroup]="filtersForm" (ngSubmit)="onSearch()">
+      <div class="filter-grid">
+        <div class="filter-item">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Recherche rapide</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput formControlName="search" placeholder="Code, titre ou processus..." />
+          </mat-form-field>
+        </div>
 
-  <mat-card class="documents-toolbar-card">
-    <form class="toolbar-grid" [formGroup]="filtersForm" (ngSubmit)="onSearch()">
-      <mat-form-field appearance="outline">
-        <mat-label>Recherche</mat-label>
-        <input matInput formControlName="search" placeholder="Code, titre, categorie..." />
-      </mat-form-field>
+        <div class="filter-item">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Type de document</mat-label>
+            <mat-select formControlName="type">
+              <mat-option value="">Tous les types</mat-option>
+              <mat-option value="MANUEL">Manuels</mat-option>
+              <mat-option value="PROCEDURE">Procédures</mat-option>
+              <mat-option value="ENREGISTREMENT">Enregistrements</mat-option>
+              <mat-option value="FORMULAIRE">Formulaires</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Type</mat-label>
-        <mat-select formControlName="type">
-          <mat-option value="">Tous</mat-option>
-          <mat-option value="MANUEL">Manuels</mat-option>
-          <mat-option value="PROCEDURE">Procedures</mat-option>
-          <mat-option value="ENREGISTREMENT">Enregistrements</mat-option>
-          <mat-option value="FORMULAIRE">Formulaires</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <div class="filter-item">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="">Tous les statuts</mat-option>
+              <mat-option value="APPROUVE">Approuvés</mat-option>
+              <mat-option value="EN_REVISION">En révision</mat-option>
+              <mat-option value="PERIME">Périmés</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Statut</mat-label>
-        <mat-select formControlName="status">
-          <mat-option value="">Tous</mat-option>
-          <mat-option value="APPROUVE">Approuves</mat-option>
-          <mat-option value="EN_REVISION">En revision</mat-option>
-          <mat-option value="PERIME">Perimes</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <div class="toolbar-actions">
-        <button mat-flat-button color="primary" type="submit">Filtrer</button>
-        <button mat-stroked-button type="button" (click)="clearFilters()">Reinitialiser</button>
+        <div class="filter-buttons">
+          <button mat-flat-button class="btn-apply" type="submit">
+            <mat-icon>filter_list</mat-icon>
+            Filtrer
+          </button>
+          <button mat-stroked-button class="btn-reset" type="button" (click)="clearFilters()">
+            <mat-icon>restart_alt</mat-icon>
+            Réinitialiser
+          </button>
+        </div>
       </div>
     </form>
-  </mat-card>
+  </div>
 
-  <mat-card class="documents-content-card">
-    <div *ngIf="loading" class="loading-box">
+  <!-- SUMMARY CARDS -->
+  <div class="summary-cards" *ngIf="statistics">
+    <div class="summary-card shadow-sm">
+      <span class="sc-label">Total Documents</span>
+      <div class="sc-value">
+        <mat-icon class="icon-neutral">folder</mat-icon>
+        {{ statistics.total }}
+      </div>
+      <span class="sc-subtext">Fichiers actifs</span>
+    </div>
+
+    <div class="summary-card shadow-sm">
+      <span class="sc-label">Approuvés</span>
+      <div class="sc-value">
+        <mat-icon class="icon-success">verified</mat-icon>
+        {{ statistics.approved }}
+      </div>
+      <span class="sc-subtext">Prêts à l'emploi</span>
+    </div>
+
+    <div class="summary-card card-warning shadow-sm" [class.active]="statistics.inReview > 0">
+      <span class="sc-label">En révision</span>
+      <div class="sc-value">
+        <mat-icon class="icon-warning">pending_actions</mat-icon>
+        {{ statistics.inReview }}
+      </div>
+      <span class="sc-subtext">Mises à jour en cours</span>
+    </div>
+
+    <div class="summary-card card-danger shadow-sm" [class.active]="statistics.expired > 0">
+      <span class="sc-label">Périmés</span>
+      <div class="sc-value">
+        <mat-icon class="icon-danger">event_busy</mat-icon>
+        {{ statistics.expired }}
+      </div>
+      <span class="sc-subtext">Nécessitent une action</span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT CARD -->
+  <mat-card class="catalog-content-card shadow-sm">
+    <div class="loading-box" *ngIf="loading">
       <mat-spinner diameter="38"></mat-spinner>
-      <span>Chargement des documents...</span>
+      <span>Traitement des documents...</span>
     </div>
 
     <ng-container *ngIf="!loading">
-      <div *ngIf="documents.length === 0" class="empty-box">
+      <div class="empty-box" *ngIf="documents.length === 0">
         <mat-icon>folder_open</mat-icon>
-        <h3>Aucun document trouve</h3>
-        <p>Essaie avec d'autres filtres ou ajoute un nouveau document.</p>
+        <h3>Aucun document trouvé</h3>
+        <p>Ajuste les filtres ou téléverse un nouveau fichier.</p>
       </div>
 
-      <div *ngIf="documents.length > 0" class="table-wrapper">
+      <div class="table-container" *ngIf="documents.length > 0">
         <table mat-table [dataSource]="documents" class="documents-table">
+          <!-- Document Column -->
           <ng-container matColumnDef="document">
-            <th mat-header-cell *matHeaderCellDef>Document</th>
-            <td mat-cell *matCellDef="let item">
-              <div class="document-cell">
-                <strong>{{ item.title }}</strong>
-                <span>{{ item.code }}</span>
+            <th mat-header-cell *matHeaderCellDef>Désignation</th>
+            <td mat-cell *matCellDef="let item" class="doc-title-cell" (click)="viewDocument(item)">
+              <div class="doc-info-main">
+                <span class="doc-title-text">{{ item.title }}</span>
+                <span class="doc-code-sub">{{ item.code }}</span>
               </div>
             </td>
           </ng-container>
 
+          <!-- Type Column -->
           <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <th mat-header-cell *matHeaderCellDef>Nature</th>
             <td mat-cell *matCellDef="let item">
-              <span class="badge type-badge">{{ getTypeLabel(item.type) }}</span>
+              <span class="tag-type">{{ getTypeLabel(item.type) }}</span>
             </td>
           </ng-container>
 
+          <!-- Process Column -->
           <ng-container matColumnDef="process">
             <th mat-header-cell *matHeaderCellDef>Processus</th>
             <td mat-cell *matCellDef="let item">
-              <span>{{ item.processCode || '-' }} {{ item.processName || '' }}</span>
+              <div class="process-link-cell" *ngIf="item.processCode">
+                <mat-icon>hub</mat-icon>
+                <span>{{ item.processCode }}</span>
+              </div>
+              <span class="empty-text" *ngIf="!item.processCode">-</span>
             </td>
           </ng-container>
 
+          <!-- Statut Column -->
           <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <th mat-header-cell *matHeaderCellDef>État</th>
             <td mat-cell *matCellDef="let item">
-              <span class="badge" [ngClass]="'status-' + item.status.toLowerCase()">{{ getStatusLabel(item.status) }}</span>
+              <span class="tag-status" [ngClass]="item.status.toLowerCase()">
+                {{ getStatusLabel(item.status) }}
+              </span>
             </td>
           </ng-container>
 
+          <!-- Revision Column -->
           <ng-container matColumnDef="revision">
-            <th mat-header-cell *matHeaderCellDef>Revision</th>
-            <td mat-cell *matCellDef="let item">{{ item.versionNumber || '-' }}</td>
+            <th mat-header-cell *matHeaderCellDef>Rév.</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="revision-v">{{ item.versionNumber || 'v1.0' }}</span>
+            </td>
           </ng-container>
 
+          <!-- Mis a jour Column -->
           <ng-container matColumnDef="updatedAt">
-            <th mat-header-cell *matHeaderCellDef>Mis a jour</th>
-            <td mat-cell *matCellDef="let item">{{ item.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <th mat-header-cell *matHeaderCellDef>Dernière maj</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="date-text">{{ item.updatedAt | date: 'dd/MM/yyyy' }}</span>
+            </td>
           </ng-container>
 
+          <!-- Responsable Column -->
           <ng-container matColumnDef="owner">
             <th mat-header-cell *matHeaderCellDef>Responsable</th>
             <td mat-cell *matCellDef="let item">
-              <div class="owner-cell">
-                <span class="owner-avatar">{{ getOwnerInitials(item.ownerFullName) }}</span>
-                <span>{{ item.ownerFullName || '-' }}</span>
+              <div class="owner-cell" *ngIf="item.ownerFullName">
+                <div class="owner-avatar-mini">{{ getOwnerInitials(item.ownerFullName) }}</div>
+                <span>{{ item.ownerFullName }}</span>
               </div>
             </td>
           </ng-container>
 
+          <!-- Actions Column -->
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <th mat-header-cell *matHeaderCellDef style="width: 180px;"></th>
             <td mat-cell *matCellDef="let item">
-              <div class="actions-cell">
-                <button mat-icon-button type="button" (click)="viewDocument(item)" title="Voir">
+              <div class="table-actions">
+                <button mat-icon-button class="action-btn view-btn" matTooltip="Consulter"
+                  (click)="$event.stopPropagation(); viewDocument(item)">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button *ngIf="canWrite" mat-icon-button type="button" (click)="editDocument(item)" title="Modifier">
+                <button *ngIf="canWrite" mat-icon-button class="action-btn edit-btn" matTooltip="Modifier"
+                  (click)="$event.stopPropagation(); editDocument(item)">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button type="button" (click)="manageVersions(item)" title="Versions">
+                <button mat-icon-button class="action-btn history-btn" matTooltip="Historique"
+                  (click)="$event.stopPropagation(); manageVersions(item)">
                   <mat-icon>history</mat-icon>
                 </button>
-                <button mat-icon-button type="button" (click)="downloadCurrent(item)" title="Telecharger">
+                <button mat-icon-button class="action-btn dl-btn" matTooltip="Télécharger"
+                  (click)="$event.stopPropagation(); downloadCurrent(item)">
                   <mat-icon>download</mat-icon>
                 </button>
-                <button *ngIf="canWrite" mat-icon-button color="warn" type="button" (click)="deleteDocument(item)" title="Supprimer">
-                  <mat-icon>delete</mat-icon>
+                <button *ngIf="canWrite" mat-icon-button class="action-btn delete-btn" matTooltip="Supprimer"
+                  (click)="$event.stopPropagation(); deleteDocument(item)">
+                  <mat-icon>delete_outline</mat-icon>
                 </button>
               </div>
             </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackByDocumentId"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" class="clickable-row" (click)="viewDocument(row)">
+          </tr>
         </table>
-      </div>
 
-      <mat-paginator
-        [length]="total"
-        [pageSize]="pageSize"
-        [pageIndex]="pageNumber - 1"
-        [pageSizeOptions]="[5, 10, 20, 50]"
-        showFirstLastButtons
-        (page)="onPageChanged($event)">
-      </mat-paginator>
+        <mat-paginator [length]="total" [pageSize]="pageSize" [pageIndex]="pageNumber - 1"
+          [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons (page)="onPageChanged($event)">
+        </mat-paginator>
+      </div>
     </ng-container>
   </mat-card>
 </section>

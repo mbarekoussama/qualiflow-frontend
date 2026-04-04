@@ -1,110 +1,113 @@
+/* TOPBAR */
+.topbar {
+  height: var(--topbar-h);
+  background: linear-gradient(90deg, var(--xl-green-dark) 0%, var(--xl-green-mid) 100%);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  flex-shrink: 0;
+  gap: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-    /* TOPBAR */
-    .topbar {
-      height: var(--topbar-h);
-      background: var(--xl-green);
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      flex-shrink: 0;
-      gap: 12px;
-    }
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-    .topbar-brand { 
-      display: flex; 
-      align-items: center; 
-      gap: 10px; 
-    }
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
 
-    .brand-icon {
-      width: 70px; 
-      height: 70px;
-      background: rgba(255,255,255,0.18);
-      border-radius: 8px;
-      display: flex; 
-      align-items: center; 
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
-      padding: 8px;
-    }
+.brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 
-    .brand-icon img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
+.brand-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.3px;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
 
-    .brand-name { 
-      font-size: 15px; 
-      font-weight: 700; 
-      color: white; 
-      letter-spacing: -0.1px; 
-    }
+.brand-name span {
+  color: #90EE90;
+}
 
-    .brand-name span { 
-      color: #90EE90; 
-    }
+.brand-tag {
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 2px 7px;
+  border-radius: 2px;
+  letter-spacing: 0.4px;
+}
 
-    .brand-tag {
-      font-size: 10px; 
-      font-weight: 600;
-      background: rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.8);
-      padding: 2px 7px; 
-      border-radius: 2px;
-      letter-spacing: 0.4px;
-    }
+.topbar-sep {
+  flex: 1;
+}
 
-    .topbar-sep { 
-      flex: 1; 
-    }
+.topbar-notif {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  color: rgba(255, 255, 255, 0.8);
+  transition: background 0.1s;
+}
 
-    .topbar-notif {
-      width: 32px; 
-      height: 32px; 
-      border-radius: var(--radius);
-      display: flex; 
-      align-items: center; 
-      justify-content: center;
-      cursor: pointer; 
-      position: relative;
-      color: rgba(255,255,255,0.8); 
-      transition: background 0.1s;
-    }
+.topbar-notif:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
 
-    .topbar-notif:hover { 
-      background: rgba(255,255,255,0.12); 
-      color: white; 
-    }
+.topbar-notif svg {
+  width: 17px;
+  height: 17px;
+}
 
-    .topbar-notif svg { 
-      width: 17px; 
-      height: 17px; 
-    }
+.notif-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 7px;
+  height: 7px;
+  background: #E74C3C;
+  border-radius: 50%;
+  border: 1.5px solid var(--xl-green);
+}
 
-    .notif-dot {
-      position: absolute; 
-      top: 5px; 
-      right: 5px;
-      width: 7px; 
-      height: 7px; 
-      background: #E74C3C;
-      border-radius: 50%; 
-      border: 1.5px solid var(--xl-green);
-    }
+/* APP BODY */
+.app-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
 
-    /* APP BODY */
-    .app-body { 
-      flex: 1; 
-      display: flex; 
-      overflow: hidden; 
-    }
-
-    .content-area { 
-      flex: 1; 
-      display: flex; 
-      flex-direction: column; 
-      overflow: hidden; 
-    }
-  
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}

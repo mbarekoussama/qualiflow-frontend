@@ -1,0 +1,146 @@
+<section class="indicator-details-page">
+  <div class="loading-box" *ngIf="loading">
+    <mat-spinner diameter="38"></mat-spinner>
+    <span>Chargement de l'indicateur...</span>
+  </div>
+
+  <ng-container *ngIf="!loading && details">
+    <div class="glass-header">
+      <div class="header-main">
+        <div class="title-section">
+          <button mat-button type="button" class="btn-back" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Retour
+          </button>
+          <h1><span class="highlight">{{ details.indicator.code }}</span> - {{ details.indicator.name }}</h1>
+          <p class="subtitle">{{ details.process.code }} - {{ details.process.name }}</p>
+        </div>
+        <div class="header-actions">
+          <button *ngIf="canWrite" mat-stroked-button type="button" (click)="toggleStatus()">
+            <mat-icon>sync_alt</mat-icon>
+            {{ details.indicator.status === 'ACTIF' ? 'Desactiver' : 'Activer' }}
+          </button>
+          <button *ngIf="canWrite" mat-flat-button color="primary" type="button" (click)="edit()">
+            <mat-icon>edit</mat-icon>
+            Modifier
+          </button>
+          <button *ngIf="canWrite" mat-stroked-button color="warn" type="button" (click)="delete()">
+            <mat-icon>delete_outline</mat-icon>
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <mat-card>
+        <span>Statut</span>
+        <strong>{{ statusLabel }}</strong>
+      </mat-card>
+      <mat-card>
+        <span>Frequence</span>
+        <strong>{{ frequencyLabel }}</strong>
+      </mat-card>
+      <mat-card>
+        <span>Cible / Seuil</span>
+        <strong>{{ details.indicator.targetValue }} / {{ details.indicator.alertThreshold }}</strong>
+      </mat-card>
+      <mat-card [class.alert]="details.isInAlert">
+        <span>Etat alerte</span>
+        <strong>{{ details.isInAlert ? 'EN ALERTE' : 'OK' }}</strong>
+      </mat-card>
+    </div>
+
+    <div class="tab-actions">
+      <button mat-stroked-button [class.active]="activeTab === 'overview'" (click)="selectTab('overview')">
+        <mat-icon>description</mat-icon>
+        Synthese
+      </button>
+      <button mat-stroked-button [class.active]="activeTab === 'chart'" (click)="selectTab('chart')">
+        <mat-icon>insights</mat-icon>
+        Graphique
+      </button>
+      <button mat-stroked-button [class.active]="activeTab === 'values'" (click)="selectTab('values')">
+        <mat-icon>table_chart</mat-icon>
+        Valeurs
+      </button>
+    </div>
+
+    <div class="content-grid" *ngIf="activeTab === 'overview'">
+      <mat-card class="details-card">
+        <h3>Informations generales</h3>
+        <dl>
+          <dt>Code</dt>
+          <dd>{{ details.indicator.code }}</dd>
+          <dt>Nom</dt>
+          <dd>{{ details.indicator.name }}</dd>
+          <dt>Description</dt>
+          <dd>{{ details.indicator.description || '-' }}</dd>
+          <dt>Methode de calcul</dt>
+          <dd>{{ details.indicator.calculationMethod || '-' }}</dd>
+          <dt>Unite</dt>
+          <dd>{{ details.indicator.unit || '-' }}</dd>
+          <dt>Responsable</dt>
+          <dd>{{ details.responsible.fullName || ('User ' + details.responsible.id) }}</dd>
+          <dt>Derniere valeur</dt>
+          <dd>
+            {{ details.latestValue?.measuredValue ?? '-' }}
+            <small *ngIf="details.latestValue">({{ details.latestValue.measuredAt | date: 'dd/MM/yyyy' }})</small>
+          </dd>
+        </dl>
+      </mat-card>
+
+      <mat-card class="details-card">
+        <h3>Alertes recentes</h3>
+        <div class="empty-alert" *ngIf="details.alerts.length === 0">
+          <mat-icon>check_circle</mat-icon>
+          <span>Aucune alerte active.</span>
+        </div>
+
+        <div class="alert-list" *ngIf="details.alerts.length > 0">
+          <article *ngFor="let alert of details.alerts.slice(0, 5)">
+            <header>
+              <mat-icon>warning</mat-icon>
+              <strong>{{ alert.measuredAt | date: 'dd/MM/yyyy' }}</strong>
+            </header>
+            <p>{{ alert.message }}</p>
+            <small>Mesure: {{ alert.measuredValue }} | Cible: {{ alert.targetValue }} | Seuil: {{ alert.alertThreshold }}</small>
+          </article>
+        </div>
+      </mat-card>
+    </div>
+
+    <mat-card class="chart-card" *ngIf="activeTab === 'chart'">
+      <h3>Evolution de l'indicateur</h3>
+      <div class="empty-alert" *ngIf="!chart || chart.values.length === 0">
+        <mat-icon>timeline</mat-icon>
+        <span>Aucune donnee graphique disponible.</span>
+      </div>
+
+      <div class="chart-wrapper" *ngIf="chart && chart.values.length > 0">
+        <svg viewBox="0 0 100 40" preserveAspectRatio="none" class="kpi-chart">
+          <line x1="0" [attr.y1]="targetY" x2="100" [attr.y2]="targetY" class="target-line"></line>
+          <line x1="0" [attr.y1]="thresholdY" x2="100" [attr.y2]="thresholdY" class="threshold-line"></line>
+          <polyline [attr.points]="chartPoints" class="series-line"></polyline>
+        </svg>
+
+        <div class="legend">
+          <span><i class="dot series"></i> Valeurs mesurees</span>
+          <span><i class="dot target"></i> Cible</span>
+          <span><i class="dot threshold"></i> Seuil</span>
+        </div>
+
+        <div class="labels">
+          <span *ngFor="let label of chart.labels">{{ label }}</span>
+        </div>
+      </div>
+    </mat-card>
+
+    <app-indicator-values
+      *ngIf="activeTab === 'values'"
+      [indicatorId]="indicatorId"
+      [canWrite]="canWrite"
+      (valuesChanged)="onValuesChanged()">
+    </app-indicator-values>
+  </ng-container>
+</section>

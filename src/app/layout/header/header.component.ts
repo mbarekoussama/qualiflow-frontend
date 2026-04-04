@@ -2,12 +2,20 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    MatMenuModule,
+    MatIconModule,
+    MatDividerModule,
+    RouterModule
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
@@ -15,14 +23,16 @@ import { AuthService } from '../../core/services/auth.service';
 export class HeaderComponent implements OnInit, OnDestroy {
   private readonly subscriptions = new Subscription();
   profilePhotoObjectUrl: string | null = null;
-
   currentUser$ = this.authService.currentUser$;
 
   get currentUser() {
     return this.authService.getCurrentUser();
   }
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadProfilePhoto();
@@ -76,6 +86,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return user.email || 'Utilisateur';
   }
 
+  goToProfile(): void {
+    this.router.navigate(['/profile']);
+  }
+
   logout(): void {
     this.authService.logout().subscribe();
   }
@@ -87,7 +101,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     this.authService.downloadProfilePhoto().subscribe({
-      next: (blob) => {
+      next: (blob: Blob) => {
         if (!blob || blob.size === 0) {
           this.revokeProfilePhotoObjectUrl();
           return;
