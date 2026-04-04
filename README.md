@@ -1,92 +1,268 @@
-# 🚀 Angular Professional Template
+# QualiFlow Frontend - Documentation detaillee
 
-Template Angular moderne avec authentification, CRUD complet, et interface utilisateur professionnelle.
+Application frontend Angular 17 pour la plateforme QualiFlow.
 
-## ⚡ Démarrage rapide
+## Sommaire
 
-### 1. Installation
+1. Vue d ensemble
+2. Stack technique
+3. Arborescence du front
+4. Architecture applicative
+5. Navigation et gestion des acces
+6. Communication avec l API
+7. Installation et demarrage
+8. Scripts npm
+9. Comptes de demo
+10. Build et tests
+11. Troubleshooting
+12. Notes techniques
+
+## 1) Vue d ensemble
+
+Le frontend couvre les modules metier suivants :
+
+- authentification (login/register/forgot-password)
+- dashboard utilisateur
+- dashboard super-admin
+- gestion organisations (super admin)
+- processus
+- procedures
+- documents et versions
+- non-conformites
+- actions correctives
+- indicateurs KPI
+- notifications
+- utilisateurs
+- profil et parametres
+
+## 2) Stack technique
+
+- Angular `17.3.x`
+- Standalone Components
+- Angular Router (lazy loading via `loadComponent`)
+- Angular Material + CDK
+- RxJS
+- SCSS
+- Interceptors HTTP fonctionnels
+
+## 3) Arborescence du front
+
+```text
+front/
+|-- src/
+|   |-- app/
+|   |   |-- core/            # Services transverses, guards, interceptors
+|   |   |-- features/        # Pages et modules metier
+|   |   |-- layout/          # Header, sidebar, main layout
+|   |   `-- shared/          # Composants/reutilisables (loading, dialogs, 404...)
+|   |-- environments/        # Config dev/prod (apiUrl, flags)
+|   |-- assets/              # Images et ressources statiques
+|   `-- styles.scss          # Styles globaux
+|-- angular.json             # Config build/serve/test Angular CLI
+|-- package.json             # Scripts et dependances npm
+`-- db.json                  # Mock API json-server (legacy/dev local)
+```
+
+Modules detectes dans `src/app/features` :
+
+- `auth`
+- `dashboard`
+- `super-admin`
+- `processes`
+- `procedures`
+- `documents`
+- `non-conformities`
+- `corrective-actions`
+- `indicators`
+- `notifications`
+- `users`
+- `organizations`
+- `profile`
+- `settings`
+- `processus` (legacy)
+
+## 4) Architecture applicative
+
+Point d entree : `src/main.ts`
+
+- bootstrap avec `bootstrapApplication`
+- enregistrement du router
+- activation animations Angular
+- branchement des interceptors HTTP :
+  - `authInterceptor`
+  - `errorInterceptor`
+  - `loadingInterceptor`
+
+Service API central : `core/services/api.service.ts`
+
+- construit toutes les URLs a partir de `${environment.apiUrl}/api`
+- normalise les endpoints
+- gere les query params pour les requetes GET
+
+## 5) Navigation et gestion des acces
+
+Routing central : `src/app/app-routing.module.ts`
+
+- routes publiques :
+  - `/login`
+  - `/register`
+  - `/forgot-password`
+- zone privee sous le layout principal (`''`) avec enfants
+- routes de fallback :
+  - `/forbidden`
+  - `/404`
+  - `** -> /404`
+
+Guards :
+
+- `AuthGuard` :
+  - bloque les routes privees sans token
+  - applique les roles (`roles` ou `requiredRoles` dans `data`)
+- `GuestGuard` :
+  - empeche l acces login/register si utilisateur deja connecte
+- `RoleGuard` :
+  - verifie les roles et redirige vers `/forbidden`
+
+## 6) Communication avec l API
+
+Environnement dev :
+
+```ts
+apiUrl: 'http://localhost:5185'
+```
+
+Environnement prod :
+
+```ts
+apiUrl: 'https://your-api-url.com'
+```
+
+Interceptors :
+
+- `authInterceptor` :
+  - ajoute `Authorization: Bearer <token>` sur les appels proteges
+  - exclut les endpoints publics d auth
+- `errorInterceptor` :
+  - centralise les messages d erreur
+  - force le logout en cas de `401`
+- `loadingInterceptor` :
+  - affiche/masque le loader global pendant les requetes HTTP
+
+Gestion session (AuthService) :
+
+- stocke `accessToken` et `refreshToken` dans `localStorage`
+- conserve `currentUser`
+- gere profil courant (`/api/auth/me`)
+- gere changement de langue/dir (`fr/en/ar`, rtl pour `ar`)
+
+## 7) Installation et demarrage
+
+Prerequis :
+
+- Node.js 18+
+- npm 9+
+- backend API lance sur `http://localhost:5185`
+
+Installation :
+
 ```bash
+cd front
 npm install
 ```
 
-### 2. Démarrage des serveurs
-```bash
-# Terminal 1 - Serveur Angular (port 4200)
-npm start
+Demarrage (mode developpement) :
 
-# Terminal 2 - Serveur JSON (port 3001)
-npx json-server --watch db.json --port 3001
+```bash
+npm start
 ```
 
-### 3. Accès à l'application
-- **URL** : http://localhost:4200/
-- **Login** : admin@test.com
-- **Mot de passe** : admin123
+Application disponible sur :
 
-## 🎯 Fonctionnalités
+- `http://localhost:4200`
 
-- ✅ **Authentification JWT** avec guards de protection
-- ✅ **CRUD complet** sur les processus (vue cards/tableau)
-- ✅ **Interface responsive** moderne
-- ✅ **Recherche et filtres** en temps réel
-- ✅ **Gestion des erreurs** centralisée
-- ✅ **Loading states** automatiques
-- ✅ **Validation des formulaires** réactive
-- ✅ **Navigation intuitive** avec lazy loading
+## 8) Scripts npm
 
-## 🏗️ Architecture
+Depuis `front/package.json` :
 
-- **Angular 17+** avec Standalone Components
-- **TypeScript** strict pour le typage fort
-- **SCSS** pour les styles avancés
-- **RxJS** pour la programmation réactive
-- **JSON Server** pour l'API de développement
+- `npm start` : lance Angular dev server
+- `npm run build` : build production
+- `npm run watch` : build dev en watch
+- `npm test` : tests unitaires (Karma)
+- `npm run api` : lance `json-server` sur `http://localhost:3001` (mock legacy)
+- `npm run dev` : lance `json-server` + Angular en parallele (mode legacy)
 
-## 📚 Documentation complète
+Important :
 
-Consultez le **[Guide de Référence Complet](TEMPLATE_REFERENCE.md)** pour :
-- Architecture détaillée
-- Règles de codage
-- Modèles de données
-- Configuration des services
-- Bonnes pratiques
-- Guide de déploiement
+- l application est configuree par defaut pour le vrai backend (`apiUrl = http://localhost:5185`)
+- les scripts `api/dev` sont surtout utiles pour scenarios mock anciens
 
-## 🎨 Structure des fichiers
+## 9) Comptes de demo
 
-Chaque composant dispose de 3 fichiers séparés :
-- `.component.ts` : Logique TypeScript
-- `.component.html` : Template HTML  
-- `.component.scss` : Styles SCSS
+Le login expose des boutons de comptes demo.
 
-## 🔐 Authentification
+Comptes backend seedes (recommandes) :
 
-Le système d'authentification inclut :
-- Page de login moderne avec design glassmorphism
-- Guards de protection des routes (authGuard, loginGuard)
-- Gestion des sessions avec JWT et localStorage
-- Menu utilisateur avec déconnexion
-- Redirection automatique selon le statut
+- `superadmin@demo.local` / `SuperAdmin@123`
+- `admin@demo.local` / `Admin@123`
+- `qualite@demo.local` / `Qualite@123`
+- `chef@demo.local` / `Chef@123`
+- `user@demo.local` / `User@123`
+- `auditeur@demo.local` / `Auditeur@123`
 
-## 📊 Module Processus
+Note :
 
-Interface complète de gestion des processus avec :
-- **Double vue** : Cards et Tableau avec toggle
-- **Recherche instantanée** par nom ou code
-- **Filtres** par type et statut
-- **CRUD complet** : Créer, Modifier, Supprimer
-- **Indicateurs visuels** (scores, statuts, barres de progression)
-- **Modal responsive** pour création/édition
+- une entree UI `admin@test.com / admin@123` apparait dans la liste demo du composant login et peut ne pas exister cote backend seed.
 
-## 🚀 Prêt pour la production
+## 10) Build et tests
 
-Ce template est **production-ready** avec :
-- Architecture scalable et maintenable
-- Code respectant les bonnes pratiques Angular
-- Interface utilisateur moderne et accessible
-- Sécurité de base implémentée
-- Documentation complète
+Build production :
 
----
+```bash
+npm run build
+```
 
-**Développé avec ❤️ pour la communauté Angular**
+Sortie :
+
+- `dist/angular-professional-template`
+
+Verification TypeScript (sans emission) :
+
+```bash
+npx tsc -p tsconfig.app.json --noEmit
+```
+
+Tests :
+
+```bash
+npm test
+```
+
+## 11) Troubleshooting
+
+Front affiche "Impossible de joindre l API" :
+
+- verifier que le backend tourne sur `http://localhost:5185`
+- verifier `src/environments/environment.ts`
+- verifier policy CORS du backend
+
+Redirection vers `/login` en boucle :
+
+- token absent/invalide dans `localStorage`
+- endpoint `/api/auth/me` en erreur (401)
+
+Erreur `403` sur une page :
+
+- role utilisateur insuffisant pour la route (voir `roles`/`requiredRoles`)
+
+Erreur build `spawn EPERM` (environnement Windows/sandbox) :
+
+- relancer terminal/IDE en mode admin
+- fermer process Node/Angular residuels
+- nettoyer `node_modules` puis `npm install`
+
+## 12) Notes techniques
+
+- La route legacy `/processus` redirige vers `/processes`.
+- Le dossier `features/processus` et certains services `core/services/*` correspondent a d anciens flux mock/in-memory.
+- Pour les nouveaux developpements, privilegier les modules sous `features/*` relies a `ApiService`.
+
