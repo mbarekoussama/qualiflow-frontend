@@ -80,6 +80,7 @@ export class IndicatorListComponent implements OnInit {
     isInAlert: ['' as '' | 'true' | 'false']
   });
 
+  viewMode: 'cards' | 'table' = 'cards';
   loading = false;
   items: IndicatorListItemResponse[] = [];
   statistics: IndicatorStatisticsResponse | null = null;
@@ -99,7 +100,7 @@ export class IndicatorListComponent implements OnInit {
     private readonly userService: CoreUserService,
     private readonly processService: ProcessService,
     private readonly indicatorService: IndicatorService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadReferences();
@@ -191,6 +192,22 @@ export class IndicatorListComponent implements OnInit {
     this.pageNumber = event.pageIndex + 1;
     this.pageSize = event.pageSize;
     this.refresh();
+  }
+
+  getPerformanceScore(item: IndicatorListItemResponse): number {
+    if (!item.latestValue || !item.targetValue || item.targetValue === 0) return 0;
+    const score = (item.latestValue / item.targetValue) * 100;
+    return Math.min(100, Math.max(0, Math.round(score)));
+  }
+
+  getScoreColor(score: number): string {
+    if (score >= 90) return '#00875a'; // Vert XL
+    if (score >= 70) return '#eab308'; // Jaune
+    return '#ef4444'; // Rouge
+  }
+
+  getStatusIcon(item: IndicatorListItemResponse): string {
+    return item.status === 'ACTIF' ? '✓' : '○';
   }
 
   getStatusLabel(status: IndicatorStatus): string {

@@ -15,6 +15,8 @@ export interface RegisterRequest {
   firstName: string;
   lastName: string;
   email: string;
+  phone?: string;
+  nationality?: string;
   organizationCode: string;
   birthDate: string;
   password: string;
@@ -101,7 +103,7 @@ export class AuthService {
   public currentUser$ = this.currentUserSubject.asObservable();
   private profilePhotoRefreshSubject = new Subject<void>();
   public profilePhotoRefresh$ = this.profilePhotoRefreshSubject.asObservable();
-  
+
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
@@ -145,7 +147,7 @@ export class AuthService {
     if (!refreshToken) {
       throw new Error('No refresh token available');
     }
-    
+
     return this.http.post<LoginResponse>(`${this.apiUrl}/refresh-token`, { refreshToken }).pipe(
       tap(response => {
         this.setTokens(response.accessToken, response.refreshToken);
@@ -254,7 +256,7 @@ export class AuthService {
   hasRole(role: string | string[]): boolean {
     const user = this.getCurrentUser();
     if (!user) return false;
-    
+
     if (Array.isArray(role)) {
       return role.includes(user.role);
     }

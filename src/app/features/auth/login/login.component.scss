@@ -1,7 +1,7 @@
 :host {
   --primary-color: #00875a;
   --primary-hover: #006644;
-  --secondary-color: #0052cc;
+  --secondary-color: #006644;
   --text-main: #172b4d;
   --text-muted: #6b778c;
   --bg-light: #f4f5f7;
@@ -26,7 +26,7 @@
   display: flex;
   flex-direction: column;
   padding: 60px;
-  background: linear-gradient(135deg, #00875a 0%, #0052cc 100%);
+  background: linear-gradient(135deg, #00875a 0%, #004d3d 100%);
   color: white;
   overflow: hidden;
   z-index: 1;
@@ -180,7 +180,7 @@
 .forgot-link {
   font-size: 13px;
   font-weight: 600;
-  color: var(--secondary-color);
+  color: #00875a;
   text-decoration: none;
 
   &:hover {

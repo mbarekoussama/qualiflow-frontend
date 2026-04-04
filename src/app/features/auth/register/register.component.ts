@@ -20,18 +20,29 @@ export class RegisterComponent implements OnInit {
   hideConfirmPassword = true;
   errorMessage: string | null = null;
 
+  readonly nationalities = [
+    { code: 'TN', label: 'Tunisie', flag: '🇹🇳' },
+    { code: 'FR', label: 'France', flag: '🇫🇷' },
+    { code: 'DZ', label: 'Algérie', flag: '🇩🇿' },
+    { code: 'MA', label: 'Maroc', flag: '🇲🇦' },
+    { code: 'LY', label: 'Libye', flag: '🇱🇾' },
+    { code: 'MR', label: 'Mauritanie', flag: '🇲🇷' }
+  ];
+
   constructor(
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
     private readonly router: Router,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.registerForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, Validators.minLength(8)]],
+      nationality: ['Tunisie', [Validators.required]],
       organizationCode: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       birthDate: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -52,6 +63,8 @@ export class RegisterComponent implements OnInit {
       firstName: this.registerForm.value.firstName,
       lastName: this.registerForm.value.lastName,
       email: this.registerForm.value.email,
+      phone: this.registerForm.value.phone,
+      nationality: this.registerForm.value.nationality,
       organizationCode: this.registerForm.value.organizationCode,
       birthDate: this.registerForm.value.birthDate,
       password: this.registerForm.value.password,

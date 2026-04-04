@@ -42,7 +42,7 @@ export class IndicatorDashboardComponent implements OnInit {
   constructor(
     private readonly router: Router,
     private readonly indicatorService: IndicatorService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadDashboard();
