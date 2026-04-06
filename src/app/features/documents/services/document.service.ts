@@ -26,7 +26,7 @@ export class DocumentService {
   constructor(
     private readonly apiService: ApiService,
     private readonly http: HttpClient
-  ) {}
+  ) { }
 
   getDocuments(params: DocumentQueryParams = {}): Observable<PagedDocumentResponse> {
     return this.apiService.get<PagedDocumentResponse>(this.endpoint, params);
@@ -84,6 +84,10 @@ export class DocumentService {
 
     if (metadata.expiryDate) {
       formData.append('expiryDate', metadata.expiryDate);
+    }
+
+    if (metadata.signature) {
+      formData.append('signature', metadata.signature);
     }
 
     return this.http.post<DocumentVersionResponse>(

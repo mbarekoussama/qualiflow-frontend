@@ -369,3 +369,35 @@ mat-paginator {
     }
   }
 }
+
+/* ======================== RESPONSIVE ======================== */
+@media (max-width: 768px) {
+  .ca-list-page {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .summary-card {
+    padding: 14px;
+
+    .sc-value {
+      font-size: 20px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .ca-list-page {
+    padding: 8px;
+    gap: 12px;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+}

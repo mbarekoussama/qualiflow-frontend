@@ -1,4 +1,84 @@
-﻿<section class="page">
-  <h1>Settings</h1>
-  <p>Settings page is ready.</p>
+﻿<section class="settings-page">
+  <!-- SETTINGS HEADER BANNER -->
+  <div class="dashboard-header-card">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>Paramètres</h1>
+        <p>Personnalisez votre expérience QualiFlow et gérez vos préférences.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-content">
+    <div class="settings-grid">
+      <!-- APPEARANCE & THEME -->
+      <mat-card class="panel-card">
+        <h2><mat-icon>palette</mat-icon> Apparence</h2>
+        <div class="setting-list">
+          <div class="setting-item">
+            <div class="item-info">
+              <strong>Mode Sombre</strong>
+              <p>Passer à une interface visuelle plus reposante pour vos yeux.</p>
+            </div>
+            <mat-slide-toggle [checked]="isDarkMode$ | async" (change)="toggleTheme()" color="primary">
+            </mat-slide-toggle>
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- LANGUAGE & LOCALE -->
+      <mat-card class="panel-card">
+        <h2><mat-icon>translate</mat-icon> Langue de l'interface</h2>
+        <div class="setting-list">
+          <div class="setting-item vertical">
+            <div class="item-info">
+              <strong>Langue préférée</strong>
+              <p>Déterminez la langue utilisée pour les menus et les messages systèmes.</p>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Sélectionner une langue</mat-label>
+              <mat-select [value]="selectedLanguage" [disabled]="isSavingLanguage"
+                (selectionChange)="onLanguageChange($event.value)">
+                <mat-option *ngFor="let lang of languages" [value]="lang.value">
+                  <span class="flag-icon">{{ lang.flag }}</span> {{ lang.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- ABOUT THE PLATFORM -->
+      <mat-card class="panel-card about-panel full-width">
+        <h2><mat-icon>info</mat-icon> Informations sur la plateforme</h2>
+        <div class="about-container">
+          <div class="about-branding">
+            <div class="logo-circle">QF</div>
+            <div class="branding-info">
+              <h3>QualiFlow QMS</h3>
+              <span class="version-tag">Version 2.2.0-stable</span>
+            </div>
+          </div>
+
+          <div class="about-text">
+            <p>
+              QualiFlow est une suite logicielle avancée dédiée à la gestion de la qualité. Elle centralise le pilotage
+              des processus,
+              la maîtrise documentaire et la gestion des non-conformités pour assurer une démarche d'amélioration
+              continue optimale.
+            </p>
+          </div>
+
+          <div class="about-actions">
+            <button mat-stroked-button color="primary">
+              <mat-icon>description</mat-icon> Documentation
+            </button>
+            <button mat-stroked-button color="primary">
+              <mat-icon>support_agent</mat-icon> Support Technique
+            </button>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
 </section>

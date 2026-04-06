@@ -1,9 +1,10 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AuthService, LoginResponse, MeResponse } from '../../../core/services/auth.service';
+import { catchError, finalize, of, switchMap, tap } from 'rxjs';
+import { AuthService, LoginRequest, LoginResponse, MeResponse } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 
 interface DemoAccount {
@@ -24,6 +25,10 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   hidePassword = true;
   isLoading = false;
+
+  antiBotQuestion = '';
+  antiBotError: string | null = null;
+  private antiBotExpectedAnswer = 0;
 
   readonly demoAccounts: DemoAccount[] = [
     {
@@ -76,7 +81,7 @@ export class LoginComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -85,14 +90,18 @@ export class LoginComponent implements OnInit {
   private initForm(): void {
     this.loginForm = this.fb.group({
       email: [this.demoAccounts[0].email, [Validators.required, Validators.email]],
-      password: [this.demoAccounts[0].password, [Validators.required]]
+      password: [this.demoAccounts[0].password, [Validators.required]],
+      antiBotAnswer: ['', [Validators.required, Validators.pattern(/^\d+$/)]]
     });
+
+    this.regenerateAntiBotChallenge();
 
     const emailFromQuery = this.route.snapshot.queryParamMap.get('email');
     if (emailFromQuery) {
       this.loginForm.patchValue({
         email: emailFromQuery,
-        password: ''
+        password: '',
+        antiBotAnswer: ''
       });
     }
   }
@@ -100,12 +109,23 @@ export class LoginComponent implements OnInit {
   useDemoAccount(account: DemoAccount): void {
     this.loginForm.patchValue({
       email: account.email,
-      password: account.password
+      password: account.password,
+      antiBotAnswer: ''
     });
 
+    this.antiBotError = null;
     this.hidePassword = true;
     this.loginForm.markAsDirty();
     this.loginForm.markAsTouched();
+  }
+
+  regenerateAntiBotChallenge(): void {
+    const first = this.generateOperand();
+    const second = this.generateOperand();
+    this.antiBotQuestion = `${first} + ${second}`;
+    this.antiBotExpectedAnswer = first + second;
+    this.antiBotError = null;
+    this.loginForm?.patchValue({ antiBotAnswer: '' });
   }
 
   onSubmit(): void {
@@ -113,28 +133,42 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    if (!this.isAntiBotAnswerCorrect()) {
+      this.regenerateAntiBotChallenge();
+      this.antiBotError = 'Resultat incorrect. Veuillez reessayer.';
+      return;
+    }
 
-    this.authService.login(this.loginForm.value).subscribe({
-      next: (response: LoginResponse) => {
-        this.authService.getProfile().subscribe({
-          next: (profile: MeResponse) => {
+    this.isLoading = true;
+    this.antiBotError = null;
+
+    const payload: LoginRequest = {
+      email: String(this.loginForm.value.email ?? '').trim(),
+      password: String(this.loginForm.value.password ?? '')
+    };
+
+    this.authService.login(payload).pipe(
+      switchMap((response: LoginResponse) =>
+        this.authService.getProfile().pipe(
+          tap((profile: MeResponse) => {
             this.notificationService.showSuccess('Connexion reussie !');
             this.navigateAfterLogin(profile.role);
-          },
-          error: (_profileError: HttpErrorResponse) => {
+          }),
+          catchError((_profileError: HttpErrorResponse) => {
             this.notificationService.showWarning('Profil non charge. Redirection par role du token.');
             this.navigateAfterLogin(response.role);
-          }
-        });
-      },
-      error: (_error: HttpErrorResponse) => {
+            return of(null);
+          })
+        )
+      ),
+      catchError((_error: HttpErrorResponse) => {
+        this.regenerateAntiBotChallenge();
+        return of(null);
+      }),
+      finalize(() => {
         this.isLoading = false;
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
+      })
+    ).subscribe();
   }
 
   private navigateAfterLogin(role: string): void {
@@ -144,5 +178,19 @@ export class LoginComponent implements OnInit {
     }
 
     this.router.navigate(['/dashboard']);
+  }
+
+  private generateOperand(): number {
+    return Math.floor(Math.random() * 9) + 1;
+  }
+
+  private isAntiBotAnswerCorrect(): boolean {
+    const rawValue = this.loginForm.get('antiBotAnswer')?.value;
+    const parsedValue = Number.parseInt(String(rawValue ?? ''), 10);
+    return Number.isFinite(parsedValue) && parsedValue === this.antiBotExpectedAnswer;
+  }
+
+  get antiBotAnswerControl() {
+    return this.loginForm.get('antiBotAnswer');
   }
 }

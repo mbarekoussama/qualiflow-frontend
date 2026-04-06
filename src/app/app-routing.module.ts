@@ -5,6 +5,12 @@ import { RoleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./features/public/home/home.component').then(m => m.HomeComponent),
+    data: { title: 'QualiFlow - Accueil' }
+  },
+  {
     path: 'login',
     canActivate: [GuestGuard],
     loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent),
@@ -21,6 +27,18 @@ export const routes: Routes = [
     canActivate: [GuestGuard],
     loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
     data: { title: 'Mot de passe oublie' }
+  },
+  {
+    path: 'reset-password',
+    canActivate: [GuestGuard],
+    loadComponent: () => import('./features/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
+    data: { title: 'Reinitialiser mot de passe' }
+  },
+  {
+    path: 'verify-email',
+    canActivate: [GuestGuard],
+    loadComponent: () => import('./features/auth/verify-email/verify-email.component').then(m => m.VerifyEmailComponent),
+    data: { title: 'Verification de l\'email' }
   },
   {
     path: '',

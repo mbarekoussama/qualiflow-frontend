@@ -50,7 +50,7 @@ export class UsersFormComponent implements OnInit {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initForm();

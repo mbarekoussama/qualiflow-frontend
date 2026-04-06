@@ -20,9 +20,18 @@
 
   <div class="login-main">
     <div class="login-container">
+      <div class="back-link-wrapper">
+        <a routerLink="/" class="back-to-home">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Retour à l'accueil
+        </a>
+      </div>
+
       <div class="login-card">
         <div class="card-header">
-          <h2>Bon retour !</h2>
+          <h2>Bienvenue !</h2>
           <p>Connectez-vous pour accéder à votre tableau de bord</p>
         </div>
 
@@ -60,7 +69,7 @@
               </span>
               <input id="password" [type]="hidePassword ? 'password' : 'text'" formControlName="password"
                 placeholder="votre mot de passe" autocomplete="current-password">
-              <button type="button" class="password-toggle" (click)="hidePassword = !hidePassword"
+              <button title="login" type="button" class="password-toggle" (click)="hidePassword = !hidePassword"
                 [attr.aria-label]="hidePassword ? 'Afficher' : 'Masquer'">
                 <svg *ngIf="hidePassword" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -77,6 +86,32 @@
             <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="field-error">
               Le mot de passe est requis
             </div>
+          </div>
+
+          <div class="form-field anti-bot-field">
+            <div class="field-label-row">
+              <label for="antiBotAnswer">Anti-bot: combien font {{ antiBotQuestion }} ?</label>
+              <button type="button" class="refresh-antibot-btn" (click)="regenerateAntiBotChallenge()">Nouvelle
+                question</button>
+            </div>
+            <div class="input-group"
+              [class.error]="(antiBotAnswerControl?.invalid && antiBotAnswerControl?.touched) || !!antiBotError">
+              <span class="input-icon">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M4 19h16M4 5h16M8 9l8 6M16 9l-8 6"></path>
+                </svg>
+              </span>
+              <input id="antiBotAnswer" type="text" formControlName="antiBotAnswer" placeholder="Votre reponse"
+                inputmode="numeric" autocomplete="off">
+            </div>
+            <div *ngIf="antiBotAnswerControl?.hasError('required') && antiBotAnswerControl?.touched"
+              class="field-error">
+              La reponse est requise
+            </div>
+            <div *ngIf="antiBotAnswerControl?.hasError('pattern') && antiBotAnswerControl?.touched" class="field-error">
+              Entrez uniquement un nombre
+            </div>
+            <div *ngIf="antiBotError" class="field-error">{{ antiBotError }}</div>
           </div>
 
           <button type="submit" class="submit-btn" [disabled]="loginForm.invalid || isLoading"
@@ -99,7 +134,7 @@
 
       <div class="demo-section">
         <div class="demo-toggle-header">
-    
+
           Accès Démo Rapide
         </div>
         <div class="demo-grid">

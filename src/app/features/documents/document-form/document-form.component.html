@@ -115,6 +115,60 @@
       </div>
     </mat-card>
 
+    <!-- SECTION 4: SIGNATURE -->
+    <mat-card class="form-section-clean">
+      <div class="section-header">
+        <mat-icon>draw</mat-icon>
+        <div class="header-text">
+          <h3>Signature du document</h3>
+          <p>Signez directement ci-dessous pour valider le document.</p>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <div class="signature-pad-container">
+          <div class="signature-pad-wrapper">
+            <canvas #signatureCanvas class="signature-pad" (mousedown)="startDrawing($event)" (mousemove)="draw($event)"
+              (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()" (touchstart)="startDrawingTouch($event)"
+              (touchmove)="drawTouch($event)" (touchend)="stopDrawing()">
+            </canvas>
+
+            <div class="signature-overlay" *ngIf="!isCanvasEmpty && !signaturePreview">
+              <span>Signature en cours...</span>
+            </div>
+
+            <div class="signature-placeholder" *ngIf="isCanvasEmpty && !signaturePreview">
+              <mat-icon>gesture</mat-icon>
+              <span>Signez ici avec votre souris ou votre doigt</span>
+            </div>
+
+            <img [src]="signaturePreview" *ngIf="signaturePreview" class="signature-result-preview"
+              alt="Signature enregistrée" />
+          </div>
+
+          <div class="signature-actions">
+            <button mat-stroked-button type="button" (click)="clearSignaturePad()"
+              [disabled]="isCanvasEmpty && !signaturePreview">
+              <mat-icon>refresh</mat-icon>
+              Effacer
+            </button>
+            <button mat-flat-button type="button" color="primary" (click)="saveSignatureFromPad()"
+              *ngIf="!isCanvasEmpty && !signaturePreview">
+              <mat-icon>check</mat-icon>
+              Valider la signature
+            </button>
+            <span class="signature-saved-badge" *ngIf="signaturePreview">
+              <mat-icon>verified</mat-icon>
+              Signature enregistrée
+            </span>
+          </div>
+
+          <p class="signature-hint">La signature sera intégrée automatiquement au PDF lors de la validation finale du
+            document.</p>
+        </div>
+      </div>
+    </mat-card>
+
     <!-- SECTION 3: VERSION & FICHIER -->
     <mat-card class="form-section-clean">
       <div class="section-header">

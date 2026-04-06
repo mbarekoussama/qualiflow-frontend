@@ -34,6 +34,7 @@ export interface CreateDocumentRequest {
   description?: string | null;
   category?: string | null;
   keywords?: string | null;
+  signature?: string | null;
   ownerUserId?: number | null;
   isActive: boolean;
 }
@@ -46,6 +47,7 @@ export interface CreateDocumentVersionRequest {
   revisionComment?: string | null;
   effectiveDate?: string | null;
   expiryDate?: string | null;
+  signature?: string | null;
 }
 
 export interface UpdateDocumentVersionStatusRequest {
@@ -88,6 +90,7 @@ export interface DocumentResponse {
   description?: string | null;
   category?: string | null;
   keywords?: string | null;
+  signature?: string | null;
   ownerUserId?: number | null;
   ownerFullName?: string | null;
   currentVersionId?: number | null;
@@ -109,6 +112,7 @@ export interface DocumentVersionResponse {
   mimeType?: string | null;
   fileSize?: number | null;
   revisionComment?: string | null;
+  signature?: string | null;
   effectiveDate?: string | null;
   expiryDate?: string | null;
   isCurrent: boolean;

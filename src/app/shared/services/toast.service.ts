@@ -5,12 +5,12 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
   providedIn: 'root'
 })
 export class ToastService {
-  constructor(private snackBar: MatSnackBar) {}
+  constructor(private snackBar: MatSnackBar) { }
 
   showSuccess(message: string, duration: number = 3500): void {
     const config: MatSnackBarConfig = {
       duration,
-      horizontalPosition: 'right',
+      horizontalPosition: 'center',
       verticalPosition: 'bottom',
       panelClass: ['success-toast']
     };
@@ -20,7 +20,7 @@ export class ToastService {
   showError(message: string, duration: number = 4000): void {
     const config: MatSnackBarConfig = {
       duration,
-      horizontalPosition: 'right',
+      horizontalPosition: 'center',
       verticalPosition: 'bottom',
       panelClass: ['error-toast']
     };
@@ -30,7 +30,7 @@ export class ToastService {
   showWarning(message: string, duration: number = 3500): void {
     const config: MatSnackBarConfig = {
       duration,
-      horizontalPosition: 'right',
+      horizontalPosition: 'center',
       verticalPosition: 'bottom',
       panelClass: ['warning-toast']
     };
@@ -40,7 +40,7 @@ export class ToastService {
   showInfo(message: string, duration: number = 3000): void {
     const config: MatSnackBarConfig = {
       duration,
-      horizontalPosition: 'right',
+      horizontalPosition: 'center',
       verticalPosition: 'bottom',
       panelClass: ['info-toast']
     };

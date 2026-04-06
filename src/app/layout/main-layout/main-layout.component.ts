@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 import { OrganizationService } from '../../core/services/organization.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -28,11 +29,13 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private logoObjectUrl: string | null = null;
 
   brandLogoUrl = 'assets/logo.png';
+  sidebarOpen = false;
 
   constructor(
     private readonly authService: AuthService,
-    private readonly organizationService: OrganizationService
-  ) {}
+    private readonly organizationService: OrganizationService,
+    private readonly router: Router
+  ) { }
 
   ngOnInit(): void {
     this.tryLoadOrganizationLogo();
@@ -42,11 +45,28 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
         this.tryLoadOrganizationLogo();
       })
     );
+
+    // Close sidebar on route change (mobile)
+    this.subscriptions.add(
+      this.router.events
+        .pipe(filter(e => e instanceof NavigationEnd))
+        .subscribe(() => {
+          this.sidebarOpen = false;
+        })
+    );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
     this.revokeLogoObjectUrl();
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen = false;
   }
 
   private tryLoadOrganizationLogo(): void {

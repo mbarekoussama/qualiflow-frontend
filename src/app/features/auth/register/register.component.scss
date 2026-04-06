@@ -219,10 +219,92 @@
       color: #a5adba;
     }
   }
+}
+
+/* ====================== COUNTRY SELECT - PREMIUM ====================== */
+.country-select-group {
+  position: relative;
+  cursor: pointer;
+
+  .country-flag-preview {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 22px;
+    line-height: 1;
+    z-index: 2;
+    pointer-events: none;
+  }
 
   .nation-select {
-    padding-right: 30px;
+    padding-left: 48px !important;
+    padding-right: 36px !important;
     cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+  }
+
+  &:focus-within .select-arrow {
+    color: #00875a;
+  }
+}
+
+/* ====================== PHONE INPUT - PREMIUM ====================== */
+.phone-input-group {
+  .phone-prefix {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    margin: 4px;
+    margin-right: 0;
+    background: linear-gradient(135deg, #f0f7f0 0%, #e8f5e9 100%);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 135, 90, 0.15);
+    flex-shrink: 0;
+    user-select: none;
+    transition: all 0.3s ease;
+
+    .prefix-flag {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .prefix-code {
+      font-size: 13px;
+      font-weight: 700;
+      color: #00875a;
+      letter-spacing: 0.3px;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+    }
+  }
+
+  &:focus-within .phone-prefix {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-color: rgba(0, 135, 90, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 135, 90, 0.1);
+  }
+
+  input {
+    padding-left: 10px !important;
+    letter-spacing: 1px;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
   }
 }
 
@@ -243,10 +325,83 @@
   }
 }
 
+.password-requirements {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  animation: fadeIn 0.3s ease-out;
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+
+  .requirement {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: #dfe1e6;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    &.met {
+      color: #00875a;
+      font-weight: 600;
+
+      .dot {
+        background: #00875a;
+        box-shadow: 0 0 0 4px rgba(0, 135, 90, 0.1);
+      }
+    }
+  }
+}
+
 .field-error {
   font-size: 12px;
   color: var(--error-color);
   font-weight: 500;
+}
+
+.terms-field {
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: #fafbfc;
+
+  &.error {
+    border-color: rgba(222, 53, 11, 0.25);
+    background: rgba(222, 53, 11, 0.04);
+  }
+}
+
+.terms-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-main);
+  line-height: 1.4;
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    margin-top: 2px;
+    width: 16px;
+    height: 16px;
+    accent-color: #00875a;
+    flex: 0 0 auto;
+  }
 }
 
 .error-box {
@@ -315,6 +470,46 @@
 
     &:hover {
       text-decoration: underline;
+    }
+  }
+}
+
+.captcha-field {
+  .captcha-question {
+    font-size: 14px;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    padding: 10px;
+    background: #f0f7f4;
+    border-radius: 8px;
+    border: 1px dashed #00875a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    strong {
+      font-size: 18px;
+      color: #00875a;
+    }
+  }
+
+  .refresh-captcha {
+    background: none;
+    border: none;
+    padding: 0 12px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      color: #00875a;
+      transform: rotate(180deg);
     }
   }
 }

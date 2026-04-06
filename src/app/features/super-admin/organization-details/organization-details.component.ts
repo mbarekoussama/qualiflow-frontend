@@ -42,7 +42,7 @@ export class OrganizationDetailsComponent implements OnInit {
     private readonly router: Router,
     private readonly organizationService: OrganizationService,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const rawId = this.route.snapshot.paramMap.get('id');

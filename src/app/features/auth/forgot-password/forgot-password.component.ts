@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService, ForgotPasswordRequest } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 
@@ -22,8 +22,9 @@ export class ForgotPasswordComponent implements OnInit {
   constructor(
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
+    private readonly router: Router,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.forgotForm = this.fb.group({
@@ -47,7 +48,11 @@ export class ForgotPasswordComponent implements OnInit {
     this.authService.forgotPassword(payload).subscribe({
       next: () => {
         this.isSubmitted = true;
-        this.notificationService.showSuccess('Demande envoyee. Verifiez votre email.');
+        this.notificationService.showSuccess('Code de reinitialisation envoye. Verifiez votre email.');
+        // Redirect to step 2 after a short delay
+        setTimeout(() => {
+          this.router.navigate(['/reset-password'], { queryParams: { email: payload.email } });
+        }, 1500);
       },
       error: (error: HttpErrorResponse) => {
         const message = error.error?.message || "Impossible d'envoyer la demande.";

@@ -156,3 +156,30 @@
     }
   }
 }
+
+/* ======================== RESPONSIVE ======================== */
+
+/* Mobile / Small Tablet (≤768px) */
+@media (max-width: 768px) {
+  .user-meta {
+    display: none;
+  }
+
+  .user-trigger {
+    padding: 4px;
+    gap: 6px;
+
+    .trigger-icon {
+      display: none;
+    }
+  }
+}
+
+/* Small mobile (≤480px) */
+@media (max-width: 480px) {
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+  }
+}

@@ -522,3 +522,49 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
 }
+
+/* ======================== RESPONSIVE ======================== */
+@media (max-width: 768px) {
+    .page-header-bar {
+        padding: 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .filters-bar {
+        padding: 10px 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .search-box {
+        max-width: 100%;
+    }
+
+    .filter-group select {
+        min-width: 120px;
+    }
+
+    .content-scroll {
+        padding: 12px;
+    }
+
+    .indicator-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-scroll {
+        padding: 8px;
+    }
+
+    .ph-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .view-toggle {
+        margin-right: 0;
+    }
+}

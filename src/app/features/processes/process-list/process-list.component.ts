@@ -80,7 +80,7 @@ export class ProcessListComponent implements OnInit {
     private readonly notificationService: NotificationService,
     private readonly dialog: MatDialog,
     private readonly router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loading = true;

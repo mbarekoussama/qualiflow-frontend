@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
@@ -21,6 +21,9 @@ export interface RegisterRequest {
   birthDate: string;
   password: string;
   confirmPassword: string;
+  captchaNum1: number;
+  captchaNum2: number;
+  captchaAnswer: number;
 }
 
 export interface RegisterResponse {
@@ -30,6 +33,8 @@ export interface RegisterResponse {
   email: string;
   role: string;
   createdAt: string;
+  requiresEmailVerification: boolean;
+  verificationEmailSent?: boolean;
 }
 
 export interface LoginResponse {
@@ -54,6 +59,8 @@ export interface MeResponse {
   role: string;
   function?: string;
   department?: string;
+  phone?: string;
+  city?: string;
   birthDate?: string;
   preferredLanguage?: 'fr' | 'en' | 'ar';
   profilePhotoPath?: string | null;
@@ -65,6 +72,8 @@ export interface UpdateProfileRequest {
   firstName: string;
   lastName: string;
   birthDate?: string | null;
+  phone?: string | null;
+  city?: string | null;
   preferredLanguage: 'fr' | 'en' | 'ar';
 }
 
@@ -85,13 +94,23 @@ export interface ForgotPasswordRequest {
 }
 
 export interface ResetPasswordRequest {
-  token: string;
+  email: string;
+  code: string;
   newPassword: string;
   confirmPassword: string;
 }
 
 export interface RefreshTokenRequest {
   refreshToken: string;
+}
+
+export interface VerifyEmailCodeRequest {
+  email: string;
+  code: string;
+}
+
+export interface ResendVerificationCodeRequest {
+  email: string;
 }
 
 @Injectable({
@@ -169,6 +188,19 @@ export class AuthService {
     );
   }
 
+  updatePreferredLanguage(preferredLanguage: 'fr' | 'en' | 'ar'): Observable<MeResponse> {
+    const currentUser = this.getCurrentUser();
+    const normalizedLanguage = this.normalizeLanguage(preferredLanguage);
+
+    if (this.canBuildProfileUpdateRequest(currentUser)) {
+      return this.updateProfile(this.buildProfileUpdateRequest(currentUser, normalizedLanguage));
+    }
+
+    return this.getProfile().pipe(
+      switchMap(profile => this.updateProfile(this.buildProfileUpdateRequest(profile, normalizedLanguage)))
+    );
+  }
+
   uploadProfilePhoto(file: File): Observable<ProfilePhotoResponse> {
     const formData = new FormData();
     formData.append('file', file);
@@ -187,6 +219,22 @@ export class AuthService {
 
   resetPassword(request: ResetPasswordRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/reset-password`, request);
+  }
+
+  verifyResetCode(request: { email: string, code: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/verify-reset-code`, request);
+  }
+
+  verifyEmail(token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/verify-email`, { params: { token } });
+  }
+
+  verifyEmailCode(request: VerifyEmailCodeRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/verify-email-code`, request);
+  }
+
+  resendVerificationCode(request: ResendVerificationCodeRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/resend-verification-code`, request);
   }
 
   getProfile(): Observable<MeResponse> {
@@ -264,8 +312,32 @@ export class AuthService {
   }
 
   private applyPlatformLanguage(language?: 'fr' | 'en' | 'ar' | string): void {
-    const normalized = language === 'en' || language === 'ar' || language === 'fr' ? language : 'fr';
+    const normalized = this.normalizeLanguage(language);
     document.documentElement.lang = normalized;
     document.documentElement.dir = normalized === 'ar' ? 'rtl' : 'ltr';
+    localStorage.setItem('language', normalized);
+  }
+
+  private canBuildProfileUpdateRequest(user: MeResponse | null): user is MeResponse {
+    return !!user && !!user.firstName?.trim() && !!user.lastName?.trim();
+  }
+
+  private buildProfileUpdateRequest(user: MeResponse, preferredLanguage: 'fr' | 'en' | 'ar'): UpdateProfileRequest {
+    return {
+      firstName: user.firstName.trim(),
+      lastName: user.lastName.trim(),
+      birthDate: user.birthDate ?? null,
+      phone: user.phone?.trim() || null,
+      city: user.city?.trim() || null,
+      preferredLanguage
+    };
+  }
+
+  private normalizeLanguage(language?: string | null): 'fr' | 'en' | 'ar' {
+    if (language === 'en' || language === 'ar' || language === 'fr') {
+      return language;
+    }
+
+    return 'fr';
   }
 }

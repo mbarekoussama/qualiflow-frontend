@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import {
+  CreateDocumentVersionRequest,
   DOCUMENT_STATUS_OPTIONS,
   DocumentDetailsResponse,
   DocumentStatus,
@@ -57,8 +58,21 @@ export class DocumentVersionsComponent implements OnInit {
   documentId!: number;
   details: DocumentDetailsResponse | null = null;
   selectedFile: File | null = null;
+  isDragging = false;
   statusByVersion: Record<number, DocumentStatus> = {};
   commentByVersion: Record<number, string> = {};
+
+  // Signature Pad
+  private signatureCanvasElement?: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private isDrawing = false;
+
+  @ViewChild('signatureCanvas') set signatureCanvas(content: ElementRef<HTMLCanvasElement>) {
+    if (content) {
+      this.signatureCanvasElement = content.nativeElement;
+      this.initCanvas();
+    }
+  }
 
   constructor(
     private readonly fb: FormBuilder,
@@ -67,7 +81,7 @@ export class DocumentVersionsComponent implements OnInit {
     private readonly documentService: DocumentService,
     private readonly authService: AuthService,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const rawId = this.route.snapshot.paramMap.get('id');
@@ -111,13 +125,85 @@ export class DocumentVersionsComponent implements OnInit {
     });
   }
 
+  // File Upload & Dropzone
   onFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.selectedFile = target.files?.[0] ?? null;
   }
 
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+
+    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+      this.selectedFile = event.dataTransfer.files[0];
+    }
+  }
+
   clearSelectedFile(): void {
     this.selectedFile = null;
+  }
+
+  // Signature Pad Logic
+  private initCanvas(): void {
+    if (!this.signatureCanvasElement) return;
+    this.ctx = this.signatureCanvasElement.getContext('2d');
+    if (this.ctx) {
+      this.ctx.strokeStyle = '#000';
+      this.ctx.lineWidth = 2;
+      this.ctx.lineCap = 'round';
+      this.ctx.lineJoin = 'round';
+    }
+  }
+
+  startDrawing(event: MouseEvent | TouchEvent): void {
+    event.preventDefault();
+    this.isDrawing = true;
+    const pos = this.getPointerPos(event);
+    this.ctx?.beginPath();
+    this.ctx?.moveTo(pos.x, pos.y);
+  }
+
+  draw(event: MouseEvent | TouchEvent): void {
+    if (!this.isDrawing) return;
+    event.preventDefault();
+    const pos = this.getPointerPos(event);
+    this.ctx?.lineTo(pos.x, pos.y);
+    this.ctx?.stroke();
+  }
+
+  stopDrawing(): void {
+    this.isDrawing = false;
+  }
+
+  clearSignature(): void {
+    if (this.signatureCanvasElement && this.ctx) {
+      this.ctx.clearRect(0, 0, this.signatureCanvasElement.width, this.signatureCanvasElement.height);
+    }
+  }
+
+  private getPointerPos(event: MouseEvent | TouchEvent): { x: number, y: number } {
+    if (!this.signatureCanvasElement) return { x: 0, y: 0 };
+    const rect = this.signatureCanvasElement.getBoundingClientRect();
+    const clientX = 'touches' in event ? (event as TouchEvent).touches[0].clientX : (event as MouseEvent).clientX;
+    const clientY = 'touches' in event ? (event as TouchEvent).touches[0].clientY : (event as MouseEvent).clientY;
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
   }
 
   backToDocument(): void {
@@ -135,12 +221,23 @@ export class DocumentVersionsComponent implements OnInit {
     }
 
     const raw = this.createVersionForm.getRawValue();
-    const payload = {
+
+    // Capture Signature
+    let signatureBase64: string | null = null;
+    if (this.signatureCanvasElement) {
+      const isCanvasEmpty = this.isCanvasBlank(this.signatureCanvasElement);
+      if (!isCanvasEmpty) {
+        signatureBase64 = this.signatureCanvasElement.toDataURL('image/png');
+      }
+    }
+
+    const payload: CreateDocumentVersionRequest = {
       versionNumber: raw.versionNumber.trim(),
       status: raw.status,
       revisionComment: raw.revisionComment?.trim() || null,
       effectiveDate: raw.effectiveDate || null,
-      expiryDate: raw.expiryDate || null
+      expiryDate: raw.expiryDate || null,
+      signature: signatureBase64
     };
 
     if (!payload.versionNumber) {
@@ -158,6 +255,7 @@ export class DocumentVersionsComponent implements OnInit {
       next: () => {
         this.submitting = false;
         this.selectedFile = null;
+        this.clearSignature();
         this.createVersionForm.reset({
           versionNumber: this.nextVersionNumber(),
           status: 'BROUILLON',
@@ -247,5 +345,14 @@ export class DocumentVersionsComponent implements OnInit {
     link.download = fileName;
     link.click();
     URL.revokeObjectURL(objectUrl);
+  }
+
+  private isCanvasBlank(canvas: HTMLCanvasElement): boolean {
+    const context = canvas.getContext('2d');
+    if (!context) return true;
+    const pixelBuffer = new Uint32Array(
+      context.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+    );
+    return !pixelBuffer.some(color => color !== 0);
   }
 }

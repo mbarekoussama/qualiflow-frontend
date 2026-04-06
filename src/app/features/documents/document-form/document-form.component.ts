@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -22,6 +22,7 @@ import {
   CreateDocumentVersionRequest,
   DOCUMENT_STATUS_OPTIONS,
   DOCUMENT_TYPE_OPTIONS,
+  DocumentResponse,
   DocumentStatus,
   DocumentType
 } from '../models/document.models';
@@ -46,7 +47,20 @@ import { DocumentService } from '../services/document.service';
   templateUrl: './document-form.component.html',
   styleUrls: ['./document-form.component.scss']
 })
-export class DocumentFormComponent implements OnInit {
+export class DocumentFormComponent implements OnInit, AfterViewInit {
+  private _signatureCanvas!: ElementRef<HTMLCanvasElement>;
+
+  @ViewChild('signatureCanvas') set signatureCanvas(el: ElementRef<HTMLCanvasElement>) {
+    if (el) {
+      this._signatureCanvas = el;
+      // Use setTimeout to ensure the element is fully rendered and has dimensions
+      setTimeout(() => this.initCanvas(), 0);
+    }
+  }
+
+  private ctx!: CanvasRenderingContext2D;
+  private isDrawing = false;
+  isCanvasEmpty = true;
   readonly typeOptions = DOCUMENT_TYPE_OPTIONS;
   readonly statusOptions = DOCUMENT_STATUS_OPTIONS;
 
@@ -70,7 +84,8 @@ export class DocumentFormComponent implements OnInit {
     initialVersionStatus: this.fb.nonNullable.control<DocumentStatus>('BROUILLON'),
     initialRevisionComment: this.fb.control<string>(''),
     initialEffectiveDate: this.fb.control<string>(''),
-    initialExpiryDate: this.fb.control<string>('')
+    initialExpiryDate: this.fb.control<string>(''),
+    signature: this.fb.control<string | null>(null)
   });
 
   loading = false;
@@ -82,6 +97,7 @@ export class DocumentFormComponent implements OnInit {
   procedures: ProcedureListItemResponse[] = [];
   owners: UserResponse[] = [];
   startWithImport = false;
+  signaturePreview: string | null = null;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -92,7 +108,107 @@ export class DocumentFormComponent implements OnInit {
     private readonly procedureService: ProcedureService,
     private readonly userService: UserService,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
+
+  ngAfterViewInit(): void {
+    // Initial call might fail if *ngIf is active, handled by setter
+    if (this._signatureCanvas) {
+      this.initCanvas();
+    }
+  }
+
+  private initCanvas(): void {
+    if (!this._signatureCanvas) return;
+
+    const canvas = this._signatureCanvas.nativeElement;
+    this.ctx = canvas.getContext('2d')!;
+
+    // Set internal resolution based on CSS size
+    canvas.width = canvas.offsetWidth || 500;
+    canvas.height = canvas.offsetHeight || 200;
+
+    // Fill with white background (important for PDF)
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Line style
+    this.ctx.strokeStyle = '#000000';
+    this.ctx.lineWidth = 2;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+  }
+
+  startDrawing(event: MouseEvent): void {
+    if (this.signaturePreview || !this.ctx) return;
+    this.isDrawing = true;
+    this.isCanvasEmpty = false;
+    const { x, y } = this.getCoords(event);
+    this.ctx.beginPath();
+    this.ctx.moveTo(x, y);
+  }
+
+  draw(event: MouseEvent): void {
+    if (!this.isDrawing || this.signaturePreview || !this.ctx) return;
+    const { x, y } = this.getCoords(event);
+    this.ctx.lineTo(x, y);
+    this.ctx.stroke();
+  }
+
+  startDrawingTouch(event: TouchEvent): void {
+    if (this.signaturePreview || !this.ctx) return;
+    event.preventDefault();
+    this.isDrawing = true;
+    this.isCanvasEmpty = false;
+    const { x, y } = this.getCoordsTouch(event);
+    this.ctx.beginPath();
+    this.ctx.moveTo(x, y);
+  }
+
+  drawTouch(event: TouchEvent): void {
+    if (!this.isDrawing || this.signaturePreview || !this.ctx) return;
+    event.preventDefault();
+    const { x, y } = this.getCoordsTouch(event);
+    this.ctx.lineTo(x, y);
+    this.ctx.stroke();
+  }
+
+  stopDrawing(): void {
+    this.isDrawing = false;
+  }
+
+  private getCoords(event: MouseEvent): { x: number, y: number } {
+    const rect = this._signatureCanvas.nativeElement.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+  }
+
+  private getCoordsTouch(event: TouchEvent): { x: number, y: number } {
+    const rect = this._signatureCanvas.nativeElement.getBoundingClientRect();
+    const touch = event.touches[0];
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+  }
+
+  saveSignatureFromPad(): void {
+    if (!this._signatureCanvas) return;
+    const canvas = this._signatureCanvas.nativeElement;
+    this.signaturePreview = canvas.toDataURL('image/png');
+    this.documentForm.patchValue({ signature: this.signaturePreview });
+  }
+
+  clearSignaturePad(): void {
+    if (!this._signatureCanvas || !this.ctx) return;
+    const canvas = this._signatureCanvas.nativeElement;
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(0, 0, canvas.width, canvas.height);
+    this.signaturePreview = null;
+    this.isCanvasEmpty = true;
+    this.documentForm.patchValue({ signature: null });
+  }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -266,6 +382,7 @@ export class DocumentFormComponent implements OnInit {
       description: raw.description?.trim() || null,
       category: raw.category?.trim() || null,
       keywords: raw.keywords?.trim() || null,
+      signature: raw.signature,
       ownerUserId: raw.ownerUserId ?? null,
       isActive: raw.isActive
     };
@@ -283,20 +400,7 @@ export class DocumentFormComponent implements OnInit {
     };
   }
 
-  private patchDocument(document: {
-    code: string;
-    title: string;
-    type: DocumentType;
-    description?: string | null;
-    category?: string | null;
-    keywords?: string | null;
-    processId?: number | null;
-    procedureId?: number | null;
-    ownerUserId?: number | null;
-    isActive: boolean;
-    currentVersionNumber?: string | null;
-    currentVersionStatus?: DocumentStatus | null;
-  }): void {
+  private patchDocument(document: DocumentResponse): void {
     this.documentForm.patchValue({
       code: document.code,
       title: document.title,
@@ -312,8 +416,10 @@ export class DocumentFormComponent implements OnInit {
       initialVersionStatus: document.currentVersionStatus ?? 'BROUILLON',
       initialRevisionComment: '',
       initialEffectiveDate: '',
-      initialExpiryDate: ''
+      initialExpiryDate: '',
+      signature: document.signature ?? null
     });
+    this.signaturePreview = document.signature ?? null;
   }
 
   private loadProceduresForProcess(processId: number, selectedProcedureId: number | null): void {

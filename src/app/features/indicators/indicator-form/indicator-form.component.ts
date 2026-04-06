@@ -76,7 +76,7 @@ export class IndicatorFormComponent implements OnInit {
     private readonly processService: ProcessService,
     private readonly userService: CoreUserService,
     private readonly indicatorService: IndicatorService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');

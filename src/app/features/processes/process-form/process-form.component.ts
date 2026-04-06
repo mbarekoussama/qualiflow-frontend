@@ -140,7 +140,7 @@ export class ProcessFormComponent implements OnInit {
     private readonly processService: ProcessService,
     private readonly userService: UserService,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');

@@ -97,7 +97,18 @@
                                     <div class="form-grid">
                                         <mat-form-field appearance="outline">
                                             <mat-label>Date de naissance</mat-label>
-                                            <input matInput type="date" formControlName="birthDate">
+                                            <input title="date" matInput type="date" formControlName="birthDate">
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Numéro</mat-label>
+                                            <input matInput formControlName="phone" placeholder="Votre numéro">
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div class="form-grid">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Ville</mat-label>
+                                            <input matInput formControlName="city" placeholder="Votre ville">
                                         </mat-form-field>
                                         <mat-form-field appearance="outline">
                                             <mat-label>Langue de la plateforme</mat-label>
@@ -250,7 +261,7 @@
                                     <div class="form-grid">
                                         <mat-form-field appearance="outline">
                                             <mat-label>Nom de l'organisation</mat-label>
-                                            <input matInput formControlName="name">
+                                            <input title="organisation" matInput formControlName="name">
                                         </mat-form-field>
                                         <mat-form-field appearance="outline">
                                             <mat-label>Type d'établissement</mat-label>

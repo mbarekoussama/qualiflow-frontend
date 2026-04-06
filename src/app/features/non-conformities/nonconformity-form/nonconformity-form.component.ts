@@ -83,7 +83,7 @@ export class NonconformityFormComponent implements OnInit {
     private readonly procedureService: ProcedureService,
     private readonly userService: CoreUserService,
     private readonly notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -199,8 +199,7 @@ export class NonconformityFormComponent implements OnInit {
   private applyReferences(
     processes: ProcessListItemResponse[],
     procedures: ProcedureListItemResponse[],
-    users: UserResponse[])
-  {
+    users: UserResponse[]) {
     this.processes = processes;
     this.procedures = procedures;
     this.users = users.filter(user => user.isActive);

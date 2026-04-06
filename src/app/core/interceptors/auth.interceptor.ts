@@ -10,7 +10,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     '/api/auth/login',
     '/api/auth/refresh-token',
     '/api/auth/forgot-password',
-    '/api/auth/reset-password'
+    '/api/auth/reset-password',
+    '/api/auth/verify-email',
+    '/api/auth/verify-email-code',
+    '/api/auth/resend-verification-code'
   ];
   const isPublicAuthEndpoint = publicAuthEndpoints.some(endpoint => req.url.includes(endpoint));
 

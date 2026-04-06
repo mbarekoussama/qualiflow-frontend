@@ -93,7 +93,7 @@ export class CorrectiveActionListComponent implements OnInit {
     private readonly userService: CoreUserService,
     private readonly nonConformityService: NonConformityService,
     private readonly correctiveActionService: CorrectiveActionService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadReferences();

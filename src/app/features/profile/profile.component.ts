@@ -53,6 +53,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     firstName: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
     lastName: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
     birthDate: this.fb.control<string>(''),
+    phone: this.fb.control<string>(''),
+    city: this.fb.control<string>(''),
     preferredLanguage: this.fb.nonNullable.control<'fr' | 'en' | 'ar'>('fr', [Validators.required])
   });
 
@@ -146,6 +148,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
       firstName: raw.firstName.trim(),
       lastName: raw.lastName.trim(),
       birthDate: raw.birthDate ? raw.birthDate : null,
+      phone: raw.phone?.trim() || null,
+      city: raw.city?.trim() || null,
       preferredLanguage: raw.preferredLanguage
     };
 
@@ -296,6 +300,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
           firstName: profile.firstName,
           lastName: profile.lastName,
           birthDate: profile.birthDate ? profile.birthDate.toString().substring(0, 10) : '',
+          phone: profile.phone ?? '',
+          city: profile.city ?? '',
           preferredLanguage: profile.preferredLanguage || 'fr'
         });
       },

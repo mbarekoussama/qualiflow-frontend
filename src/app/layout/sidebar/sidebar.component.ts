@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -11,10 +11,17 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
+  @Input() sidebarOpen = false;
+  @Output() navClicked = new EventEmitter<void>();
+
   constructor(
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) { }
+
+  onNavClick(): void {
+    this.navClicked.emit();
+  }
 
   get homeRoute(): string {
     return this.isSuperAdmin ? '/super-admin/dashboard' : '/dashboard';

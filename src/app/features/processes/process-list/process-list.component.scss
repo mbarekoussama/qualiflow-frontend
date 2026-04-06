@@ -254,3 +254,18 @@ mat-paginator {
   background: var(--bg-raised) !important;
   border-top: 1px solid var(--border) !important;
 }
+
+/* ======================== RESPONSIVE ======================== */
+@media (max-width: 768px) {
+  .process-catalog-page {
+    padding: 12px;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .process-catalog-page {
+    padding: 8px;
+    gap: 12px;
+  }
+}

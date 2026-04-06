@@ -8,6 +8,17 @@ import { NotificationService } from '../services/notification.service';
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const notificationService = inject(NotificationService);
   const authService = inject(AuthService);
+  const publicAuthEndpoints = [
+    '/api/auth/register',
+    '/api/auth/login',
+    '/api/auth/refresh-token',
+    '/api/auth/forgot-password',
+    '/api/auth/reset-password',
+    '/api/auth/verify-email',
+    '/api/auth/verify-email-code',
+    '/api/auth/resend-verification-code'
+  ];
+  const isPublicAuthRequest = publicAuthEndpoints.some(endpoint => req.url.includes(endpoint));
 
   return next(req).pipe(
     catchError((error) => {
@@ -21,8 +32,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             errorMessage = `Impossible de joindre l'API (${environment.apiUrl}). Verifiez que le backend est demarre.`;
             break;
           case 401:
-            errorMessage = 'Non autorise. Veuillez vous reconnecter.';
-            authService.forceLogout();
+            errorMessage = error.error?.message || 'Non autorise. Veuillez vous reconnecter.';
+            if (!isPublicAuthRequest) {
+              authService.forceLogout();
+            }
             break;
           case 403:
             errorMessage = 'Acces interdit.';

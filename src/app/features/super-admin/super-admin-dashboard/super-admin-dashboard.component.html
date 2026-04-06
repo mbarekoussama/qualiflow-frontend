@@ -1,55 +1,5 @@
 <section class="super-admin-dashboard-page">
   <!-- DASHBOARD HEADER BANNER -->
-  <div class="dashboard-header-card">
-    <div class="header-content">
-      <div class="title-section">
-        <h1>Dashboard Super Admin</h1>
-        <p>Vue globale multi-organisations QualiFlow — <span class="date">{{ now | date: 'dd MMMM yyyy' }}</span></p>
-      </div>
-      <div class="header-actions">
-        <button mat-icon-button (click)="refresh()" matTooltip="Rafraîchir les données">
-          <mat-icon style="color: white">refresh</mat-icon>
-        </button>
-      </div>
-    </div>
-
-    <!-- INTEGRATED FILTERS -->
-    <form class="header-filters shadow-sm" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-      <div class="filter-item">
-        <mat-form-field appearance="outline">
-          <mat-label>Période d'analyse</mat-label>
-          <mat-select formControlName="period">
-            <mat-option *ngFor="let period of periods" [value]="period.value">{{ period.label }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="filter-item">
-        <mat-form-field appearance="outline">
-          <mat-label>Organisation Cible</mat-label>
-          <mat-select formControlName="organizationId">
-            <mat-option [value]="null">Toutes les organisations</mat-option>
-            <mat-option *ngFor="let org of organizations" [value]="org.id">{{ org.name }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="filter-item">
-        <mat-form-field appearance="outline">
-          <mat-label>Filtrer par Statut</mat-label>
-          <mat-select formControlName="status">
-            <mat-option value="">Tous les statuts</mat-option>
-            <mat-option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="filter-actions">
-        <button mat-flat-button class="btn-apply shadow-sm" type="submit">Appliquer</button>
-        <button mat-stroked-button class="btn-reset" type="button" (click)="resetFilters()">Reset</button>
-      </div>
-    </form>
-  </div>
 
   <!-- LOADING STATE -->
   <mat-card *ngIf="loading" class="loading-card">
