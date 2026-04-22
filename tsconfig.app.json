@@ -8,12 +8,6 @@
     "src/main.ts"
   ],
   "include": [
-    "src/**/*.ts",
     "src/**/*.d.ts"
-  ],
-  "exclude": [
-    "src/app/app.module.ts",
-    "src/app/features/auth/components/**/*",
-    "src/app/features/processus/**/*"
   ]
 }
