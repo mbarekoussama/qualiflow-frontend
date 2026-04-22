@@ -11,7 +11,7 @@ export class ToastService {
     const config: MatSnackBarConfig = {
       duration,
       horizontalPosition: 'center',
-      verticalPosition: 'bottom',
+      verticalPosition: 'top',
       panelClass: ['success-toast']
     };
     this.snackBar.open(`✓ ${message}`, '', config);
@@ -21,7 +21,7 @@ export class ToastService {
     const config: MatSnackBarConfig = {
       duration,
       horizontalPosition: 'center',
-      verticalPosition: 'bottom',
+      verticalPosition: 'top',
       panelClass: ['error-toast']
     };
     this.snackBar.open(`✕ ${message}`, '', config);
@@ -31,7 +31,7 @@ export class ToastService {
     const config: MatSnackBarConfig = {
       duration,
       horizontalPosition: 'center',
-      verticalPosition: 'bottom',
+      verticalPosition: 'top',
       panelClass: ['warning-toast']
     };
     this.snackBar.open(`⚠ ${message}`, '', config);
@@ -41,7 +41,7 @@ export class ToastService {
     const config: MatSnackBarConfig = {
       duration,
       horizontalPosition: 'center',
-      verticalPosition: 'bottom',
+      verticalPosition: 'top',
       panelClass: ['info-toast']
     };
     this.snackBar.open(`ℹ ${message}`, '', config);

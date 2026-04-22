@@ -1,7 +1,7 @@
 <section class="procedure-details-page">
     <div class="loading-overlay" *ngIf="loading">
         <mat-spinner diameter="40"></mat-spinner>
-        <span>Chargement de la procédure...</span>
+        <span>{{ 'detail.procedure.loading' | t }}</span>
     </div>
 
     <ng-container *ngIf="!loading && details">
@@ -10,7 +10,7 @@
             <div class="page-header-left">
                 <div class="page-subtitle">
                     <button type="button" class="link-button" (click)="backToList()">
-                        <mat-icon>arrow_back</mat-icon> Retour à la liste
+                        <mat-icon>arrow_back</mat-icon> {{ 'common.backToList' | t }}
                     </button>
                 </div>
                 <h1 class="page-title">{{ details.procedure.code }} — {{ details.procedure.title }}</h1>
@@ -19,7 +19,7 @@
             <div class="page-header-right">
                 <button *ngIf="canWrite" mat-flat-button color="primary" class="new-process-btn"
                     (click)="editProcedure()">
-                    <mat-icon>edit</mat-icon> Modifier
+                    <mat-icon>edit</mat-icon> {{ 'common.edit' | t }}
                 </button>
             </div>
         </div>
@@ -28,7 +28,7 @@
             <!-- SUMMARY CARDS -->
             <div class="summary-cards">
                 <div class="summary-card">
-                    <span class="sc-label">Processus Parent</span>
+                    <span class="sc-label">{{ 'detail.procedure.parentProcess' | t }}</span>
                     <div class="sc-value">
                         <mat-icon style="color: var(--xl-green-mid); margin-right: 8px;">hub</mat-icon>
                         {{ details.procedure.processCode }}
@@ -37,17 +37,17 @@
                 </div>
 
                 <div class="summary-card">
-                    <span class="sc-label">Responsable</span>
+                    <span class="sc-label">{{ 'common.responsible' | t }}</span>
                     <div class="sc-value">
                         <div class="pilote-avatar" *ngIf="details.procedure.responsibleFullName">
                             {{ details.procedure.responsibleFullName.charAt(0) }}
                         </div>
-                        {{ details.procedure.responsibleFullName || 'Non assigné' }}
+                        {{ details.procedure.responsibleFullName || ('common.toDefine' | t) }}
                     </div>
                 </div>
 
                 <div class="summary-card">
-                    <span class="sc-label">Statut Actuel</span>
+                    <span class="sc-label">{{ 'detail.nc.currentStatus' | t }}</span>
                     <div class="sc-value">
                         <span class="tag" [ngClass]="details.procedure.status === 'ACTIF' ? 'conforme' : 'perime'">
                             {{ getStatusLabel(details.procedure.status) }}
@@ -60,30 +60,30 @@
                 <!-- GENERAL INFO -->
                 <mat-card class="info-card">
                     <div class="card-header-clean">
-                        <h2>Informations Générales</h2>
+                        <h2>{{ 'form.indicator.generalInfo' | t }}</h2>
                         <mat-icon>info</mat-icon>
                     </div>
                     <div class="info-grid">
                         <div class="info-item full-width">
-                            <label>Description</label>
-                            <p>{{ details.procedure.description || 'Aucune description fournie.' }}</p>
+                            <label>{{ 'detail.indicator.description' | t }}</label>
+                            <p>{{ details.procedure.description || ('detail.nc.noDescription' | t) }}</p>
                         </div>
                         <div class="info-item">
-                            <label>Objectif</label>
-                            <p>{{ details.procedure.objective || 'Non renseigné.' }}</p>
+                            <label>{{ 'form.procedure.mainObjective' | t }}</label>
+                            <p>{{ details.procedure.objective || ('detail.procedure.notProvided' | t) }}</p>
                         </div>
                         <div class="info-item">
-                            <label>Scope / Périmètre</label>
-                            <p>{{ details.procedure.scope || 'Non renseigné.' }}</p>
+                            <label>{{ 'form.procedure.scope' | t }}</label>
+                            <p>{{ details.procedure.scope || ('detail.procedure.notProvided' | t) }}</p>
                         </div>
                         <div class="info-item">
-                            <label>Créée le</label>
+                            <label>{{ 'common.createdAt' | t }}</label>
                             <p>{{ details.procedure.createdAt | date: 'dd/MM/yyyy' }}</p>
                         </div>
                         <div class="info-item">
-                            <label>Dernière mise à jour</label>
+                            <label>{{ 'detail.procedure.lastUpdated' | t }}</label>
                             <p>{{ details.procedure.updatedAt ? (details.procedure.updatedAt | date: 'dd/MM/yyyy') :
-                                'Jamais' }}</p>
+                                ('detail.procedure.never' | t) }}</p>
                         </div>
                     </div>
                 </mat-card>
@@ -91,10 +91,10 @@
                 <!-- INSTRUCTIONS -->
                 <mat-card class="info-card instructions-section">
                     <div class="card-header-clean">
-                        <h2>Instructions ({{ details.instructions.length }})</h2>
+                        <h2>{{ 'detail.procedure.instructions' | t }} ({{ details.instructions.length }})</h2>
                         <button mat-button color="primary" *ngIf="canWrite && !editingInstructionId"
                             (click)="instructionForm.reset({status: 'ACTIF', orderIndex: details.instructions.length + 1})">
-                            <mat-icon>add</mat-icon> Ajouter
+                            <mat-icon>add</mat-icon> {{ 'detail.nc.add' | t }}
                         </button>
                     </div>
 
@@ -103,15 +103,15 @@
                         <form [formGroup]="instructionForm" (ngSubmit)="saveInstruction()"
                             class="instruction-inline-form">
                             <mat-form-field appearance="outline" style="width: 100px;">
-                                <mat-label>Ordre</mat-label>
+                                <mat-label>{{ 'detail.procedure.order' | t }}</mat-label>
                                 <input matInput type="number" formControlName="orderIndex" />
                             </mat-form-field>
                             <mat-form-field appearance="outline" style="width: 120px;">
-                                <mat-label>Code</mat-label>
+                                <mat-label>{{ 'common.code' | t }}</mat-label>
                                 <input matInput formControlName="code" />
                             </mat-form-field>
                             <mat-form-field appearance="outline" style="flex: 1;">
-                                <mat-label>Titre de l'instruction</mat-label>
+                                <mat-label>{{ 'detail.procedure.instructionTitle' | t }}</mat-label>
                                 <input matInput formControlName="title" />
                             </mat-form-field>
                             <div class="form-actions-inline">
@@ -129,7 +129,7 @@
 
                     <div class="empty-box" *ngIf="details.instructions.length === 0">
                         <mat-icon>assignment_late</mat-icon>
-                        <span>Aucune instruction associée.</span>
+                        <span>{{ 'detail.procedure.noInstruction' | t }}</span>
                     </div>
 
                     <div class="table-container" *ngIf="details.instructions.length > 0">
@@ -145,12 +145,12 @@
                             </ng-container>
 
                             <ng-container matColumnDef="title">
-                                <th mat-header-cell *matHeaderCellDef>Instruction</th>
+                                <th mat-header-cell *matHeaderCellDef>{{ 'detail.procedure.instruction' | t }}</th>
                                 <td mat-cell *matCellDef="let item">{{ item.title }}</td>
                             </ng-container>
 
                             <ng-container matColumnDef="status">
-                                <th mat-header-cell *matHeaderCellDef style="width: 100px;">Statut</th>
+                                <th mat-header-cell *matHeaderCellDef style="width: 100px;">{{ 'common.status' | t }}</th>
                                 <td mat-cell *matCellDef="let item">
                                     <span class="tag" [ngClass]="item.status === 'ACTIF' ? 'conforme' : 'perime'"
                                         style="font-size: 10px; padding: 1px 6px;">

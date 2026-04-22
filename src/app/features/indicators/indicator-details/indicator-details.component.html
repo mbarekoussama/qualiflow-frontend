@@ -13,11 +13,11 @@
         <div class="ph-actions">
             <button class="btn btn-secondary" (click)="toggleStatus()">
                 <mat-icon>{{ details.indicator.status === 'ACTIF' ? 'pause' : 'play_arrow' }}</mat-icon>
-                {{ details.indicator.status === 'ACTIF' ? 'Désactiver' : 'Activer' }}
+                {{ details.indicator.status === 'ACTIF' ? ('detail.indicator.deactivate' | t) : ('detail.indicator.activate' | t) }}
             </button>
             <button class="btn btn-primary" (click)="edit()" *ngIf="canWrite">
                 <mat-icon>edit</mat-icon>
-                Modifier
+                {{ 'common.edit' | t }}
             </button>
             <button class="btn btn-danger" (click)="delete()" *ngIf="canWrite">
                 <mat-icon>delete_outline</mat-icon>
@@ -29,32 +29,32 @@
         <!-- SUMMARY CARDS -->
         <div class="summary-row">
             <div class="s-item">
-                <span class="l">Statut</span>
+                <span class="l">{{ 'common.status' | t }}</span>
                 <span class="v" [style.color]="details.indicator.status === 'ACTIF' ? '#00875a' : '#64748b'">{{
                     statusLabel }}</span>
             </div>
             <div class="s-item">
-                <span class="l">Fréquence</span>
+                <span class="l">{{ 'detail.indicator.frequency' | t }}</span>
                 <span class="v">{{ frequencyLabel }}</span>
             </div>
             <div class="s-item">
-                <span class="l">Objectif Cible</span>
+                <span class="l">{{ 'detail.indicator.targetObjective' | t }}</span>
                 <span class="v">{{ details.indicator.targetValue }} <small>{{ details.indicator.unit }}</small></span>
             </div>
             <div class="s-item" [class.danger]="details.isInAlert">
-                <span class="l">État d'Alerte</span>
-                <span class="v">{{ details.isInAlert ? '⚠ Alerte' : '✓ Conforme' }}</span>
+                <span class="l">{{ 'detail.indicator.alertState' | t }}</span>
+                <span class="v">{{ details.isInAlert ? ('list.indicators.alert' | t) : ('list.indicators.compliant' | t) }}</span>
             </div>
         </div>
 
         <!-- TABS -->
         <div class="view-tabs">
             <button class="tab-btn" [class.active]="activeTab === 'overview'"
-                (click)="selectTab('overview')">Synthèse</button>
+                (click)="selectTab('overview')">{{ 'detail.indicator.overview' | t }}</button>
             <button class="tab-btn" [class.active]="activeTab === 'chart'"
-                (click)="selectTab('chart')">Graphique</button>
+                (click)="selectTab('chart')">{{ 'detail.indicator.chart' | t }}</button>
             <button class="tab-btn" [class.active]="activeTab === 'values'"
-                (click)="selectTab('values')">Historique</button>
+                (click)="selectTab('values')">{{ 'detail.indicator.history' | t }}</button>
         </div>
 
         <div class="tab-content">
@@ -62,22 +62,22 @@
             <div class="overview-grid" *ngIf="activeTab === 'overview'">
                 <div class="info-panel">
                     <div class="panel-section">
-                        <div class="section-title">Informations Générales</div>
+                        <div class="section-title">{{ 'detail.indicator.generalInfo' | t }}</div>
                         <div class="detail-row">
-                            <label>Description</label>
-                            <p>{{ details.indicator.description || 'Aucune description disponible.' }}</p>
+                            <label>{{ 'detail.indicator.description' | t }}</label>
+                            <p>{{ details.indicator.description || ('detail.indicator.noDescription' | t) }}</p>
                         </div>
                         <div class="detail-row">
-                            <label>Méthode de calcul</label>
+                            <label>{{ 'detail.indicator.calcMethod' | t }}</label>
                             <div class="formula">{{ details.indicator.calculationMethod || '-' }}</div>
                         </div>
                         <div class="detail-grid">
                             <div class="detail-row">
-                                <label>Unité de mesure</label>
+                                <label>{{ 'detail.indicator.unit' | t }}</label>
                                 <div class="val">{{ details.indicator.unit || '-' }}</div>
                             </div>
                             <div class="detail-row">
-                                <label>Responsable</label>
+                                <label>{{ 'common.responsible' | t }}</label>
                                 <div class="val">{{ details.responsible.fullName }}</div>
                             </div>
                         </div>
@@ -86,10 +86,10 @@
 
                 <div class="info-panel">
                     <div class="panel-section">
-                        <div class="section-title">Alertes Récentes</div>
+                        <div class="section-title">{{ 'detail.indicator.recentAlerts' | t }}</div>
                         <div class="empty-state-mini" *ngIf="details.alerts.length === 0">
                             <mat-icon>check_circle</mat-icon>
-                            <span>Aucune alerte enregistrée</span>
+                            <span>{{ 'detail.indicator.noAlerts' | t }}</span>
                         </div>
                         <div class="alerts-mini-list" *ngIf="details.alerts.length > 0">
                             <div class="mini-alert" *ngFor="let alert of details.alerts.slice(0, 5)">
@@ -97,7 +97,7 @@
                                 <div class="ma-content">
                                     <div class="ma-date">{{ alert.measuredAt | date: 'dd MMMM yyyy' }}</div>
                                     <div class="ma-msg">{{ alert.message }}</div>
-                                    <div class="ma-val">Mesure: {{ alert.measuredValue }} · Cible: {{ alert.targetValue
+                                    <div class="ma-val">{{ 'detail.indicator.measure' | t }}: {{ alert.measuredValue }} · {{ 'detail.indicator.target' | t }}: {{ alert.targetValue
                                         }}</div>
                                 </div>
                             </div>
@@ -109,16 +109,16 @@
             <!-- CHART -->
             <div class="chart-container-flat" *ngIf="activeTab === 'chart'">
                 <div class="panel-section">
-                    <div class="section-title">Evolution de la Performance</div>
+                    <div class="section-title">{{ 'detail.indicator.performanceTrend' | t }}</div>
                     <div class="chart-legend">
-                        <span class="l-item target">Objectif</span>
-                        <span class="l-item threshold">Alerte</span>
-                        <span class="l-item actual">Réel</span>
+                        <span class="l-item target">{{ 'detail.indicator.target' | t }}</span>
+                        <span class="l-item threshold">{{ 'list.indicators.alert' | t }}</span>
+                        <span class="l-item actual">{{ 'detail.indicator.actual' | t }}</span>
                     </div>
 
                     <div class="empty-state-mini" *ngIf="!chart || chart.values.length === 0">
                         <mat-icon>show_chart</mat-icon>
-                        <span>Données insuffisantes</span>
+                        <span>{{ 'detail.indicator.notEnoughData' | t }}</span>
                     </div>
 
                     <div class="visual-chart" *ngIf="chart && chart.values.length > 0">
@@ -147,5 +147,5 @@
 
 <div class="loading-box-center" *ngIf="loading">
     <mat-spinner diameter="40"></mat-spinner>
-    <span>Chargement de l'indicateur...</span>
+    <span>{{ 'detail.indicator.loading' | t }}</span>
 </div>

@@ -177,6 +177,9 @@
                 [matTooltip]="row.status === 'ACTIF' ? 'Suspendre' : 'Activer'">
                 <mat-icon>{{ row.status === 'ACTIF' ? 'pause_circle' : 'play_circle' }}</mat-icon>
               </button>
+              <button mat-icon-button class="btn-delete" (click)="deleteOrganization(row)" matTooltip="Supprimer">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
             </div>
           </td>
         </ng-container>

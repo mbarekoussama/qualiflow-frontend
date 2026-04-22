@@ -13,6 +13,8 @@ import { Subscription } from 'rxjs';
 import {
   AuthService,
   ChangePasswordRequest,
+  ConfirmEmailChangeRequest,
+  RequestEmailChangeCodeRequest,
   UpdateProfileRequest
 } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
@@ -64,6 +66,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
     confirmPassword: this.fb.nonNullable.control('', [Validators.required])
   });
 
+  readonly emailChangeForm = this.fb.group({
+    newEmail: this.fb.nonNullable.control('', [Validators.required, Validators.email]),
+    code: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)])
+  });
+
   readonly organizationForm = this.fb.group({
     name: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
     type: this.fb.nonNullable.control('INSTITUT', [Validators.required]),
@@ -78,8 +85,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   savingProfile = false;
   changingPassword = false;
   uploadingProfilePhoto = false;
+  requestingEmailCode = false;
+  confirmingEmailChange = false;
   savingOrganization = false;
   uploadingLogo = false;
+  sendingResetEmail = false;
 
   organization: OrganizationResponse | null = null;
   logoObjectUrl: string | null = null;
@@ -197,6 +207,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
+  initiatePasswordReset(): void {
+    const user = this.currentUser;
+    if (!user || !user.email) {
+      return;
+    }
+
+    this.sendingResetEmail = true;
+    this.authService.forgotPassword({ email: user.email }).subscribe({
+      next: () => {
+        this.sendingResetEmail = false;
+        this.notificationService.showSuccess(`Un code de réinitialisation a été envoyé à ${user.email}`);
+      },
+      error: () => {
+        this.sendingResetEmail = false;
+        this.notificationService.showError('Impossible d\'envoyer le code de réinitialisation.');
+      }
+    });
+  }
+
   onProfilePhotoSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.selectedProfilePhoto = target.files?.[0] ?? null;
@@ -204,6 +233,57 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   removeSelectedProfilePhoto(): void {
     this.selectedProfilePhoto = null;
+  }
+
+  requestEmailChangeCode(): void {
+    const newEmailControl = this.emailChangeForm.controls.newEmail;
+    if (newEmailControl.invalid) {
+      newEmailControl.markAsTouched();
+      return;
+    }
+
+    const payload: RequestEmailChangeCodeRequest = {
+      newEmail: newEmailControl.value.trim().toLowerCase()
+    };
+
+    this.requestingEmailCode = true;
+    this.authService.requestEmailChangeCode(payload).subscribe({
+      next: () => {
+        this.requestingEmailCode = false;
+        this.notificationService.showSuccess('Code de verification envoye au nouvel email.');
+      },
+      error: () => {
+        this.requestingEmailCode = false;
+        this.notificationService.showError('Impossible d\'envoyer le code de verification.');
+      }
+    });
+  }
+
+  confirmEmailChange(): void {
+    if (this.emailChangeForm.invalid) {
+      this.emailChangeForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.emailChangeForm.getRawValue();
+    const payload: ConfirmEmailChangeRequest = {
+      newEmail: raw.newEmail.trim().toLowerCase(),
+      code: raw.code.trim()
+    };
+
+    this.confirmingEmailChange = true;
+    this.authService.confirmEmailChange(payload).subscribe({
+      next: () => {
+        this.confirmingEmailChange = false;
+        this.emailChangeForm.patchValue({ code: '' });
+        this.notificationService.showSuccess('Email modifie avec succes.');
+        this.loadProfile();
+      },
+      error: () => {
+        this.confirmingEmailChange = false;
+        this.notificationService.showError('Code invalide ou changement d\'email impossible.');
+      }
+    });
   }
 
   uploadProfilePhoto(): void {

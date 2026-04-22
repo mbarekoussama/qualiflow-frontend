@@ -9,6 +9,7 @@ interface DialogData {
   message: string;
   confirmText?: string;
   cancelText?: string;
+  type?: 'warning' | 'danger' | 'info' | 'success';
 }
 
 @Component({
@@ -27,7 +28,7 @@ export class ConfirmDialogComponent {
   constructor(
     private dialogRef: MatDialogRef<ConfirmDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
-  ) {}
+  ) { }
 
   onConfirm(): void {
     this.dialogRef.close(true);

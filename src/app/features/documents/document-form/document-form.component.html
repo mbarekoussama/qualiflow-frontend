@@ -3,21 +3,21 @@
   <div class="page-header-bar">
     <div class="page-header-left">
       <div class="page-subtitle">
-        <button type="button" class="link-button" (click)="goBack()">
+        <button type="button" class="btn-back" (click)="goBack()">
           <mat-icon>arrow_back</mat-icon> Retour
         </button>
       </div>
-      <h1 class="page-title">{{ title }}</h1>
+      <h1 class="page-title">{{ isEdit ? ('form.document.editTitle' | t) : ('form.document.newTitle' | t) }}</h1>
     </div>
     <div class="page-header-right">
-      <span class="form-status-hint">Tous les champs avec * sont obligatoires</span>
+      <span class="form-status-hint">{{ 'common.requiredHint' | t }}</span>
     </div>
   </div>
 
   <!-- LOADING STATE -->
   <div class="loading-overlay" *ngIf="loading">
     <mat-spinner diameter="40"></mat-spinner>
-    <span>Initialisation du formulaire...</span>
+    <span>{{ 'common.initializing' | t }}</span>
   </div>
 
   <!-- FORM CONTAINER -->
@@ -105,6 +105,16 @@
             <mat-option [value]="null">-- Non assigné --</mat-option>
             <mat-option *ngFor="let user of owners" [value]="user.id">
               {{ user.firstName }} {{ user.lastName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Departement (optionnel)</mat-label>
+          <mat-select formControlName="departmentId">
+            <mat-option [value]="null">-- Aucun departement --</mat-option>
+            <mat-option *ngFor="let department of departments" [value]="department.id">
+              {{ department.code }} - {{ department.name }}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -236,12 +246,12 @@
 
     <!-- FORM ACTIONS BAR -->
     <div class="form-actions-bar">
-      <button mat-button type="button" (click)="goBack()" [disabled]="saving">Annuler</button>
+      <button mat-button type="button" (click)="goBack()" [disabled]="saving">{{ 'common.cancel' | t }}</button>
       <div class="spacer"></div>
       <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="saving">
         <mat-icon *ngIf="!saving">check_circle</mat-icon>
         <mat-spinner *ngIf="saving" diameter="20"></mat-spinner>
-        <span>{{ isEdit ? 'Sauvegarder les modifications' : 'Créer le document GED' }}</span>
+        <span>{{ isEdit ? ('form.document.saveChanges' | t) : ('form.document.create' | t) }}</span>
       </button>
     </div>
   </form>

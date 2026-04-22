@@ -113,6 +113,15 @@ export interface ResendVerificationCodeRequest {
   email: string;
 }
 
+export interface RequestEmailChangeCodeRequest {
+  newEmail: string;
+}
+
+export interface ConfirmEmailChangeRequest {
+  newEmail: string;
+  code: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -235,6 +244,20 @@ export class AuthService {
 
   resendVerificationCode(request: ResendVerificationCodeRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/resend-verification-code`, request);
+  }
+
+  requestEmailChangeCode(request: RequestEmailChangeCodeRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/me/email-change/request-code`, request);
+  }
+
+  confirmEmailChange(request: ConfirmEmailChangeRequest): Observable<MeResponse> {
+    return this.http.post<MeResponse>(`${this.apiUrl}/me/email-change/confirm`, request).pipe(
+      tap(user => {
+        this.currentUserSubject.next(user);
+        this.saveUserToStorage(user);
+        this.applyPlatformLanguage(user.preferredLanguage);
+      })
+    );
   }
 
   getProfile(): Observable<MeResponse> {

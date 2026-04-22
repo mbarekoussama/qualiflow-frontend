@@ -1,6 +1,6 @@
 .profile-container {
   padding: 0;
-  background: var(--bg-main, #f8f9fa);
+  background: var(--bg-body);
   min-height: calc(100vh - var(--topbar-h));
   display: flex;
   flex-direction: column;
@@ -29,7 +29,7 @@
   width: 110px;
   height: 110px;
   border-radius: 50%;
-  background: white;
+  background: var(--bg-white);
   border: 4px solid rgba(255, 255, 255, 0.3);
   overflow: hidden;
   display: flex;
@@ -114,15 +114,15 @@
 }
 
 ::ng-deep .mat-mdc-tab-group {
-  background: white;
+  background: var(--bg-white);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 ::ng-deep .mat-mdc-tab-header {
-  background: #fdfdfd;
-  border-bottom: 1px solid #eee;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
 }
 
 .tab-icon {
@@ -147,7 +147,7 @@
 /* MODERN CARD */
 .modern-card {
   border: none;
-  background: white;
+  background: var(--bg-white);
   border-radius: 16px;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -181,7 +181,7 @@
   padding: 16px 0;
 
   mat-icon {
-    background: #f0f7f0;
+    background: var(--xl-green-xlight);
     color: var(--xl-green-mid);
     padding: 10px;
     border-radius: 12px;
@@ -199,7 +199,7 @@
 
   mat-card-subtitle {
     font-size: 13px;
-    color: #888;
+    color: var(--text-secondary);
   }
 }
 
@@ -223,7 +223,7 @@
   justify-content: flex-end;
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px dashed #eee;
+  border-top: 1px dashed var(--border);
 }
 
 /* SPECIFIC CARDS */
@@ -233,7 +233,7 @@
 
 .security-card {
   grid-column: 1 / 2;
-  background: #fcfcfc;
+  background: var(--bg-raised);
 }
 
 .info-card {
@@ -250,6 +250,32 @@
   }
 }
 
+.security-footer {
+  justify-content: space-between !important;
+  align-items: center;
+}
+
+.forgot-pwd-link {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: var(--xl-green-mid);
+    background: var(--xl-green-xlight);
+  }
+}
+
 /* UPLOAD AREAS */
 .upload-area {
   display: flex;
@@ -258,17 +284,17 @@
 }
 
 .file-drop-zone {
-  border: 2px dashed #ccd6cc;
+  border: 2px dashed var(--border-mid);
   border-radius: 12px;
   padding: 30px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
-  background: #fafafa;
+  background: var(--bg-raised);
 
   &:hover {
     border-color: var(--xl-green-mid);
-    background: #f0fbee;
+    background: var(--xl-green-xlight);
   }
 
   mat-icon {
@@ -281,7 +307,7 @@
   p {
     margin: 0;
     font-weight: 600;
-    color: #555;
+    color: var(--text-secondary);
   }
 }
 
@@ -309,9 +335,9 @@
 .logo-visual {
   width: 140px;
   height: 140px;
-  background: white;
+  background: var(--bg-white);
   border-radius: 12px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -328,7 +354,7 @@
 .logo-empty,
 .logo-pending {
   text-align: center;
-  color: #aaa;
+  color: var(--text-muted);
 
   mat-icon {
     font-size: 48px;
@@ -342,8 +368,45 @@
   }
 }
 
+:host-context(.dark-theme) {
+  ::ng-deep .mat-mdc-tab {
+    color: var(--text-secondary) !important;
+  }
+
+  ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+    color: var(--text-primary) !important;
+  }
+
+  ::ng-deep .mat-mdc-tab-header-pagination-chevron {
+    border-color: var(--text-secondary) !important;
+  }
+
+  .org-badge {
+    color: #1f2937;
+  }
+}
+
 .upload-zone-compact {
   flex-grow: 1;
+}
+
+/* Material form field prefix icon alignment (MDC) */
+:host ::ng-deep .modern-form .mat-mdc-form-field-icon-prefix {
+  padding-right: 8px;
+}
+
+:host ::ng-deep .modern-form .mat-mdc-form-field-icon-prefix > .mat-icon {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 18px !important;
+  color: var(--text-muted) !important;
+}
+
+:host ::ng-deep .modern-form .mat-mdc-text-field-wrapper {
+  border-radius: 10px;
 }
 
 /* UTILS */

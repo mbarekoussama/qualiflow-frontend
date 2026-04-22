@@ -53,6 +53,23 @@ export interface OrganizationAdminSummaryResponse {
   createdAt: string;
 }
 
+export interface OrganizationUserSummaryResponse {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface OrganizationUsersListResponse {
+  total: number;
+  page: number;
+  pageSize: number;
+  items: OrganizationUserSummaryResponse[];
+}
+
 export interface OrganizationListItemResponse {
   id: number;
   name: string;

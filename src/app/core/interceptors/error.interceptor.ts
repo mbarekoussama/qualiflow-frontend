@@ -19,10 +19,28 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     '/api/auth/resend-verification-code'
   ];
   const isPublicAuthRequest = publicAuthEndpoints.some(endpoint => req.url.includes(endpoint));
+  const isNotificationRequest = req.url.includes('/api/notifications') || req.url.includes('/hubs/notifications');
 
   return next(req).pipe(
     catchError((error) => {
+      // Missing org logo is an expected state for many tenants.
+      // Let callers handle fallback rendering without a global toast.
+      if (
+        error?.status === 404 &&
+        req.method === 'GET' &&
+        req.url.includes('/api/organizations/my/logo')
+      ) {
+        return throwError(() => error);
+      }
+
       let errorMessage = 'Une erreur est survenue';
+      const shouldSilenceNotificationError =
+        isNotificationRequest &&
+        (error?.status === 401 || error?.status === 403);
+
+      if (shouldSilenceNotificationError) {
+        return throwError(() => error);
+      }
 
       if (error.error instanceof ErrorEvent) {
         errorMessage = `Erreur: ${error.error.message}`;
@@ -33,7 +51,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             break;
           case 401:
             errorMessage = error.error?.message || 'Non autorise. Veuillez vous reconnecter.';
-            if (!isPublicAuthRequest) {
+            if (!isPublicAuthRequest && !isNotificationRequest) {
               authService.forceLogout();
             }
             break;

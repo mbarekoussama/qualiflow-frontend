@@ -1,7 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface Feature {
     icon: string;
@@ -109,9 +110,21 @@ export class HomeComponent implements OnInit {
         { title: 'Optimiser', desc: 'Suivez les KPI et améliorez la qualité.' }
     ];
 
-    constructor() { }
+    constructor(
+        private authService: AuthService,
+        private router: Router
+    ) { }
 
     ngOnInit(): void {
+        if (this.authService.isAuthenticated()) {
+            const user = this.authService.getCurrentUser();
+            if (user?.role === 'SUPER_ADMIN') {
+                this.router.navigate(['/super-admin/dashboard']);
+            } else {
+                this.router.navigate(['/dashboard']);
+            }
+            return;
+        }
         window.scrollTo(0, 0);
     }
 
@@ -124,18 +137,9 @@ export class HomeComponent implements OnInit {
         this.isMenuOpen = !this.isMenuOpen;
     }
 
-    contactForm = {
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-    };
 
-    onSubmitContact() {
-        console.log('Contact form submitted:', this.contactForm);
-        alert('Merci pour votre message ! Notre équipe vous contactera sous peu.');
-        this.contactForm = { name: '', email: '', subject: '', message: '' };
-    }
+
+
 
     scrollToSection(sectionId: string) {
         const element = document.getElementById(sectionId);

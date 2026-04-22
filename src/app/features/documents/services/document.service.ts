@@ -7,11 +7,13 @@ import {
   CreateDocumentRequest,
   CreateDocumentVersionRequest,
   DocumentDetailsResponse,
+  DocumentExpiringResponse,
   DocumentQueryParams,
   DocumentResponse,
   DocumentStatisticsResponse,
   DocumentVersionResponse,
   PagedDocumentResponse,
+  UpdateDocumentStatusRequest,
   UpdateDocumentRequest,
   UpdateDocumentVersionStatusRequest
 } from '../models/document.models';
@@ -54,6 +56,14 @@ export class DocumentService {
 
   getDocumentStatistics(): Observable<DocumentStatisticsResponse> {
     return this.apiService.get<DocumentStatisticsResponse>(`${this.endpoint}/statistics`);
+  }
+
+  getExpiringDocuments(withinDays = 30): Observable<DocumentExpiringResponse[]> {
+    return this.apiService.get<DocumentExpiringResponse[]>(`${this.endpoint}/expiring`, { withinDays });
+  }
+
+  updateDocumentStatus(id: number, payload: UpdateDocumentStatusRequest): Observable<DocumentResponse> {
+    return this.apiService.put<DocumentResponse>(`${this.endpoint}/${id}/status`, payload);
   }
 
   getVersions(documentId: number): Observable<DocumentVersionResponse[]> {

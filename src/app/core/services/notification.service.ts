@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationToastComponent } from '../../features/notifications/notification-toast/notification-toast.component';
+
+type NotificationCategory = 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR';
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +15,7 @@ export class NotificationService {
             duration: 3000,
             panelClass: ['success-snackbar'],
             horizontalPosition: 'center',
-            verticalPosition: 'bottom'
+            verticalPosition: 'top'
         });
     }
 
@@ -21,7 +24,7 @@ export class NotificationService {
             duration: 5000,
             panelClass: ['error-snackbar'],
             horizontalPosition: 'center',
-            verticalPosition: 'bottom'
+            verticalPosition: 'top'
         });
     }
 
@@ -30,7 +33,7 @@ export class NotificationService {
             duration: 3000,
             panelClass: ['info-snackbar'],
             horizontalPosition: 'center',
-            verticalPosition: 'bottom'
+            verticalPosition: 'top'
         });
     }
 
@@ -39,7 +42,21 @@ export class NotificationService {
             duration: 4000,
             panelClass: ['warning-snackbar'],
             horizontalPosition: 'center',
-            verticalPosition: 'bottom'
+            verticalPosition: 'top'
+        });
+    }
+
+    showRealtimeNotification(title: string, message: string, category: NotificationCategory = 'INFO'): void {
+        this.snackBar.openFromComponent(NotificationToastComponent, {
+            duration: 4000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+            panelClass: ['notification-toast-panel'],
+            data: {
+                title,
+                message,
+                category
+            }
         });
     }
 }

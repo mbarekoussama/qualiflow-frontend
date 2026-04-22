@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import {
@@ -15,6 +16,7 @@ import {
   DocumentVersionResponse
 } from '../models/document.models';
 import { DocumentService } from '../services/document.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-document-details',
@@ -26,7 +28,9 @@ import { DocumentService } from '../services/document.service';
     MatButtonModule,
     MatIconModule,
     MatTableModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    TranslatePipe
   ],
   templateUrl: './document-details.component.html',
   styleUrls: ['./document-details.component.scss']
@@ -163,6 +167,8 @@ export class DocumentDetailsComponent implements OnInit {
         return 'Approuve';
       case 'EN_REVISION':
         return 'En revision';
+      case 'REJETE':
+        return 'Rejete';
       case 'PERIME':
         return 'Perime';
       case 'ARCHIVE':

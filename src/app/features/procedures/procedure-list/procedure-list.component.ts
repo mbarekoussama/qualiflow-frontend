@@ -27,6 +27,7 @@ import {
   ProcedureStatus
 } from '../models/procedure.models';
 import { ProcedureService } from '../services/procedure.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-procedure-list',
@@ -44,7 +45,8 @@ import { ProcedureService } from '../services/procedure.service';
     MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    TranslatePipe
   ],
   templateUrl: './procedure-list.component.html',
   styleUrls: ['./procedure-list.component.scss']
@@ -88,9 +90,12 @@ export class ProcedureListComponent implements OnInit {
       pageSize: 300,
       items: [] as UserResponse[]
     };
+    const usersRequest$ = this.canWrite
+      ? this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse)))
+      : of(emptyUsersResponse);
 
     forkJoin({
-      users: this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse))),
+      users: usersRequest$,
       processes: this.processService.getProcesses({ pageNumber: 1, pageSize: 300 })
     }).subscribe({
       next: ({ users, processes }) => {
@@ -172,7 +177,8 @@ export class ProcedureListComponent implements OnInit {
         title: 'Changer le statut',
         message: `Basculer le statut de la procedure ${item.code} ?`,
         confirmText: 'Confirmer',
-        cancelText: 'Annuler'
+        cancelText: 'Annuler',
+        type: 'info'
       }
     });
 
@@ -199,7 +205,8 @@ export class ProcedureListComponent implements OnInit {
         title: 'Supprimer la procedure',
         message: `Confirmer la suppression de ${item.code} - ${item.title} ?`,
         confirmText: 'Supprimer',
-        cancelText: 'Annuler'
+        cancelText: 'Annuler',
+        type: 'danger'
       }
     });
 

@@ -28,6 +28,7 @@ import {
   ProcessType
 } from '../models/process.models';
 import { ProcessService } from '../services/process.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 type ProcessTone = 'good' | 'warning' | 'danger';
 
@@ -48,7 +49,8 @@ type ProcessTone = 'good' | 'warning' | 'danger';
     MatPaginatorModule,
     MatDialogModule,
     MatTooltipModule,
-    MatTableModule
+    MatTableModule,
+    TranslatePipe
   ],
   templateUrl: './process-list.component.html',
   styleUrls: ['./process-list.component.scss']
@@ -91,9 +93,10 @@ export class ProcessListComponent implements OnInit {
       items: [] as UserResponse[]
     };
 
-    const usersRequest = this.userService.getAll(1, 300).pipe(
-      catchError(() => of(emptyUsersResponse))
-    );
+    const canLoadPilots = this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
+    const usersRequest = canLoadPilots
+      ? this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse)))
+      : of(emptyUsersResponse);
 
     forkJoin({
       users: usersRequest,
@@ -181,7 +184,8 @@ export class ProcessListComponent implements OnInit {
         title: 'Changer le statut',
         message: `Basculer le statut du processus ${process.code} ?`,
         confirmText: 'Confirmer',
-        cancelText: 'Annuler'
+        cancelText: 'Annuler',
+        type: 'info'
       }
     });
 
@@ -208,7 +212,8 @@ export class ProcessListComponent implements OnInit {
         title: 'Supprimer le processus',
         message: `Confirmer la suppression de ${process.code} - ${process.name} ?`,
         confirmText: 'Supprimer',
-        cancelText: 'Annuler'
+        cancelText: 'Annuler',
+        type: 'danger'
       }
     });
 

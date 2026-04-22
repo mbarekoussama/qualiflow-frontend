@@ -3,15 +3,15 @@
     <div class="glass-header shadow-sm">
         <div class="header-main">
             <div class="title-section">
-                <h1><span class="highlight">Procédures</span></h1>
+                <h1><span class="highlight">{{ 'list.procedures.title' | t }}</span></h1>
                 <p class="subtitle">
-                    <span>{{ activeCount }} procédures actives dans le référentiel</span>
+                    <span>{{ activeCount }} {{ 'list.procedures.activeCount' | t }}</span>
                 </p>
             </div>
             <div class="header-actions">
                 <button *ngIf="canWrite" mat-flat-button color="primary" class="btn-create" (click)="createProcedure()">
                     <mat-icon>add</mat-icon>
-                    Nouvelle procédure
+                    {{ 'list.procedures.new' | t }}
                 </button>
             </div>
         </div>
@@ -21,17 +21,17 @@
             <div class="filter-grid">
                 <div class="filter-item">
                     <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                        <mat-label>Recherche</mat-label>
+                        <mat-label>{{ 'common.search' | t }}</mat-label>
                         <mat-icon matPrefix>search</mat-icon>
-                        <input matInput formControlName="search" placeholder="Code, titre ou description" />
+                        <input matInput formControlName="search" [placeholder]="'list.procedures.searchPlaceholder' | t" />
                     </mat-form-field>
                 </div>
 
                 <div class="filter-item">
                     <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                        <mat-label>Processus</mat-label>
+                        <mat-label>{{ 'list.processes.title' | t }}</mat-label>
                         <mat-select formControlName="processId">
-                            <mat-option [value]="null">Tous les processus</mat-option>
+                            <mat-option [value]="null">{{ 'list.procedures.allProcesses' | t }}</mat-option>
                             <mat-option *ngFor="let process of processes" [value]="process.id">
                                 {{ process.code }} - {{ process.name }}
                             </mat-option>
@@ -41,9 +41,9 @@
 
                 <div class="filter-item">
                     <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                        <mat-label>Statut</mat-label>
+                        <mat-label>{{ 'common.status' | t }}</mat-label>
                         <mat-select formControlName="status">
-                            <mat-option value="">Tous les statuts</mat-option>
+                            <mat-option value="">{{ 'common.allStatuses' | t }}</mat-option>
                             <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label
                                 }}</mat-option>
                         </mat-select>
@@ -52,9 +52,9 @@
 
                 <div class="filter-item">
                     <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                        <mat-label>Responsable</mat-label>
+                        <mat-label>{{ 'common.responsible' | t }}</mat-label>
                         <mat-select formControlName="responsibleUserId">
-                            <mat-option [value]="null">Tous les responsables</mat-option>
+                            <mat-option [value]="null">{{ 'list.procedures.allResponsibles' | t }}</mat-option>
                             <mat-option *ngFor="let responsible of responsibles" [value]="responsible.id">
                                 {{ responsible.firstName }} {{ responsible.lastName }}
                             </mat-option>
@@ -65,11 +65,11 @@
                 <div class="filter-buttons">
                     <button mat-flat-button class="btn-apply" type="submit">
                         <mat-icon>filter_list</mat-icon>
-                        Filtrer
+                        {{ 'common.filter' | t }}
                     </button>
                     <button mat-stroked-button class="btn-reset" type="button" (click)="clearFilters()">
                         <mat-icon>restart_alt</mat-icon>
-                        Réinitialiser
+                        {{ 'common.reset' | t }}
                     </button>
                 </div>
             </div>
@@ -79,21 +79,21 @@
     <mat-card class="catalog-content-card shadow-sm">
         <div class="loading-box" *ngIf="loading">
             <mat-spinner diameter="38"></mat-spinner>
-            <span>Chargement des procédures...</span>
+            <span>{{ 'list.procedures.loading' | t }}</span>
         </div>
 
         <ng-container *ngIf="!loading">
             <div class="empty-box" *ngIf="procedures.length === 0">
                 <mat-icon>inbox</mat-icon>
-                <h3>Aucune procédure trouvée</h3>
-                <p>Ajuste les filtres ou crée une procédure.</p>
+                <h3>{{ 'list.procedures.emptyTitle' | t }}</h3>
+                <p>{{ 'list.procedures.emptyText' | t }}</p>
             </div>
 
             <div class="table-container" *ngIf="procedures.length > 0">
                 <table mat-table [dataSource]="procedures" class="procedure-table">
                     <!-- Code Column -->
                     <ng-container matColumnDef="code">
-                        <th mat-header-cell *matHeaderCellDef>Code</th>
+                        <th mat-header-cell *matHeaderCellDef>{{ 'common.code' | t }}</th>
                         <td mat-cell *matCellDef="let item">
                             <span class="procedure-code-inline">{{ item.code }}</span>
                         </td>
@@ -101,7 +101,7 @@
 
                     <!-- Titre Column -->
                     <ng-container matColumnDef="title">
-                        <th mat-header-cell *matHeaderCellDef>Titre</th>
+                        <th mat-header-cell *matHeaderCellDef>{{ 'common.title' | t }}</th>
                         <td mat-cell *matCellDef="let item" class="title-cell" (click)="viewProcedure(item)">
                             <span class="procedure-title-text">{{ item.title }}</span>
                         </td>
@@ -109,7 +109,7 @@
 
                     <!-- Processus Column -->
                     <ng-container matColumnDef="process">
-                        <th mat-header-cell *matHeaderCellDef>Processus</th>
+                        <th mat-header-cell *matHeaderCellDef>{{ 'list.processes.title' | t }}</th>
                         <td mat-cell *matCellDef="let item">
                             <div class="process-link">
                                 <strong>{{ item.processCode }}</strong>
@@ -120,19 +120,19 @@
 
                     <!-- Responsable Column -->
                     <ng-container matColumnDef="responsible">
-                        <th mat-header-cell *matHeaderCellDef>Responsable</th>
+                        <th mat-header-cell *matHeaderCellDef>{{ 'common.responsible' | t }}</th>
                         <td mat-cell *matCellDef="let item">
                             <div class="responsible-cell" *ngIf="item.responsibleFullName; else noResp">
                                 <div class="resp-avatar-small">{{ item.responsibleFullName.charAt(0) }}</div>
                                 <span>{{ item.responsibleFullName }}</span>
                             </div>
-                            <ng-template #noResp><span class="empty-text">A définir</span></ng-template>
+                            <ng-template #noResp><span class="empty-text">{{ 'common.toDefine' | t }}</span></ng-template>
                         </td>
                     </ng-container>
 
                     <!-- Statut Column -->
                     <ng-container matColumnDef="status">
-                        <th mat-header-cell *matHeaderCellDef>Statut</th>
+                        <th mat-header-cell *matHeaderCellDef>{{ 'common.status' | t }}</th>
                         <td mat-cell *matCellDef="let item">
                             <span class="tag-status" [ngClass]="item.status === 'ACTIF' ? 'conforme' : 'perime'">
                                 {{ getStatusLabel(item.status) }}
@@ -142,7 +142,7 @@
 
                     <!-- Date Column -->
                     <ng-container matColumnDef="createdAt">
-                        <th mat-header-cell *matHeaderCellDef>Création</th>
+                        <th mat-header-cell *matHeaderCellDef>{{ 'common.createdAt' | t }}</th>
                         <td mat-cell *matCellDef="let item">{{ item.createdAt | date: 'dd/MM/yyyy' }}</td>
                     </ng-container>
 

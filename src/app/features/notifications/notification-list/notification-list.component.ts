@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotificationListItemResponse } from '../models/notification.models';
 
 @Component({
@@ -12,7 +13,8 @@ import { NotificationListItemResponse } from '../models/notification.models';
     CommonModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule
   ],
   templateUrl: './notification-list.component.html',
   styleUrls: ['./notification-list.component.scss']

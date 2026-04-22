@@ -1,10 +1,167 @@
 .super-admin-dashboard-page {
   padding: 24px;
-  background: var(--bg-main, #f8f9fa);
+  background: var(--bg-body);
   min-height: calc(100vh - var(--topbar-h));
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+/* ================= DARK MODE IMPROVEMENTS ================= */
+:host-context(.dark-theme) {
+  .super-admin-dashboard-page {
+    background: var(--bg-body);
+  }
+
+  ::ng-deep .dashboard-tabs {
+    .mat-mdc-tab-header {
+      background: var(--bg-white);
+      border-color: var(--border);
+    }
+
+    .mat-mdc-tab .mdc-tab__text-label {
+      color: var(--text-secondary);
+    }
+
+    .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+      color: var(--text-primary);
+    }
+  }
+
+  .kpi-card {
+    background: var(--bg-white);
+    border-color: var(--border);
+    box-shadow: none;
+
+    .kpi-title {
+      color: var(--text-secondary);
+    }
+
+    strong {
+      color: var(--text-primary);
+    }
+
+    small {
+      color: var(--text-muted);
+    }
+  }
+
+  .panel-card {
+    background: var(--bg-white);
+    border-color: var(--border);
+    box-shadow: none;
+
+    h2 {
+      color: var(--text-primary);
+    }
+  }
+
+  .chart-row {
+    span {
+      color: var(--text-secondary);
+    }
+
+    .bar-track {
+      background: color-mix(in srgb, var(--bg-raised) 75%, #ffffff 25%);
+    }
+
+    strong {
+      color: var(--text-primary);
+    }
+  }
+
+  .trend-item {
+    background: var(--bg-raised);
+
+    h3 {
+      color: var(--text-secondary);
+    }
+
+    .trend-bar-col {
+      .label {
+        color: var(--text-muted);
+      }
+
+      .value {
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .ranking-box {
+    background: var(--bg-white);
+    border-color: var(--border);
+
+    h3 {
+      color: var(--text-primary);
+    }
+
+    ul li {
+      border-bottom-color: var(--border);
+
+      span {
+        color: var(--text-secondary);
+      }
+
+      strong {
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .top-table-wrap {
+    border-color: var(--border);
+
+    table {
+      th {
+        background: var(--bg-raised);
+        color: var(--text-secondary);
+      }
+
+      td {
+        color: var(--text-primary);
+        border-top-color: var(--border);
+      }
+    }
+  }
+
+  .timeline-list::before {
+    background: var(--border);
+  }
+
+  .timeline-item {
+    .timeline-icon {
+      background: var(--bg-white);
+      border-color: var(--border);
+
+      mat-icon {
+        color: var(--text-secondary);
+      }
+    }
+
+    .timeline-content {
+      background: var(--bg-white);
+      border-color: var(--border);
+      box-shadow: none;
+
+      .content-header strong {
+        color: var(--text-primary);
+      }
+
+      p {
+        color: var(--text-secondary);
+      }
+
+      .content-meta {
+        color: var(--text-muted);
+      }
+    }
+  }
+
+  .empty-state,
+  .empty-text {
+    color: var(--text-muted);
+  }
 }
 
 /* DASHBOARD HEADER BANNER */

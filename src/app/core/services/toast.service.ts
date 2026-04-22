@@ -12,7 +12,7 @@ export class ToastService {
             duration,
             panelClass: ['success-snackbar'],
             horizontalPosition: 'center',
-            verticalPosition: 'bottom'
+            verticalPosition: 'top'
         });
     }
 
@@ -21,7 +21,7 @@ export class ToastService {
             duration,
             panelClass: ['error-snackbar'],
             horizontalPosition: 'center',
-            verticalPosition: 'bottom'
+            verticalPosition: 'top'
         });
     }
 
@@ -30,7 +30,7 @@ export class ToastService {
             duration,
             panelClass: ['warning-snackbar'],
             horizontalPosition: 'center',
-            verticalPosition: 'bottom'
+            verticalPosition: 'top'
         });
     }
 
@@ -39,7 +39,7 @@ export class ToastService {
             duration,
             panelClass: ['info-snackbar'],
             horizontalPosition: 'center',
-            verticalPosition: 'bottom'
+            verticalPosition: 'top'
         });
     }
 }

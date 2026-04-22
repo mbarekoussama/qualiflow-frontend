@@ -2,11 +2,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
@@ -39,16 +40,25 @@ export class SidebarComponent {
 
   get canReadNotifications(): boolean {
     return this.authService.hasRole([
-      'SUPER_ADMIN',
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
       'UTILISATEUR',
-      'AUDITEUR'
+      'AUDITEUR',
+      'SUPER_ADMIN'
     ]);
   }
 
   get canAccessDocuments(): boolean {
+    return this.authService.hasRole([
+      'ADMIN_ORG',
+      'RESPONSABLE_QUALITE',
+      'CHEF_SERVICE',
+      'AUDITEUR'
+    ]);
+  }
+
+  get canReadDepartments(): boolean {
     return this.authService.hasRole([
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',

@@ -23,6 +23,7 @@ import {
   UpdateInstructionRequest
 } from '../models/procedure.models';
 import { ProcedureService } from '../services/procedure.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-procedure-details',
@@ -39,7 +40,8 @@ import { ProcedureService } from '../services/procedure.service';
     MatSelectModule,
     MatTableModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    TranslatePipe
   ],
   templateUrl: './procedure-details.component.html',
   styleUrls: ['./procedure-details.component.scss']

@@ -1,6 +1,7 @@
 .topbar-user {
   display: flex;
   align-items: center;
+  min-width: 0;
 }
 
 .user-trigger {
@@ -13,6 +14,8 @@
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.05);
+  min-width: 0;
+  max-width: 100%;
 
   &:hover {
     background: rgba(255, 255, 255, 0.12);
@@ -30,12 +33,17 @@
   display: flex;
   flex-direction: column;
   text-align: right;
+  min-width: 0;
 
   .user-name {
     font-size: 0.85rem;
     font-weight: 600;
     color: white;
     line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
   }
 
   .user-role {
@@ -177,6 +185,10 @@
 
 /* Small mobile (≤480px) */
 @media (max-width: 480px) {
+  ::ng-deep .modern-user-menu {
+    min-width: min(92vw, 320px) !important;
+  }
+
   .user-avatar {
     width: 28px;
     height: 28px;

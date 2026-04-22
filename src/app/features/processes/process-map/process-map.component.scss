@@ -35,28 +35,6 @@
     color: var(--text-muted);
     font-size: 0.85rem;
 
-    .link-button {
-        border: 0;
-        background: transparent;
-        color: var(--xl-green-mid);
-        cursor: pointer;
-        padding: 0;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-
-        mat-icon {
-            font-size: 16px;
-            width: 16px;
-            height: 16px;
-        }
-
-        &:hover {
-            text-decoration: underline;
-            color: var(--xl-green);
-        }
-    }
 }
 
 .stats-pills {

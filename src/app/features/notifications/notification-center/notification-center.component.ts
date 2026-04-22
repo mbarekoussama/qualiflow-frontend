@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,16 +10,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
-import { NotificationService } from '../../../core/services/notification.service';
+import { NotificationService as UiNotificationService } from '../../../core/services/notification.service';
 import {
   NOTIFICATION_CATEGORY_OPTIONS,
   NOTIFICATION_PRIORITY_OPTIONS,
+  NOTIFICATION_TYPE_OPTIONS,
   NotificationListItemResponse,
   NotificationQueryParams,
   NotificationStatisticsResponse
 } from '../models/notification.models';
 import { NotificationListComponent } from '../notification-list/notification-list.component';
-import { UserNotificationService } from '../services/user-notification.service';
+import { NotificationSignalRService } from '../services/notification-signalr.service';
+import { NotificationService as UserNotificationService } from '../services/notification.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DashboardService } from '../../super-admin/services/dashboard.service';
 import { DashboardAlertResponse } from '../../super-admin/models/dashboard.models';
@@ -42,15 +44,20 @@ import { DashboardAlertResponse } from '../../super-admin/models/dashboard.model
   templateUrl: './notification-center.component.html',
   styleUrls: ['./notification-center.component.scss']
 })
-export class NotificationCenterComponent implements OnInit {
+export class NotificationCenterComponent implements OnInit, OnDestroy {
   readonly categoryOptions = NOTIFICATION_CATEGORY_OPTIONS;
   readonly priorityOptions = NOTIFICATION_PRIORITY_OPTIONS;
+  readonly typeOptions = NOTIFICATION_TYPE_OPTIONS;
+  private readonly subscriptions = new Subscription();
 
   readonly filtersForm = this.fb.group({
     search: [''],
     isRead: ['' as '' | 'true' | 'false'],
     category: ['' as string],
-    priority: ['' as string]
+    priority: ['' as string],
+    type: ['' as string],
+    fromDate: [''],
+    toDate: ['']
   });
 
   notifications: NotificationListItemResponse[] = [];
@@ -58,6 +65,7 @@ export class NotificationCenterComponent implements OnInit {
   statistics: NotificationStatisticsResponse | null = null;
   loading = false;
   isSuperAdmin = false;
+  currentRole = '';
 
   total = 0;
   pageNumber = 1;
@@ -66,16 +74,28 @@ export class NotificationCenterComponent implements OnInit {
   constructor(
     private readonly fb: FormBuilder,
     private readonly userNotificationService: UserNotificationService,
-    private readonly notificationService: NotificationService,
+    private readonly notificationSignalRService: NotificationSignalRService,
+    private readonly notificationService: UiNotificationService,
     private readonly authService: AuthService,
     private readonly dashboardService: DashboardService,
     private readonly router: Router
   ) {
     this.isSuperAdmin = this.authService.hasRole('SUPER_ADMIN');
+    this.currentRole = this.authService.getCurrentUser()?.role ?? '';
   }
 
   ngOnInit(): void {
+    this.subscriptions.add(
+      this.notificationSignalRService.notificationReceived$.subscribe(() => {
+        this.loadData();
+      })
+    );
+
     this.loadData();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   onFilter(): void {
@@ -88,7 +108,10 @@ export class NotificationCenterComponent implements OnInit {
       search: '',
       isRead: '',
       category: '',
-      priority: ''
+      priority: '',
+      type: '',
+      fromDate: '',
+      toDate: ''
     });
     this.pageNumber = 1;
     this.loadData();
@@ -203,6 +226,21 @@ export class NotificationCenterComponent implements OnInit {
     }
   }
 
+  get roleViewLabel(): string {
+    switch (this.currentRole) {
+      case 'UTILISATEUR':
+        return 'Vue Employé: notifications documentaires et actions personnelles';
+      case 'CHEF_SERVICE':
+        return 'Vue Responsable Département: suivi des documents de votre périmètre';
+      case 'RESPONSABLE_QUALITE':
+        return 'Vue Responsable Qualité: supervision des validations et expirations';
+      case 'SUPER_ADMIN':
+        return 'Vue Super Admin: surveillance globale plateforme';
+      default:
+        return 'Vue Notifications';
+    }
+  }
+
   private buildQueryParams(): NotificationQueryParams {
     const raw = this.filtersForm.getRawValue();
 
@@ -221,7 +259,10 @@ export class NotificationCenterComponent implements OnInit {
       search: raw.search?.trim() || undefined,
       isRead,
       category: (raw.category as any) || undefined,
-      priority: (raw.priority as any) || undefined
+      priority: (raw.priority as any) || undefined,
+      type: (raw.type as any) || undefined,
+      fromDate: raw.fromDate || undefined,
+      toDate: raw.toDate || undefined
     };
   }
 }

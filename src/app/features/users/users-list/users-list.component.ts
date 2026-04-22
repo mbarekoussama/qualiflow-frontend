@@ -15,6 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotificationService } from '../../../core/services/notification.service';
 import { UserResponse, UserRole, UserService } from '../services/user.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-users-list',
@@ -38,7 +39,7 @@ import { UserResponse, UserRole, UserService } from '../services/user.service';
   templateUrl: './users-list.component.html',
   styleUrls: ['./users-list.component.scss']
 })
-export class UsersListComponent implements OnInit { // refreshed
+export class UsersListComponent implements OnInit {
   users: UserResponse[] = [];
   displayedColumns: string[] = ['fullName', 'email', 'role', 'status', 'lastLoginAt', 'createdAt', 'actions'];
 
@@ -59,11 +60,16 @@ export class UsersListComponent implements OnInit { // refreshed
 
   constructor(
     private readonly userService: UserService,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly authService: AuthService
   ) { }
 
   ngOnInit(): void {
     this.loadUsers();
+  }
+
+  isAdminOrg(): boolean {
+    return this.authService.hasRole('ADMIN_ORG');
   }
 
   loadUsers(): void {
@@ -151,17 +157,19 @@ export class UsersListComponent implements OnInit { // refreshed
   }
 
   deleteUser(user: UserResponse): void {
-    if (!confirm(`Confirmer la suppression de ${user.firstName} ${user.lastName} ?`)) {
+    if (!confirm(`Confirmer la suppression DÉFINITIVE de ${user.firstName} ${user.lastName} ?\n\nAttention: Cette action est irréversible et supprimera toutes les données associées qui ne sont pas soumises à des restrictions d'audit.`)) {
       return;
     }
 
-    this.userService.deleteUser(user.id).subscribe({
+    this.userService.hardDeleteUser(user.id).subscribe({
       next: () => {
-        this.notificationService.showSuccess('Utilisateur desactive avec succes.');
+        this.notificationService.showSuccess('Utilisateur supprimé définitivement.');
         this.loadUsers();
       },
-      error: () => {
-        this.notificationService.showError('Suppression impossible.');
+      error: (error) => {
+        console.error('Delete error:', error);
+        const message = error.error?.message || 'Une erreur est survenue lors de la suppression définitive.';
+        this.notificationService.showError(message);
       }
     });
   }

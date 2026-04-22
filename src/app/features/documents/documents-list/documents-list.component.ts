@@ -12,11 +12,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import {
+  DOCUMENT_STATUS_OPTIONS,
   DocumentListItemResponse,
   DocumentQueryParams,
   DocumentStatisticsResponse,
@@ -25,9 +28,10 @@ import {
   PagedDocumentResponse
 } from '../models/document.models';
 import { DocumentService } from '../services/document.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 type ToolbarTypeFilter = '' | 'MANUEL' | 'PROCEDURE' | 'ENREGISTREMENT' | 'FORMULAIRE';
-type ToolbarStatusFilter = '' | 'APPROUVE' | 'EN_REVISION' | 'PERIME';
+type ToolbarStatusFilter = '' | 'APPROUVE' | 'EN_REVISION' | 'REJETE' | 'PERIME';
 
 @Component({
   selector: 'app-documents-list',
@@ -45,13 +49,17 @@ type ToolbarStatusFilter = '' | 'APPROUVE' | 'EN_REVISION' | 'PERIME';
     MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTooltipModule,
+    MatMenuModule,
+    TranslatePipe
   ],
   templateUrl: './documents-list.component.html',
   styleUrls: ['./documents-list.component.scss']
 })
 export class DocumentsListComponent implements OnInit {
   readonly displayedColumns: string[] = ['document', 'type', 'process', 'status', 'revision', 'updatedAt', 'owner', 'actions'];
+  readonly statusOptions = DOCUMENT_STATUS_OPTIONS;
 
   readonly filtersForm = this.fb.group({
     search: [''],
@@ -149,7 +157,8 @@ export class DocumentsListComponent implements OnInit {
         title: 'Supprimer le document',
         message: `Confirmer la suppression logique de ${item.code} ?`,
         confirmText: 'Supprimer',
-        cancelText: 'Annuler'
+        cancelText: 'Annuler',
+        type: 'danger'
       }
     });
 
@@ -165,6 +174,39 @@ export class DocumentsListComponent implements OnInit {
         },
         error: () => {
           this.notificationService.showError('Suppression impossible.');
+        }
+      });
+    });
+  }
+
+  changeStatus(item: DocumentListItemResponse, newStatus: DocumentStatus): void {
+    if (item.status === newStatus) {
+      return;
+    }
+
+    const label = this.getStatusLabel(newStatus);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Changer le statut',
+        message: `Passer le document ${item.code} au statut "${label}" ?`,
+        confirmText: 'Confirmer',
+        cancelText: 'Annuler',
+        type: 'info'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.documentService.updateDocumentStatus(item.id, { status: newStatus }).subscribe({
+        next: () => {
+          this.notificationService.showSuccess('Statut mis à jour.');
+          this.refresh();
+        },
+        error: () => {
+          this.notificationService.showError('Impossible de changer le statut.');
         }
       });
     });
@@ -205,16 +247,52 @@ export class DocumentsListComponent implements OnInit {
   getStatusLabel(status: DocumentStatus): string {
     switch (status) {
       case 'APPROUVE':
-        return 'Approuve';
+        return 'Approuvé';
       case 'EN_REVISION':
-        return 'En revision';
+        return 'En révision';
+      case 'REJETE':
+        return 'Rejeté';
       case 'PERIME':
-        return 'Perime';
+        return 'Périmé';
       case 'ARCHIVE':
-        return 'Archive';
+        return 'Archivé';
       default:
         return 'Brouillon';
     }
+  }
+
+  getExpirationState(item: DocumentListItemResponse): 'VALID' | 'EXPIRING_SOON' | 'EXPIRED' {
+    if (item.expirationState) {
+      return item.expirationState;
+    }
+
+    if (item.status === 'PERIME') {
+      return 'EXPIRED';
+    }
+
+    if (typeof item.daysToExpiry === 'number') {
+      if (item.daysToExpiry < 0) {
+        return 'EXPIRED';
+      }
+      if (item.daysToExpiry <= 30) {
+        return 'EXPIRING_SOON';
+      }
+    }
+
+    return 'VALID';
+  }
+
+  getExpirationLabel(item: DocumentListItemResponse): string {
+    const state = this.getExpirationState(item);
+    if (state === 'EXPIRED') {
+      return 'Expiré';
+    }
+
+    if (state === 'EXPIRING_SOON') {
+      return 'Expire bientôt';
+    }
+
+    return 'Valide';
   }
 
   getOwnerInitials(fullName?: string | null): string {

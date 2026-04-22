@@ -111,6 +111,44 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       }
     }
+
+    .btn-toggle {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 0 20px;
+      height: 48px;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      &.mat-warn {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: rgba(239, 68, 68, 0.4);
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.3);
+        }
+      }
+    }
+
+    .btn-delete {
+      color: #fecaca;
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: 12px;
+      padding: 0 20px;
+      height: 48px;
+      font-weight: 600;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.2);
+        color: white;
+      }
+    }
   }
 
   .status-banners {

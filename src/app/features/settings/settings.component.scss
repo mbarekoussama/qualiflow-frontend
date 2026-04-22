@@ -206,6 +206,53 @@
       font-size: 13px;
     }
   }
+
+  .support-panel {
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    background: #f8fbf8;
+
+    .support-contact-card {
+      margin-bottom: 14px;
+
+      h3 {
+        margin: 0 0 8px;
+        font-size: 16px;
+        color: var(--text-primary);
+      }
+
+      .support-description {
+        margin: 0 0 10px;
+        color: var(--text-secondary);
+      }
+
+      .assistant-info {
+        display: grid;
+        gap: 4px;
+        font-size: 13px;
+        color: var(--text-primary);
+      }
+    }
+
+    .support-form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .support-description-field {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .support-actions {
+      margin-top: 8px;
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
 }
 
 /* DARK THEME SPECIFICS */
@@ -234,5 +281,9 @@
     h1 {
       font-size: 28px;
     }
+  }
+
+  .about-container .support-panel .support-form-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -17,6 +17,8 @@ import { ProcessListItemResponse } from '../../processes/models/process.models';
 import { ProcessService } from '../../processes/services/process.service';
 import { ProcedureListItemResponse } from '../../procedures/models/procedure.models';
 import { ProcedureService } from '../../procedures/services/procedure.service';
+import { DepartmentListItemResponse } from '../../departments/models/department.models';
+import { DepartmentService } from '../../departments/services/department.service';
 import {
   CreateDocumentRequest,
   CreateDocumentVersionRequest,
@@ -27,6 +29,7 @@ import {
   DocumentType
 } from '../models/document.models';
 import { DocumentService } from '../services/document.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-document-form',
@@ -42,7 +45,8 @@ import { DocumentService } from '../services/document.service';
     MatSlideToggleModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslatePipe
   ],
   templateUrl: './document-form.component.html',
   styleUrls: ['./document-form.component.scss']
@@ -79,6 +83,7 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
     processId: this.fb.control<number | null>(null),
     procedureId: this.fb.control<number | null>(null),
     ownerUserId: this.fb.control<number | null>(null),
+    departmentId: this.fb.control<number | null>(null),
     isActive: this.fb.nonNullable.control(true),
     initialVersionNumber: this.fb.nonNullable.control('v1.0', [Validators.maxLength(30)]),
     initialVersionStatus: this.fb.nonNullable.control<DocumentStatus>('BROUILLON'),
@@ -96,6 +101,7 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
   processes: ProcessListItemResponse[] = [];
   procedures: ProcedureListItemResponse[] = [];
   owners: UserResponse[] = [];
+  departments: DepartmentListItemResponse[] = [];
   startWithImport = false;
   signaturePreview: string | null = null;
 
@@ -106,6 +112,7 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
     private readonly documentService: DocumentService,
     private readonly processService: ProcessService,
     private readonly procedureService: ProcedureService,
+    private readonly departmentService: DepartmentService,
     private readonly userService: UserService,
     private readonly notificationService: NotificationService
   ) { }
@@ -220,7 +227,8 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
 
     const baseData$ = forkJoin({
       processes: this.processService.getProcesses({ pageNumber: 1, pageSize: 300 }),
-      users: this.userService.getAll(1, 300)
+      users: this.userService.getAll(1, 300),
+      departments: this.departmentService.getDepartments({ pageNumber: 1, pageSize: 300 })
     });
 
     if (this.isEdit && this.documentId) {
@@ -231,6 +239,7 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
         next: ({ base, details }) => {
           this.processes = base.processes.items;
           this.owners = base.users.items.filter(user => user.isActive);
+          this.departments = base.departments.items.filter(dept => dept.status === 'ACTIF');
           this.patchDocument(details.document);
 
           if (details.document.processId) {
@@ -250,14 +259,27 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
     }
 
     baseData$.subscribe({
-      next: ({ processes, users }) => {
+      next: ({ processes, users, departments }) => {
         this.processes = processes.items;
         this.owners = users.items.filter(user => user.isActive);
+        this.departments = departments.items.filter(dept => dept.status === 'ACTIF');
         this.loading = false;
       },
       error: () => {
         this.loading = false;
         this.notificationService.showError('Impossible de charger les donnees de formulaire.');
+      }
+    });
+
+    // Auto-select responsible from procedure
+    this.documentForm.controls.procedureId.valueChanges.subscribe(procedureId => {
+      if (!procedureId) {
+        return;
+      }
+
+      const selectedProcedure = this.procedures.find(item => item.id === procedureId);
+      if (selectedProcedure?.responsibleUserId) {
+        this.documentForm.controls.ownerUserId.setValue(selectedProcedure.responsibleUserId);
       }
     });
   }
@@ -376,6 +398,7 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
     return {
       processId: raw.processId ?? null,
       procedureId: raw.procedureId ?? null,
+      departmentId: raw.departmentId ?? null,
       code: raw.code.trim(),
       title: raw.title.trim(),
       type: raw.type,
@@ -411,6 +434,7 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
       processId: document.processId ?? null,
       procedureId: document.procedureId ?? null,
       ownerUserId: document.ownerUserId ?? null,
+      departmentId: document.departmentId ?? null,
       isActive: document.isActive,
       initialVersionNumber: document.currentVersionNumber ?? 'v1.0',
       initialVersionStatus: document.currentVersionStatus ?? 'BROUILLON',

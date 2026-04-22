@@ -164,12 +164,58 @@
                                         </mat-form-field>
                                     </div>
 
-                                    <div class="card-actions-right">
-                                        <button mat-flat-button class="btn-security" (click)="changePassword()"
-                                            [disabled]="changingPassword">
+                                    <div class="card-actions-right security-footer">
+                                        <button mat-button type="button" class="forgot-pwd-link"
+                                            (click)="initiatePasswordReset()" [disabled]="sendingResetEmail">
+                                            <mat-icon>mail_outline</mat-icon>
+                                            J'ai oublié mon mot de passe actuel.
+                                        </button>
+
+                                        <button  mat-flat-button class="btn-security" (click)="changePassword()"
+                                            [disabled]="changingPassword || sendingResetEmail">
                                             <mat-spinner diameter="20" *ngIf="changingPassword"></mat-spinner>
                                             <mat-icon *ngIf="!changingPassword">vpn_key</mat-icon>
                                             <span *ngIf="!changingPassword">Mettre à jour mon mot de passe</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card class="modern-card security-card glass-card">
+                            <mat-card-header>
+                                <div class="card-icon-title">
+                                    <mat-icon>mark_email_read</mat-icon>
+                                    <div>
+                                        <mat-card-title>Modifier l'email</mat-card-title>
+                                        <mat-card-subtitle>Changement sécurisé avec code de vérification</mat-card-subtitle>
+                                    </div>
+                                </div>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <form [formGroup]="emailChangeForm" class="modern-form">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-label>Nouvel email</mat-label>
+                                        <input matInput type="email" formControlName="newEmail" placeholder="nouvel-email@domaine.com">
+                                    </mat-form-field>
+
+                                    <div class="card-actions-right" style="margin-bottom: 12px;">
+                                        <button mat-stroked-button color="primary" type="button" (click)="requestEmailChangeCode()" [disabled]="requestingEmailCode">
+                                            <mat-spinner diameter="20" *ngIf="requestingEmailCode"></mat-spinner>
+                                            <span *ngIf="!requestingEmailCode">Envoyer le code</span>
+                                        </button>
+                                    </div>
+
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-label>Code de vérification</mat-label>
+                                        <input matInput type="text" maxlength="6" formControlName="code" placeholder="Code à 6 chiffres">
+                                    </mat-form-field>
+
+                                    <div class="card-actions-right">
+                                        <button mat-flat-button color="primary" type="button" (click)="confirmEmailChange()" [disabled]="confirmingEmailChange">
+                                            <mat-spinner diameter="20" *ngIf="confirmingEmailChange"></mat-spinner>
+                                            <mat-icon *ngIf="!confirmingEmailChange">verified</mat-icon>
+                                            <span *ngIf="!confirmingEmailChange">Confirmer le nouvel email</span>
                                         </button>
                                     </div>
                                 </form>
@@ -274,20 +320,20 @@
 
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-label>Adresse complète</mat-label>
-                                        <mat-icon matPrefix>place</mat-icon>
-                                        <input matInput formControlName="address">
+                                        <mat-icon matIconPrefix>place</mat-icon>
+                                        <input title="address" matInput formControlName="address">
                                     </mat-form-field>
 
                                     <div class="form-grid">
                                         <mat-form-field appearance="outline">
                                             <mat-label>Email officiel</mat-label>
-                                            <mat-icon matPrefix>alternate_email</mat-icon>
-                                            <input matInput formControlName="email">
+                                            <mat-icon matIconPrefix>alternate_email</mat-icon>
+                                            <input title="email" matInput formControlName="email">
                                         </mat-form-field>
                                         <mat-form-field appearance="outline">
                                             <mat-label>Téléphone support</mat-label>
-                                            <mat-icon matPrefix>phone</mat-icon>
-                                            <input matInput formControlName="phone">
+                                            <mat-icon matIconPrefix>phone</mat-icon>
+                                            <input title="phone" matInput formControlName="phone">
                                         </mat-form-field>
                                     </div>
 

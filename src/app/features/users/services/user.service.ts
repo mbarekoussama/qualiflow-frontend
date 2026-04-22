@@ -14,6 +14,8 @@ export interface UserResponse {
   role: string;
   function?: string;
   department?: string;
+  departmentId?: number | null;
+  departmentName?: string | null;
   isActive: boolean;
   lastLoginAt?: string;
   createdAt: string;
@@ -35,6 +37,7 @@ export interface CreateUserRequest {
   role: UserRole;
   function?: string;
   department?: string;
+  departmentId?: number | null;
 }
 
 export interface UpdateUserRequest {
@@ -43,6 +46,7 @@ export interface UpdateUserRequest {
   email: string;
   function?: string;
   department?: string;
+  departmentId?: number | null;
 }
 
 export interface ChangeUserRoleRequest {
@@ -55,7 +59,7 @@ export interface ChangeUserRoleRequest {
 export class UserService {
   private readonly endpoint = 'users';
 
-  constructor(private readonly apiService: ApiService) {}
+  constructor(private readonly apiService: ApiService) { }
 
   getUsers(page = 1, pageSize = 50): Observable<UserListResponse> {
     return this.apiService.get<UserListResponse>(this.endpoint, { page, pageSize });
@@ -87,5 +91,9 @@ export class UserService {
 
   deleteUser(id: number): Observable<void> {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);
+  }
+
+  hardDeleteUser(id: number): Observable<void> {
+    return this.apiService.delete<void>(`${this.endpoint}/${id}/permanent`);
   }
 }

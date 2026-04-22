@@ -5,6 +5,7 @@ import {
   CreateOrganizationRequest,
   OrganizationListQueryParams,
   OrganizationResponse,
+  OrganizationUsersListResponse,
   PagedOrganizationsResponse,
   ToggleOrganizationStatusRequest,
   UpdateOrganizationRequest
@@ -16,7 +17,7 @@ import {
 export class OrganizationService {
   private readonly endpoint = 'organizations';
 
-  constructor(private readonly apiService: ApiService) {}
+  constructor(private readonly apiService: ApiService) { }
 
   getOrganizations(params: OrganizationListQueryParams = {}): Observable<PagedOrganizationsResponse> {
     return this.apiService.get<PagedOrganizationsResponse>(this.endpoint, params);
@@ -36,5 +37,17 @@ export class OrganizationService {
 
   toggleOrganizationStatus(id: number, payload: ToggleOrganizationStatusRequest = {}): Observable<OrganizationResponse> {
     return this.apiService.patch<OrganizationResponse>(`${this.endpoint}/${id}/toggle-status`, payload);
+  }
+
+  deleteOrganization(id: number): Observable<void> {
+    return this.apiService.delete<void>(`${this.endpoint}/${id}`);
+  }
+
+  getOrganizationUsers(id: number, page = 1, pageSize = 200): Observable<OrganizationUsersListResponse> {
+    return this.apiService.get<OrganizationUsersListResponse>(`${this.endpoint}/${id}/users`, { page, pageSize });
+  }
+
+  changeOrganizationUserRole(organizationId: number, userId: number, role: string): Observable<void> {
+    return this.apiService.patch<void>(`${this.endpoint}/${organizationId}/users/${userId}/role`, { role });
   }
 }

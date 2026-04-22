@@ -32,6 +32,7 @@ import {
   PagedNonConformityResponse
 } from '../models/nonconformity.models';
 import { NonConformityService } from '../services/nonconformity.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-nonconformity-list',
@@ -51,7 +52,8 @@ import { NonConformityService } from '../services/nonconformity.service';
     MatProgressSpinnerModule,
     MatDialogModule,
     MatTooltipModule,
-    MatMenuModule
+    MatMenuModule,
+    TranslatePipe
   ],
   templateUrl: './nonconformity-list.component.html',
   styleUrls: ['./nonconformity-list.component.scss']
@@ -99,10 +101,13 @@ export class NonconformityListComponent implements OnInit {
       pageSize: 300,
       items: [] as UserResponse[]
     };
+    const usersRequest$ = this.canWrite || this.canCreate
+      ? this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse)))
+      : of(emptyUsersResponse);
 
     forkJoin({
       processes: this.processService.getProcesses({ pageNumber: 1, pageSize: 300 }),
-      users: this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse)))
+      users: usersRequest$
     }).subscribe({
       next: ({ processes, users }) => {
         this.processes = processes.items;
@@ -118,6 +123,10 @@ export class NonconformityListComponent implements OnInit {
 
   get canWrite(): boolean {
     return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
+  }
+
+  get canCreate(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'AUDITEUR']);
   }
 
   toggleFilters(): void {
@@ -201,7 +210,8 @@ export class NonconformityListComponent implements OnInit {
         title: 'Supprimer la non-conformite',
         message: `Confirmer la suppression de ${item.code} ?`,
         confirmText: 'Supprimer',
-        cancelText: 'Annuler'
+        cancelText: 'Annuler',
+        type: 'danger'
       }
     });
 

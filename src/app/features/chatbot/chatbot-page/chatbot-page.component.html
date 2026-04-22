@@ -1,0 +1,73 @@
+<section class="chatbot-shell">
+  <aside class="conversation-panel">
+    <div class="panel-header">
+      <h2>Conversations</h2>
+      <button type="button" class="new-btn" (click)="startNewConversation()">Nouvelle</button>
+    </div>
+
+    <div class="panel-content">
+      <div *ngIf="loadingConversations" class="panel-state">
+        <span class="loading-spinner"></span>
+        Chargement...
+      </div>
+
+      <button *ngFor="let conversation of conversations; trackBy: trackByConversation" type="button"
+        class="conversation-item" [class.active]="conversation.id === selectedConversationId"
+        (click)="openConversation(conversation.id)">
+        <div class="conversation-meta">
+          <span class="title">{{ conversation.title || 'Conversation' }}</span>
+          <span class="time">{{ formatTime(conversation.updatedAt) }}</span>
+        </div>
+        <span class="date">{{ conversation.updatedAt | date: 'dd/MM/yyyy' }}</span>
+        <button type="button" class="delete-btn" title="Supprimer"
+          (click)="deleteConversation(conversation.id, $event)">
+        </button>
+      </button>
+
+      <div *ngIf="!loadingConversations && conversations.length === 0" class="panel-state">
+        Aucune conversation.
+      </div>
+    </div>
+  </aside>
+
+  <main class="chat-panel">
+    <header class="chat-header">
+      <h1>Assistant GED</h1>
+      <p>Posez vos questions sur les documents, procédures, processus et modules de la plateforme.</p>
+    </header>
+
+    <div class="messages" #messagesContainer>
+      <div *ngIf="loadingMessages" class="empty-state">
+        Chargement des messages...
+      </div>
+
+      <div *ngIf="!loadingMessages && messages.length === 0" class="empty-state">
+        Démarrez une conversation pour interroger l'assistant.
+      </div>
+
+      <article *ngFor="let message of messages; trackBy: trackByMessage" class="message"
+        [class.message-user]="isUserMessage(message.role)" [class.message-assistant]="!isUserMessage(message.role)">
+        <div class="message-role">{{ isUserMessage(message.role) ? 'Vous' : 'Assistant QualiFlow' }}</div>
+        <div class="message-content">{{ message.content }}</div>
+        <div class="message-time">{{ formatTime(message.createdAt) }}</div>
+      </article>
+    </div>
+
+    <footer class="composer">
+      <div *ngIf="errorMessage" class="error-text">{{ errorMessage }}</div>
+
+      <div class="composer-input-wrapper">
+        <textarea [formControl]="questionControl" rows="1" maxlength="1500" placeholder="Écrivez votre question ici..."
+          (keydown)="onComposerKeydown($event)"></textarea>
+      </div>
+
+      <div class="composer-actions">
+        <span class="hint">Entrer pour envoyer, Shift+Entrer pour nouvelle ligne</span>
+        <button type="button" [class.sending]="sending" [disabled]="sending || !questionControl.value.trim()"
+          (click)="sendQuestion()">
+          {{ sending ? 'Envoi en cours...' : 'Envoyer' }}
+        </button>
+      </div>
+    </footer>
+  </main>
+</section>

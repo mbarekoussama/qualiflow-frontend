@@ -5,7 +5,7 @@
             <h1>Utilisateurs et rôles</h1>
             <p>Gérez les membres de votre organisation et leurs permissions</p>
         </div>
-        <div class="header-actions">
+        <div class="header-actions" *ngIf="isAdminOrg()">
             <button mat-flat-button color="primary" routerLink="/users/new">
                 <mat-icon>person_add</mat-icon>
                 Ajouter un utilisateur
@@ -73,7 +73,7 @@
                 <ng-container matColumnDef="role">
                     <th mat-header-cell *matHeaderCellDef> Rôle </th>
                     <td mat-cell *matCellDef="let user">
-                        <div class="role-selector">
+                        <div class="role-selector" *ngIf="isAdminOrg(); else staticRole">
                             <mat-select [(ngModel)]="pendingRoles[user.id]" class="modern-select">
                                 <mat-option *ngFor="let option of roleOptions" [value]="option.value">
                                     {{ option.label }}
@@ -84,6 +84,9 @@
                                 <mat-icon>check</mat-icon>
                             </button>
                         </div>
+                        <ng-template #staticRole>
+                            <span class="role-label-static">{{ getRoleLabel(user.role) }}</span>
+                        </ng-template>
                     </td>
                 </ng-container>
 
@@ -117,17 +120,19 @@
                 <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef class="actions-header"> Actions </th>
                     <td mat-cell *matCellDef="let user">
-                        <div class="actions-cell">
-                            <button mat-icon-button color="primary" [routerLink]="['/users', user.id]"
-                                matTooltip="Modifier">
-                                <mat-icon>edit_square</mat-icon>
+                        <div class="actions-cell" *ngIf="isAdminOrg()">
+                            <button mat-icon-button class="action-btn edit" [routerLink]="['/users', user.id]"
+                                matTooltip="Modifier les informations">
+                                <mat-icon>edit_calendar</mat-icon>
                             </button>
-                            <button mat-icon-button [color]="user.isActive ? 'warn' : 'primary'"
-                                (click)="toggleStatus(user)" [matTooltip]="user.isActive ? 'Désactiver' : 'Activer'">
-                                <mat-icon>{{ user.isActive ? 'block' : 'undo' }}</mat-icon>
+                            <button mat-icon-button class="action-btn status" [class.active]="user.isActive"
+                                (click)="toggleStatus(user)"
+                                [matTooltip]="user.isActive ? 'Désactiver l\'accès' : 'Réactiver l\'accès'">
+                                <mat-icon>{{ user.isActive ? 'lock_person' : 'lock_open' }}</mat-icon>
                             </button>
-                            <button mat-icon-button color="warn" (click)="deleteUser(user)" matTooltip="Supprimer">
-                                <mat-icon>delete_outline</mat-icon>
+                            <button mat-icon-button class="action-btn delete" (click)="deleteUser(user)"
+                                matTooltip="Supprimer définitivement">
+                                <mat-icon>person_remove</mat-icon>
                             </button>
                         </div>
                     </td>

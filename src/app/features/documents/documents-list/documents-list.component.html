@@ -3,20 +3,21 @@
   <div class="glass-header shadow-sm">
     <div class="header-main">
       <div class="title-section">
-        <h1><span class="highlight">Documents</span></h1>
-        <p class="subtitle">Gestion du référentiel documentaire et des révisions</p>
+        <h1><span class="highlight">{{ 'list.documents.title' | t }}</span></h1>
+        <p class="subtitle">{{ 'list.documents.subtitle' | t }}</p>
       </div>
       <div class="header-actions">
-        <button mat-icon-button type="button" class="action-btn" (click)="refresh()" matTooltip="Rafraîchir">
+        <button mat-icon-button type="button" class="action-btn" (click)="refresh()"
+          [matTooltip]="'common.refresh' | t">
           <mat-icon>refresh</mat-icon>
         </button>
         <button *ngIf="canWrite" mat-stroked-button class="btn-import" (click)="openImport()">
           <mat-icon>upload_file</mat-icon>
-          Importer
+          {{ 'list.documents.import' | t }}
         </button>
         <button *ngIf="canWrite" mat-flat-button color="primary" class="btn-create" (click)="createDocument()">
           <mat-icon>add</mat-icon>
-          Nouveau document
+          {{ 'list.documents.new' | t }}
         </button>
       </div>
     </div>
@@ -26,33 +27,35 @@
       <div class="filter-grid">
         <div class="filter-item">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Recherche rapide</mat-label>
+            <mat-label>{{ 'list.documents.quickSearch' | t }}</mat-label>
             <mat-icon matPrefix>search</mat-icon>
-            <input matInput formControlName="search" placeholder="Code, titre ou processus..." />
+            <input title="ou" matInput formControlName="search"
+              [placeholder]="'list.documents.searchPlaceholder' | t" />
           </mat-form-field>
         </div>
 
         <div class="filter-item">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Type de document</mat-label>
+            <mat-label>{{ 'list.documents.docType' | t }}</mat-label>
             <mat-select formControlName="type">
-              <mat-option value="">Tous les types</mat-option>
-              <mat-option value="MANUEL">Manuels</mat-option>
-              <mat-option value="PROCEDURE">Procédures</mat-option>
-              <mat-option value="ENREGISTREMENT">Enregistrements</mat-option>
-              <mat-option value="FORMULAIRE">Formulaires</mat-option>
+              <mat-option value="">{{ 'common.allTypes' | t }}</mat-option>
+              <mat-option value="MANUEL">{{ 'list.documents.manuals' | t }}</mat-option>
+              <mat-option value="PROCEDURE">{{ 'list.procedures.title' | t }}</mat-option>
+              <mat-option value="ENREGISTREMENT">{{ 'list.documents.records' | t }}</mat-option>
+              <mat-option value="FORMULAIRE">{{ 'list.documents.forms' | t }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
 
         <div class="filter-item">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Statut</mat-label>
+            <mat-label>{{ 'common.status' | t }}</mat-label>
             <mat-select formControlName="status">
-              <mat-option value="">Tous les statuts</mat-option>
-              <mat-option value="APPROUVE">Approuvés</mat-option>
-              <mat-option value="EN_REVISION">En révision</mat-option>
-              <mat-option value="PERIME">Périmés</mat-option>
+              <mat-option value="">{{ 'common.allStatuses' | t }}</mat-option>
+              <mat-option value="APPROUVE">{{ 'list.documents.approved' | t }}</mat-option>
+              <mat-option value="EN_REVISION">{{ 'list.documents.inReview' | t }}</mat-option>
+              <mat-option value="REJETE">{{ 'list.documents.rejected' | t }}</mat-option>
+              <mat-option value="PERIME">{{ 'list.documents.expired' | t }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -60,11 +63,11 @@
         <div class="filter-buttons">
           <button mat-flat-button class="btn-apply" type="submit">
             <mat-icon>filter_list</mat-icon>
-            Filtrer
+            {{ 'common.filter' | t }}
           </button>
           <button mat-stroked-button class="btn-reset" type="button" (click)="clearFilters()">
             <mat-icon>restart_alt</mat-icon>
-            Réinitialiser
+            {{ 'common.reset' | t }}
           </button>
         </div>
       </div>
@@ -74,39 +77,39 @@
   <!-- SUMMARY CARDS -->
   <div class="summary-cards" *ngIf="statistics">
     <div class="summary-card shadow-sm">
-      <span class="sc-label">Total Documents</span>
+      <span class="sc-label">{{ 'list.documents.totalDocuments' | t }}</span>
       <div class="sc-value">
         <mat-icon class="icon-neutral">folder</mat-icon>
         {{ statistics.total }}
       </div>
-      <span class="sc-subtext">Fichiers actifs</span>
+      <span class="sc-subtext">{{ 'list.documents.activeFiles' | t }}</span>
     </div>
 
     <div class="summary-card shadow-sm">
-      <span class="sc-label">Approuvés</span>
+      <span class="sc-label">{{ 'list.documents.approved' | t }}</span>
       <div class="sc-value">
         <mat-icon class="icon-success">verified</mat-icon>
         {{ statistics.approved }}
       </div>
-      <span class="sc-subtext">Prêts à l'emploi</span>
+      <span class="sc-subtext">{{ 'list.documents.readyToUse' | t }}</span>
     </div>
 
     <div class="summary-card card-warning shadow-sm" [class.active]="statistics.inReview > 0">
-      <span class="sc-label">En révision</span>
+      <span class="sc-label">{{ 'list.documents.inReview' | t }}</span>
       <div class="sc-value">
         <mat-icon class="icon-warning">pending_actions</mat-icon>
         {{ statistics.inReview }}
       </div>
-      <span class="sc-subtext">Mises à jour en cours</span>
+      <span class="sc-subtext">{{ 'list.documents.updatesInProgress' | t }}</span>
     </div>
 
     <div class="summary-card card-danger shadow-sm" [class.active]="statistics.expired > 0">
-      <span class="sc-label">Périmés</span>
+      <span class="sc-label">{{ 'list.documents.expired' | t }}</span>
       <div class="sc-value">
         <mat-icon class="icon-danger">event_busy</mat-icon>
         {{ statistics.expired }}
       </div>
-      <span class="sc-subtext">Nécessitent une action</span>
+      <span class="sc-subtext">{{ 'list.documents.needAction' | t }}</span>
     </div>
   </div>
 
@@ -114,21 +117,21 @@
   <mat-card class="catalog-content-card shadow-sm">
     <div class="loading-box" *ngIf="loading">
       <mat-spinner diameter="38"></mat-spinner>
-      <span>Traitement des documents...</span>
+      <span>{{ 'list.documents.loading' | t }}</span>
     </div>
 
     <ng-container *ngIf="!loading">
       <div class="empty-box" *ngIf="documents.length === 0">
         <mat-icon>folder_open</mat-icon>
-        <h3>Aucun document trouvé</h3>
-        <p>Ajuste les filtres ou téléverse un nouveau fichier.</p>
+        <h3>{{ 'list.documents.emptyTitle' | t }}</h3>
+        <p>{{ 'list.documents.emptyText' | t }}</p>
       </div>
 
       <div class="table-container" *ngIf="documents.length > 0">
         <table mat-table [dataSource]="documents" class="documents-table">
           <!-- Document Column -->
           <ng-container matColumnDef="document">
-            <th mat-header-cell *matHeaderCellDef>Désignation</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'list.documents.designation' | t }}</th>
             <td mat-cell *matCellDef="let item" class="doc-title-cell" (click)="viewDocument(item)">
               <div class="doc-info-main">
                 <span class="doc-title-text">{{ item.title }}</span>
@@ -139,7 +142,7 @@
 
           <!-- Type Column -->
           <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef>Nature</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'list.documents.nature' | t }}</th>
             <td mat-cell *matCellDef="let item">
               <span class="tag-type">{{ getTypeLabel(item.type) }}</span>
             </td>
@@ -147,7 +150,7 @@
 
           <!-- Process Column -->
           <ng-container matColumnDef="process">
-            <th mat-header-cell *matHeaderCellDef>Processus</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'list.processes.title' | t }}</th>
             <td mat-cell *matCellDef="let item">
               <div class="process-link-cell" *ngIf="item.processCode">
                 <mat-icon>hub</mat-icon>
@@ -159,17 +162,23 @@
 
           <!-- Statut Column -->
           <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>État</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'list.nonconformities.state' | t }}</th>
             <td mat-cell *matCellDef="let item">
-              <span class="tag-status" [ngClass]="item.status.toLowerCase()">
-                {{ getStatusLabel(item.status) }}
-              </span>
+              <div class="status-cell-modern">
+                <span class="status-badge" [ngClass]="item.status.toLowerCase()">
+                  {{ getStatusLabel(item.status) }}
+                </span>
+                <div class="expiration-hint" [ngClass]="getExpirationState(item).toLowerCase()">
+                  <mat-icon>{{ getExpirationState(item) === 'VALID' ? 'check_circle' : 'warning' }}</mat-icon>
+                  <span>{{ getExpirationLabel(item) }}</span>
+                </div>
+              </div>
             </td>
           </ng-container>
 
           <!-- Revision Column -->
           <ng-container matColumnDef="revision">
-            <th mat-header-cell *matHeaderCellDef>Rév.</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'list.documents.revision' | t }}</th>
             <td mat-cell *matCellDef="let item">
               <span class="revision-v">{{ item.versionNumber || 'v1.0' }}</span>
             </td>
@@ -177,7 +186,7 @@
 
           <!-- Mis a jour Column -->
           <ng-container matColumnDef="updatedAt">
-            <th mat-header-cell *matHeaderCellDef>Dernière maj</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'list.documents.lastUpdate' | t }}</th>
             <td mat-cell *matCellDef="let item">
               <span class="date-text">{{ item.updatedAt | date: 'dd/MM/yyyy' }}</span>
             </td>
@@ -185,7 +194,7 @@
 
           <!-- Responsable Column -->
           <ng-container matColumnDef="owner">
-            <th mat-header-cell *matHeaderCellDef>Responsable</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'common.responsible' | t }}</th>
             <td mat-cell *matCellDef="let item">
               <div class="owner-cell" *ngIf="item.ownerFullName">
                 <div class="owner-avatar-mini">{{ getOwnerInitials(item.ownerFullName) }}</div>
@@ -196,7 +205,7 @@
 
           <!-- Actions Column -->
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef style="width: 180px;"></th>
+            <th mat-header-cell *matHeaderCellDef style="width: 220px;"></th>
             <td mat-cell *matCellDef="let item">
               <div class="table-actions">
                 <button mat-icon-button class="action-btn view-btn" matTooltip="Consulter"
@@ -207,9 +216,9 @@
                   (click)="$event.stopPropagation(); editDocument(item)">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button class="action-btn history-btn" matTooltip="Historique"
-                  (click)="$event.stopPropagation(); manageVersions(item)">
-                  <mat-icon>history</mat-icon>
+                <button *ngIf="canWrite" mat-icon-button class="action-btn status-btn" matTooltip="Changer l'état"
+                  [matMenuTriggerFor]="statusMenu" (click)="$event.stopPropagation()">
+                  <mat-icon>published_with_changes</mat-icon>
                 </button>
                 <button mat-icon-button class="action-btn dl-btn" matTooltip="Télécharger"
                   (click)="$event.stopPropagation(); downloadCurrent(item)">
@@ -219,6 +228,15 @@
                   (click)="$event.stopPropagation(); deleteDocument(item)">
                   <mat-icon>delete_outline</mat-icon>
                 </button>
+
+                <!-- Status Selection Menu -->
+                <mat-menu #statusMenu="matMenu" class="modern-status-menu">
+                  <div class="menu-label">Définir l'état</div>
+                  <button mat-menu-item *ngFor="let opt of statusOptions" (click)="changeStatus(item, opt.value)">
+                    <mat-icon [ngClass]="opt.value.toLowerCase()">circle</mat-icon>
+                    <span>{{ getStatusLabel(opt.value) }}</span>
+                  </button>
+                </mat-menu>
               </div>
             </td>
           </ng-container>

@@ -23,6 +23,7 @@ import {
   INDICATOR_STATUS_OPTIONS
 } from '../models/indicator.models';
 import { IndicatorService } from '../services/indicator.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-indicator-form',
@@ -37,7 +38,8 @@ import { IndicatorService } from '../services/indicator.service';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslatePipe
   ],
   templateUrl: './indicator-form.component.html',
   styleUrls: ['./indicator-form.component.scss']

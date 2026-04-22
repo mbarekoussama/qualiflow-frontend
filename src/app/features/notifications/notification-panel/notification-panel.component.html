@@ -1,60 +1,54 @@
-<button mat-icon-button [matMenuTriggerFor]="notificationMenu" matBadgeColor="warn" [matBadgeHidden]="unreadCount === 0"
-  [matBadge]="unreadCount > 99 ? '99+' : unreadCount" matBadgeSize="small" class="notif-button"
-  aria-label="Notifications">
+<button mat-icon-button [matMenuTriggerFor]="notificationMenu" xPosition="before" matBadgeColor="warn"
+  [matBadgeHidden]="unreadCount === 0" [matBadge]="unreadCount > 99 ? '99+' : unreadCount" matBadgeSize="small"
+  class="notif-button" (menuOpened)="onMenuOpened()" aria-label="Notifications">
   <mat-icon>notifications</mat-icon>
 </button>
 
-<mat-menu #notificationMenu="matMenu" class="notification-menu shadow-lg" (menuOpened)="onMenuOpened()">
-  <!-- HEADER -->
-  <div class="menu-header" (click)="$event.stopPropagation()">
-    <div>
-      <h4>Notifications</h4>
-      <span>{{ unreadCount }} message(s) non lu(s)</span>
-    </div>
-    <button mat-button type="button" class="btn-mark-all" (click)="markAllAsRead($event)">
-      Tout lire
-    </button>
-  </div>
-
-  <!-- CONTENT -->
-  <div class="menu-content" (click)="$event.stopPropagation()">
-    <!-- LOADING -->
-    <div *ngIf="loading" class="menu-loading">
-      <mat-spinner diameter="32"></mat-spinner>
-      <p>Chargement...</p>
-    </div>
-
-    <!-- EMPTY -->
-    <div *ngIf="!loading && recentNotifications.length === 0" class="menu-empty">
-      <mat-icon>notifications_none</mat-icon>
-      <p>Aucune notification récente</p>
-    </div>
-
-    <!-- ITEMS -->
-    <div *ngFor="let item of recentNotifications; trackBy: trackById" class="menu-item" [class.unread]="!item.isRead"
-      (click)="openNotification(item)">
-
-      <div class="menu-item-icon shadow-xs">
-        <mat-icon>{{ getIcon(item) }}</mat-icon>
+<mat-menu #notificationMenu="matMenu" class="notification-menu-panel">
+  <div class="notif-container" (click)="$event.stopPropagation()">
+    <div class="notif-header">
+      <div class="title-group">
+        <h2>Notifications</h2>
+        <span class="count-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
       </div>
-
-      <div class="menu-item-content">
-        <strong>{{ item.title }}</strong>
-        <p>{{ item.message }}</p>
-        <span>{{ item.createdAt | date: 'dd MMM, HH:mm' }}</span>
-      </div>
-
-      <button *ngIf="!item.isRead" mat-icon-button type="button" class="btn-read-item" matTooltip="Marquer comme lue"
-        (click)="markAsRead(item, $event)">
-        <mat-icon>done</mat-icon>
+      <button mat-button class="mark-all-btn" (click)="markAllAsRead($event)">
+        Tout marquer comme lu
       </button>
     </div>
-  </div>
 
-  <!-- FOOTER -->
-  <div class="menu-footer" (click)="$event.stopPropagation()">
-    <button mat-stroked-button type="button" class="btn-all" (click)="openCenter()">
-      Voir tout le centre de notifications
-    </button>
+    <div class="notif-content custom-scrollbar">
+      <div *ngIf="loading" class="notif-loading">
+        <mat-spinner diameter="28"></mat-spinner>
+      </div>
+
+      <div *ngIf="!loading && recentNotifications.length === 0" class="notif-empty">
+        <mat-icon>notifications_none</mat-icon>
+        <p>Aucune notification</p>
+      </div>
+
+      <div *ngFor="let item of recentNotifications; trackBy: trackById" class="notif-item" [class.unread]="!item.isRead"
+        (click)="openNotification(item)">
+
+        <div class="notif-icon" [ngClass]="getCategoryClass(item)">
+          <mat-icon>{{ getIcon(item) }}</mat-icon>
+        </div>
+
+        <div class="notif-body">
+          <div class="notif-top">
+            <span class="notif-title">{{ item.title }}</span>
+            <span class="notif-time">{{ getTimeAgo(item.createdAt) }}</span>
+          </div>
+          <p class="notif-msg">{{ item.message }}</p>
+
+          <div class="notif-unread-dot" *ngIf="!item.isRead"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notif-footer">
+      <button mat-button class="view-all-btn" (click)="openCenter()">
+        Voir tout l'historique
+      </button>
+    </div>
   </div>
 </mat-menu>

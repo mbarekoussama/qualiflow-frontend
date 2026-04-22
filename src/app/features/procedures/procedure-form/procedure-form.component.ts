@@ -22,6 +22,7 @@ import {
   UpdateProcedureRequest
 } from '../models/procedure.models';
 import { ProcedureService } from '../services/procedure.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-procedure-form',
@@ -36,7 +37,8 @@ import { ProcedureService } from '../services/procedure.service';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslatePipe
   ],
   templateUrl: './procedure-form.component.html',
   styleUrls: ['./procedure-form.component.scss']

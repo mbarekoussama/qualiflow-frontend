@@ -190,7 +190,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/non-conformities/nonconformity-form/nonconformity-form.component').then(m => m.NonconformityFormComponent),
             data: {
               title: 'Nouvelle non-conformite',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'AUDITEUR']
             }
           },
           {
@@ -354,11 +354,56 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'departments',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/departments/department-list/department-list.component').then(m => m.DepartmentListComponent),
+            data: {
+              title: 'Départements',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+            }
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/departments/department-form/department-form.component').then(m => m.DepartmentFormComponent),
+            data: {
+              title: 'Nouveau département',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE']
+            }
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () => import('./features/departments/department-form/department-form.component').then(m => m.DepartmentFormComponent),
+            data: {
+              title: 'Modifier département',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE']
+            }
+          },
+          {
+            path: ':id',
+            loadComponent: () => import('./features/departments/department-details/department-details.component').then(m => m.DepartmentDetailsComponent),
+            data: {
+              title: 'Détail département',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+            }
+          }
+        ]
+      },
+      {
         path: 'notifications',
         loadComponent: () => import('./features/notifications/notification-center/notification-center.component').then(m => m.NotificationCenterComponent),
         data: {
           title: 'Notifications',
-          roles: ['SUPER_ADMIN', 'ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR', 'AUDITEUR']
+          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR', 'AUDITEUR', 'SUPER_ADMIN']
+        }
+      },
+      {
+        path: 'chatbot',
+        loadComponent: () => import('./features/chatbot/chatbot-page/chatbot-page.component').then(m => m.ChatbotPageComponent),
+        data: {
+          title: 'Assistant GED',
+          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR', 'AUDITEUR', 'SUPER_ADMIN']
         }
       },
       {

@@ -9,8 +9,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { NotificationService } from '../../../core/services/notification.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { UserResponse, UserService as CoreUserService } from '../../../core/services/user.service';
 import { ProcessListItemResponse } from '../../processes/models/process.models';
 import { ProcessService } from '../../processes/services/process.service';
@@ -28,6 +29,7 @@ import {
   UpdateNonConformityRequest
 } from '../models/nonconformity.models';
 import { NonConformityService } from '../services/nonconformity.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-nonconformity-form',
@@ -42,7 +44,8 @@ import { NonConformityService } from '../services/nonconformity.service';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslatePipe
   ],
   templateUrl: './nonconformity-form.component.html',
   styleUrls: ['./nonconformity-form.component.scss']
@@ -82,6 +85,7 @@ export class NonconformityFormComponent implements OnInit {
     private readonly processService: ProcessService,
     private readonly procedureService: ProcedureService,
     private readonly userService: CoreUserService,
+    private readonly authService: AuthService,
     private readonly notificationService: NotificationService
   ) { }
 
@@ -107,12 +111,31 @@ export class NonconformityFormComponent implements OnInit {
       }
     });
 
+    // Auto-select responsible from procedure
+    this.form.controls.procedureId.valueChanges.subscribe(procedureId => {
+      if (!procedureId) {
+        return;
+      }
+
+      const selectedProcedure = this.procedures.find(item => item.id === procedureId);
+      if (selectedProcedure?.responsibleUserId) {
+        this.form.controls.responsibleUserId.setValue(selectedProcedure.responsibleUserId);
+      }
+    });
+
     this.loading = true;
+
+    const emptyUsersResponse = {
+      total: 0,
+      page: 1,
+      pageSize: 300,
+      items: [] as UserResponse[]
+    };
 
     const baseLoad$ = forkJoin({
       processes: this.processService.getProcesses({ pageNumber: 1, pageSize: 300 }),
       procedures: this.procedureService.getProcedures({ pageNumber: 1, pageSize: 300 }),
-      users: this.userService.getAll(1, 300)
+      users: this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse)))
     });
 
     if (this.isEdit && this.nonConformityId) {
@@ -203,6 +226,30 @@ export class NonconformityFormComponent implements OnInit {
     this.processes = processes;
     this.procedures = procedures;
     this.users = users.filter(user => user.isActive);
+
+    if (this.users.length === 0) {
+      const currentUser = this.authService.getCurrentUser();
+      if (currentUser?.id) {
+        this.users = [
+          {
+            id: currentUser.id,
+            organizationId: currentUser.organizationId,
+            firstName: currentUser.firstName,
+            lastName: currentUser.lastName,
+            email: currentUser.email,
+            role: currentUser.role,
+            function: currentUser.function,
+            department: currentUser.department,
+            isActive: true,
+            createdAt: currentUser.createdAt
+          }
+        ];
+      }
+    }
+
+    if (!this.isEdit && this.users.length > 0) {
+      this.form.controls.responsibleUserId.setValue(this.users[0].id);
+    }
   }
 
   private patchForm(nc: NonConformityResponse): void {

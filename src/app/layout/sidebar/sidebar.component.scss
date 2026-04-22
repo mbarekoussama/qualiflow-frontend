@@ -8,6 +8,7 @@
   flex-shrink: 0;
   overflow-y: auto;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
 }
 
 .nav-section {
@@ -35,6 +36,7 @@
   border-left: 3px solid transparent;
   user-select: none;
   text-decoration: none;
+  min-width: 0;
 }
 
 .nav-item:hover {
@@ -83,7 +85,7 @@
     top: var(--topbar-h);
     left: 0;
     bottom: 0;
-    width: 260px;
+    width: min(82vw, 280px);
     z-index: 200;
     transform: translateX(-100%);
     box-shadow: none;
@@ -92,5 +94,14 @@
       transform: translateX(0);
       box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
     }
+  }
+
+  .nav-item {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .nav-section-title {
+    padding: 0 14px 6px;
   }
 }

@@ -11,6 +11,7 @@ export type DocumentStatus =
   | 'BROUILLON'
   | 'EN_REVISION'
   | 'APPROUVE'
+  | 'REJETE'
   | 'PERIME'
   | 'ARCHIVE';
 
@@ -23,6 +24,7 @@ export interface DocumentQueryParams {
   processId?: number | null;
   procedureId?: number | null;
   ownerUserId?: number | null;
+  departmentId?: number | null;
 }
 
 export interface CreateDocumentRequest {
@@ -36,6 +38,7 @@ export interface CreateDocumentRequest {
   keywords?: string | null;
   signature?: string | null;
   ownerUserId?: number | null;
+  departmentId?: number | null;
   isActive: boolean;
 }
 
@@ -68,9 +71,14 @@ export interface DocumentListItemResponse {
   procedureCode?: string | null;
   status: DocumentStatus;
   versionNumber?: string | null;
+  expiryDate?: string | null;
+  daysToExpiry?: number | null;
+  expirationState?: 'VALID' | 'EXPIRING_SOON' | 'EXPIRED';
   updatedAt: string;
   ownerUserId?: number | null;
   ownerFullName?: string | null;
+  departmentId?: number | null;
+  departmentName?: string | null;
   fileName?: string | null;
   isActive: boolean;
 }
@@ -93,6 +101,8 @@ export interface DocumentResponse {
   signature?: string | null;
   ownerUserId?: number | null;
   ownerFullName?: string | null;
+  departmentId?: number | null;
+  departmentName?: string | null;
   currentVersionId?: number | null;
   currentVersionNumber?: string | null;
   currentVersionStatus?: DocumentStatus | null;
@@ -167,6 +177,27 @@ export interface DocumentStatisticsResponse {
   byProcess: Record<string, number>;
 }
 
+export interface DocumentExpiringResponse {
+  id: number;
+  organizationId: number;
+  code: string;
+  title: string;
+  status: DocumentStatus | string;
+  versionNumber?: string | null;
+  expiryDate?: string | null;
+  daysToExpiry: number;
+  expirationState: 'VALID' | 'EXPIRING_SOON' | 'EXPIRED';
+  ownerUserId?: number | null;
+  ownerFullName?: string | null;
+  departmentId?: number | null;
+  departmentName?: string | null;
+}
+
+export interface UpdateDocumentStatusRequest {
+  status: DocumentStatus;
+  revisionComment?: string | null;
+}
+
 export const DOCUMENT_TYPE_OPTIONS: Array<{ value: DocumentType; label: string }> = [
   { value: 'MANUEL', label: 'Manuel' },
   { value: 'PROCEDURE', label: 'Procedure' },
@@ -181,6 +212,7 @@ export const DOCUMENT_STATUS_OPTIONS: Array<{ value: DocumentStatus; label: stri
   { value: 'BROUILLON', label: 'Brouillon' },
   { value: 'EN_REVISION', label: 'En revision' },
   { value: 'APPROUVE', label: 'Approuve' },
+  { value: 'REJETE', label: 'Rejete' },
   { value: 'PERIME', label: 'Perime' },
   { value: 'ARCHIVE', label: 'Archive' }
 ];

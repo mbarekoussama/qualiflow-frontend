@@ -12,7 +12,7 @@
     <span class="brand-name">QualiFlow</span>
   </div>
   <span class="topbar-sep"></span>
-  <app-notification-panel></app-notification-panel>
+  <app-notification-dropdown *ngIf="canShowNotifications"></app-notification-dropdown>
   <app-header></app-header>
 </header>
 

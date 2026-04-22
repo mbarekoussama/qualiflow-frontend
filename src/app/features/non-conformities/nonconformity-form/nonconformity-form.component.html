@@ -3,14 +3,14 @@
   <div class="page-header-bar">
     <div class="page-header-left">
       <div class="page-subtitle">
-        <button type="button" class="link-button" (click)="goBack()">
+        <button type="button" class="btn-back" (click)="goBack()">
           <mat-icon>arrow_back</mat-icon> Retour
         </button>
       </div>
-      <h1 class="page-title">{{ title }}</h1>
+      <h1 class="page-title">{{ isEdit ? ('form.nc.editTitle' | t) : ('form.nc.newTitle' | t) }}</h1>
     </div>
     <div class="page-header-right">
-      <span class="form-status-hint">Tous les champs avec * sont obligatoires</span>
+      <span class="form-status-hint">{{ 'common.requiredHint' | t }}</span>
     </div>
   </div>
 
@@ -18,18 +18,18 @@
   <div class="form-progress-bar">
     <div class="progress-step active">
       <div class="step-dot">1</div>
-      <span>Qualification</span>
+      <span>{{ 'form.nc.qualification' | t }}</span>
     </div>
     <div class="progress-line" [class.active]="form.valid"></div>
     <div class="progress-step" [class.active]="form.valid">
       <div class="step-dot">2</div>
-      <span>Validation</span>
+      <span>{{ 'form.nc.validation' | t }}</span>
     </div>
   </div>
 
   <div class="loading-overlay" *ngIf="loading">
     <mat-spinner diameter="40"></mat-spinner>
-    <span>Initialisation...</span>
+    <span>{{ 'common.initializing' | t }}</span>
   </div>
 
   <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="submit()" class="modern-form-container">
@@ -39,21 +39,21 @@
       <div class="section-header">
         <mat-icon>assignment_late</mat-icon>
         <div class="header-text">
-          <h3>Identification de l'écart</h3>
-          <p>Définissez l'origine et la nature de la non-conformité.</p>
+          <h3>{{ 'form.nc.identification' | t }}</h3>
+          <p>{{ 'form.nc.identificationDesc' | t }}</p>
         </div>
       </div>
 
       <div class="section-content grid-2-cols">
         <mat-form-field appearance="outline">
-          <mat-label>Code Identification</mat-label>
+          <mat-label>{{ 'form.nc.identificationCode' | t }}</mat-label>
           <input matInput formControlName="code" placeholder="ex: NC-2024-001" />
-          <mat-hint>Format suggéré: NC-YYYY-XXX</mat-hint>
-          <mat-error *ngIf="form.get('code')?.invalid">Code obligatoire</mat-error>
+          <mat-hint>{{ 'form.nc.codeHint' | t }}</mat-hint>
+          <mat-error *ngIf="form.get('code')?.invalid">{{ 'form.nc.codeRequired' | t }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Sévérité / Impact</mat-label>
+          <mat-label>{{ 'form.nc.severityImpact' | t }}</mat-label>
           <mat-select formControlName="severity">
             <mat-option *ngFor="let option of severityOptions" [value]="option.value">
               {{ option.label }}
@@ -62,15 +62,15 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Titre de la non-conformité *</mat-label>
-          <input matInput formControlName="title" placeholder="Description courte de l'écart" />
-          <mat-error *ngIf="form.get('title')?.invalid">Un titre explicite est requis</mat-error>
+          <mat-label>{{ 'form.nc.titleLabel' | t }} *</mat-label>
+          <input matInput formControlName="title" [placeholder]="'form.nc.titlePlaceholder' | t" />
+          <mat-error *ngIf="form.get('title')?.invalid">{{ 'form.nc.titleRequired' | t }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Description détaillée</mat-label>
+          <mat-label>{{ 'form.nc.detailedDescription' | t }}</mat-label>
           <textarea matInput rows="4" formControlName="description"
-            placeholder="Expliquez ici les faits constatés, les preuves, etc."></textarea>
+            [placeholder]="'form.nc.descriptionPlaceholder' | t"></textarea>
         </mat-form-field>
       </div>
     </mat-card>
@@ -80,52 +80,52 @@
       <div class="section-header">
         <mat-icon>share</mat-icon>
         <div class="header-text">
-          <h3>Contexte & Affectation</h3>
-          <p>Liez l'écart à un élément métier et désignez un responsable.</p>
+          <h3>{{ 'form.nc.contextAssignment' | t }}</h3>
+          <p>{{ 'form.nc.contextAssignmentDesc' | t }}</p>
         </div>
       </div>
 
       <div class="section-content grid-2-cols">
         <mat-form-field appearance="outline">
-          <mat-label>Processus impacté</mat-label>
+          <mat-label>{{ 'form.nc.impactedProcess' | t }}</mat-label>
           <mat-select formControlName="processId">
-            <mat-option [value]="null">-- Aucun --</mat-option>
+            <mat-option [value]="null">{{ 'form.nc.none' | t }}</mat-option>
             <mat-option *ngFor="let p of processes" [value]="p.id">{{ p.code }} - {{ p.name }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Procédure concernée</mat-label>
+          <mat-label>{{ 'form.nc.concernedProcedure' | t }}</mat-label>
           <mat-select formControlName="procedureId">
-            <mat-option [value]="null">-- Aucune --</mat-option>
+            <mat-option [value]="null">{{ 'form.nc.none' | t }}</mat-option>
             <mat-option *ngFor="let proc of filteredProcedures" [value]="proc.id">{{ proc.code }} - {{ proc.title
               }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Responsable du traitement *</mat-label>
+          <mat-label>{{ 'form.nc.processingOwner' | t }} *</mat-label>
           <mat-select formControlName="responsibleUserId">
-            <mat-option [value]="0">Sélectionner un pilote...</mat-option>
+            <mat-option [value]="0">{{ 'form.nc.selectPilot' | t }}</mat-option>
             <mat-option *ngFor="let u of users" [value]="u.id">{{ u.firstName }} {{ u.lastName }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="form.get('responsibleUserId')?.invalid">Veuillez désigner un responsable</mat-error>
+          <mat-error *ngIf="form.get('responsibleUserId')?.invalid">{{ 'form.nc.ownerRequired' | t }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Date de détection</mat-label>
+          <mat-label>{{ 'form.nc.detectedDate' | t }}</mat-label>
           <input matInput type="date" formControlName="detectedDate" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Catégorie / Type</mat-label>
+          <mat-label>{{ 'form.nc.categoryType' | t }}</mat-label>
           <mat-select formControlName="type">
             <mat-option *ngFor="let t of typeOptions" [value]="t.value">{{ t.label }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Statut Initial</mat-label>
+          <mat-label>{{ 'form.nc.initialStatus' | t }}</mat-label>
           <mat-select formControlName="status">
             <mat-option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</mat-option>
           </mat-select>
@@ -135,12 +135,12 @@
 
     <!-- FORM ACTIONS BAR -->
     <div class="form-actions-bar">
-      <button mat-button type="button" (click)="goBack()" [disabled]="saving">Annuler</button>
+      <button mat-button type="button" (click)="goBack()" [disabled]="saving">{{ 'common.cancel' | t }}</button>
       <div class="spacer"></div>
       <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="saving">
         <mat-icon *ngIf="!saving">check_circle</mat-icon>
         <mat-spinner *ngIf="saving" diameter="20"></mat-spinner>
-        <span>{{ isEdit ? 'Mettre à jour la fiche' : 'Valider la déclaration' }}</span>
+        <span>{{ isEdit ? ('form.nc.update' | t) : ('form.nc.submit' | t) }}</span>
       </button>
     </div>
   </form>

@@ -4,21 +4,21 @@
         <div class="page-header-left">
             <div class="page-subtitle">
                 <button type="button" class="link-button" (click)="goBack()">
-                    <mat-icon>arrow_back</mat-icon> Retour
+                    <mat-icon>arrow_back</mat-icon> {{ 'common.back' | t }}
                 </button>
             </div>
-            <h1 class="page-title">{{ isEdit ? 'Modifier la procédure' : 'Nouvelle procédure' }}</h1>
+            <h1 class="page-title">{{ isEdit ? ('form.procedure.editTitle' | t) : ('form.procedure.newTitle' | t) }}</h1>
         </div>
 
         <div class="page-header-right">
             <button mat-stroked-button type="button" class="cancel-btn" (click)="goBack()" [disabled]="saving">
-                Annuler
+                {{ 'common.cancel' | t }}
             </button>
             <button mat-flat-button color="primary" class="new-process-btn" (click)="submit()"
                 [disabled]="saving || procedureForm.invalid">
                 <mat-icon *ngIf="!saving">save</mat-icon>
                 <mat-spinner *ngIf="saving" diameter="18"></mat-spinner>
-                {{ isEdit ? 'Enregistrer' : 'Créer la procédure' }}
+                {{ isEdit ? ('common.save' | t) : ('form.procedure.create' | t) }}
             </button>
         </div>
     </div>
@@ -26,7 +26,7 @@
     <!-- PROGRESS BAR -->
     <div class="form-progress-bar">
         <div class="progress-info">
-            <span>Complétion du formulaire</span>
+            <span>{{ 'common.formCompletion' | t }}</span>
             <strong>{{ completionPercent }}%</strong>
         </div>
         <div class="progress-track">
@@ -37,7 +37,7 @@
     <div class="form-body">
         <div class="loading-box" *ngIf="loading">
             <mat-spinner diameter="38"></mat-spinner>
-            <span>Chargement du formulaire...</span>
+            <span>{{ 'common.loadingForm' | t }}</span>
         </div>
 
         <form *ngIf="!loading" [formGroup]="procedureForm" class="form-container">
@@ -47,31 +47,31 @@
                 <div class="section-header">
                     <mat-icon>fingerprint</mat-icon>
                     <div>
-                        <h2>Identification & Parent</h2>
-                        <p>Définis le code unique et le processus d'appartenance.</p>
+                        <h2>{{ 'form.procedure.identificationParent' | t }}</h2>
+                        <p>{{ 'form.procedure.identificationParentDesc' | t }}</p>
                     </div>
                 </div>
 
                 <div class="section-content grid-two">
                     <mat-form-field appearance="outline">
-                        <mat-label>Code</mat-label>
+                        <mat-label>{{ 'common.code' | t }}</mat-label>
                         <input matInput formControlName="code" placeholder="Ex: PROC-QUAL-001" />
-                        <mat-error *ngIf="isInvalid('code')">Code requis (format valide).</mat-error>
+                        <mat-error *ngIf="isInvalid('code')">{{ 'form.procedure.codeError' | t }}</mat-error>
                     </mat-form-field>
 
                     <mat-form-field appearance="outline">
-                        <mat-label>Processus Parent</mat-label>
+                        <mat-label>{{ 'form.procedure.parentProcess' | t }}</mat-label>
                         <mat-select formControlName="processId">
                             <mat-option *ngFor="let p of processes" [value]="p.id">{{ p.code }} — {{ p.name
                                 }}</mat-option>
                         </mat-select>
-                        <mat-error *ngIf="isInvalid('processId')">Sélection obligatoire.</mat-error>
+                        <mat-error *ngIf="isInvalid('processId')">{{ 'form.procedure.selectionRequired' | t }}</mat-error>
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-label>Titre de la procédure</mat-label>
-                        <input matInput formControlName="title" placeholder="Ex: Gestion des non-conformités" />
-                        <mat-error *ngIf="isInvalid('title')">Titre requis (min 3 car.).</mat-error>
+                        <mat-label>{{ 'form.procedure.titleLabel' | t }}</mat-label>
+                        <input matInput formControlName="title" [placeholder]="'form.procedure.titlePlaceholder' | t" />
+                        <mat-error *ngIf="isInvalid('title')">{{ 'form.procedure.titleError' | t }}</mat-error>
                     </mat-form-field>
                 </div>
             </div>
@@ -81,23 +81,23 @@
                 <div class="section-header">
                     <mat-icon>person</mat-icon>
                     <div>
-                        <h2>Responsabilité & Statut</h2>
-                        <p>Assigne un pilote et définit l'état opérationnel.</p>
+                        <h2>{{ 'form.procedure.responsibilityStatus' | t }}</h2>
+                        <p>{{ 'form.procedure.responsibilityStatusDesc' | t }}</p>
                     </div>
                 </div>
 
                 <div class="section-content grid-two">
                     <mat-form-field appearance="outline">
-                        <mat-label>Responsable</mat-label>
+                        <mat-label>{{ 'common.responsible' | t }}</mat-label>
                         <mat-select formControlName="responsibleUserId">
-                            <mat-option [value]="null">Aucun</mat-option>
+                            <mat-option [value]="null">{{ 'form.procedure.none' | t }}</mat-option>
                             <mat-option *ngFor="let r of responsibles" [value]="r.id">{{ r.firstName }} {{ r.lastName
                                 }}</mat-option>
                         </mat-select>
                     </mat-form-field>
 
                     <mat-form-field appearance="outline">
-                        <mat-label>Statut</mat-label>
+                        <mat-label>{{ 'common.status' | t }}</mat-label>
                         <mat-select formControlName="status">
                             <mat-option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label
                                 }}</mat-option>
@@ -111,24 +111,24 @@
                 <div class="section-header">
                     <mat-icon>assignment</mat-icon>
                     <div>
-                        <h2>Objectifs & Périmètre</h2>
-                        <p>Détaille le but et le champ d'application de cette procédure.</p>
+                        <h2>{{ 'form.procedure.objectivesScope' | t }}</h2>
+                        <p>{{ 'form.procedure.objectivesScopeDesc' | t }}</p>
                     </div>
                 </div>
 
                 <div class="section-content">
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-label>Objectif principal</mat-label>
+                        <mat-label>{{ 'form.procedure.mainObjective' | t }}</mat-label>
                         <textarea matInput rows="3" formControlName="objective"></textarea>
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-label>Périmètre (Scope)</mat-label>
+                        <mat-label>{{ 'form.procedure.scope' | t }}</mat-label>
                         <textarea matInput rows="3" formControlName="scope"></textarea>
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-label>Description détaillée</mat-label>
+                        <mat-label>{{ 'form.procedure.detailedDescription' | t }}</mat-label>
                         <textarea matInput rows="6" formControlName="description"></textarea>
                     </mat-form-field>
                 </div>

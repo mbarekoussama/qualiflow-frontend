@@ -52,14 +52,10 @@ import { OrganizationService } from '../services/organization.service';
 export class OrganizationsListComponent implements OnInit {
   readonly displayedColumns: string[] = [
     'name',
-    'code',
     'type',
     'status',
-    'email',
-    'phone',
     'usersCount',
     'adminsCount',
-    'createdAt',
     'actions'
   ];
 
@@ -150,7 +146,8 @@ export class OrganizationsListComponent implements OnInit {
         title: 'Changer le statut',
         message: `Voulez-vous passer ${item.name} au statut ${nextStatus} ?`,
         confirmText: 'Confirmer',
-        cancelText: 'Annuler'
+        cancelText: 'Annuler',
+        type: 'info'
       }
     });
 
@@ -166,6 +163,34 @@ export class OrganizationsListComponent implements OnInit {
         },
         error: () => {
           this.notificationService.showError('Impossible de changer le statut.');
+        }
+      });
+    });
+  }
+
+  deleteOrganization(item: OrganizationListItemResponse): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Supprimer l\'organisation',
+        message: `Êtes-vous sûr de vouloir supprimer définitivement ${item.name} ? Cette action est irréversible.`,
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.organizationService.deleteOrganization(item.id).subscribe({
+        next: () => {
+          this.notificationService.showSuccess('Organisation supprimée avec succès.');
+          this.loadOrganizations();
+        },
+        error: () => {
+          this.notificationService.showError('Erreur lors de la suppression de l\'organisation.');
         }
       });
     });

@@ -31,6 +31,7 @@ import {
   INDICATOR_STATUS_OPTIONS
 } from '../models/indicator.models';
 import { IndicatorService } from '../services/indicator.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-indicator-list',
@@ -49,7 +50,8 @@ import { IndicatorService } from '../services/indicator.service';
     MatPaginatorModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    TranslatePipe
   ],
   templateUrl: './indicator-list.component.html',
   styleUrls: ['./indicator-list.component.scss']

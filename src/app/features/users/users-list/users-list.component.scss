@@ -220,42 +220,95 @@
 }
 
 .status-badge {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
 
   &.active {
     background: #e6fffa;
-    color: #38a169;
-    border: 1px solid #b2f5ea;
+    color: #065f46;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+
+    &::before {
+      background-color: #10b981;
+    }
   }
 
   &.inactive {
-    background: #fff5f5;
-    color: #e53e3e;
-    border: 1px solid #feb2b2;
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+
+    &::before {
+      background-color: #ef4444;
+    }
   }
 }
 
 .date-cell {
-  color: #718096;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .actions-cell {
   display: flex;
-  gap: 4px;
+  gap: 8px;
 
-  button {
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
+  .action-btn {
+    width: 36px;
+    height: 36px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     mat-icon {
       font-size: 18px;
       width: 18px;
       height: 18px;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    &.edit:hover {
+      color: #3182ce;
+      background: #ebf8ff;
+      border-color: #bee3f8;
+    }
+
+    &.status {
+      &.active:hover {
+        color: #d69e2e;
+        background: #fffaf0;
+        border-color: #fefcbf;
+      }
+
+      &:not(.active):hover {
+        color: #38a169;
+        background: #e6fffa;
+        border-color: #b2f5ea;
+      }
+    }
+
+    &.delete:hover {
+      color: #e53e3e;
+      background: #fff5f5;
+      border-color: #feb2b2;
     }
   }
 }

@@ -250,82 +250,221 @@
   }
 }
 
-.tag-status {
-  padding: 6px 14px;
-  border-radius: 8px;
+/* STATUS CELL MODERN */
+.status-cell-modern {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.status-badge {
+  padding: 6px 16px;
+  border-radius: 12px;
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  display: inline-block;
+  border-left: 4px solid currentColor;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-width: 120px;
+  text-align: center;
 
   &.approuve {
+    color: #059669;
+    border-color: #059669;
     background: #ecfdf5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
   }
 
   &.en_revision {
+    color: #d97706;
+    border-color: #d97706;
     background: #fffbeb;
-    color: #92400e;
-    border: 1px solid #fde68a;
   }
 
-  &.perime {
+  &.perime,
+  &.rejete {
+    color: #dc2626;
+    border-color: #dc2626;
     background: #fef2f2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
+  }
+
+  &.brouillon {
+    color: #4b5563;
+    border-color: #4b5563;
+    background: #f3f4f6;
+  }
+}
+
+.expiration-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding-left: 4px;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  &.valid {
+    color: #059669;
+  }
+
+  &.expiring_soon {
+    color: #d97706;
+  }
+
+  &.expired {
+    color: #dc2626;
   }
 }
 
 .revision-v {
   font-weight: 700;
-  color: var(--text-secondary);
+  color: var(--xl-green-mid);
+  font-size: 13px;
+  padding: 4px 10px;
+  background: var(--xl-green-xlight);
+  border-radius: 6px;
 }
 
 .owner-cell {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .owner-avatar-mini {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: var(--xl-green-xlight);
-  color: var(--xl-green-mid);
+  background: var(--xl-green-mid);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 11px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .table-actions {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   justify-content: flex-end;
 }
 
 .action-btn {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: white;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
 
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: var(--text-muted);
+    color: var(--text-secondary);
   }
 
   &:hover {
-    mat-icon {
-      color: var(--xl-green-mid);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+
+    &.view-btn {
+      border-color: #2563eb;
+
+      mat-icon {
+        color: #2563eb;
+      }
     }
 
-    &.delete-btn:hover mat-icon {
-      color: #dc2626;
+    &.edit-btn {
+      border-color: #059669;
+
+      mat-icon {
+        color: #059669;
+      }
+    }
+
+    &.status-btn {
+      border-color: #7c3aed;
+
+      mat-icon {
+        color: #7c3aed;
+      }
+    }
+
+    &.dl-btn {
+      border-color: #0891b2;
+
+      mat-icon {
+        color: #0891b2;
+      }
+    }
+
+    &.delete-btn {
+      border-color: #dc2626;
+
+      mat-icon {
+        color: #dc2626;
+      }
+    }
+  }
+}
+
+/* MENUS */
+.modern-status-menu {
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+  margin-top: 8px !important;
+
+  .menu-label {
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  button.mat-menu-item {
+    font-size: 13px;
+    font-weight: 500;
+    height: 44px;
+
+    mat-icon {
+      font-size: 16px;
+      margin-right: 8px;
+
+      &.approuve {
+        color: #059669;
+      }
+
+      &.en_revision {
+        color: #d97706;
+      }
+
+      &.perime,
+      &.rejete {
+        color: #dc2626;
+      }
+
+      &.brouillon {
+        color: #4b5563;
+      }
+    }
+
+    &:hover {
+      background: var(--bg-body);
     }
   }
 }

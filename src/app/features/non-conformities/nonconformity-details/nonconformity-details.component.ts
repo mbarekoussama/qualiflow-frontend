@@ -13,7 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { UserResponse, UserService as CoreUserService } from '../../../core/services/user.service';
@@ -31,6 +31,7 @@ import {
   UpdateCorrectiveActionRequest
 } from '../models/nonconformity.models';
 import { NonConformityService } from '../services/nonconformity.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-nonconformity-details',
@@ -49,7 +50,8 @@ import { NonConformityService } from '../services/nonconformity.service';
     MatProgressSpinnerModule,
     MatDialogModule,
     MatMenuModule,
-    MatTooltipModule
+    MatTooltipModule,
+    TranslatePipe
   ],
   templateUrl: './nonconformity-details.component.html',
   styleUrls: ['./nonconformity-details.component.scss']
@@ -75,6 +77,7 @@ export class NonconformityDetailsComponent implements OnInit {
   details: NonConformityDetailsResponse | null = null;
   users: UserResponse[] = [];
   editingActionId: number | null = null;
+  showActionForm = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -115,10 +118,19 @@ export class NonconformityDetailsComponent implements OnInit {
 
   loadData(): void {
     this.loading = true;
+    const emptyUsersResponse = {
+      total: 0,
+      page: 1,
+      pageSize: 300,
+      items: [] as UserResponse[]
+    };
+    const usersRequest$ = this.canWrite
+      ? this.userService.getAll(1, 300)
+      : of(emptyUsersResponse);
 
     forkJoin({
       details: this.nonConformityService.getNonConformityById(this.nonConformityId),
-      users: this.userService.getAll(1, 300)
+      users: usersRequest$
     }).subscribe({
       next: ({ details, users }) => {
         this.details = details;
@@ -190,6 +202,7 @@ export class NonconformityDetailsComponent implements OnInit {
 
   editAction(action: CorrectiveActionResponse): void {
     this.editingActionId = action.id;
+    this.showActionForm = true;
     this.actionForm.patchValue({
       title: action.title,
       description: action.description || '',
@@ -202,6 +215,20 @@ export class NonconformityDetailsComponent implements OnInit {
 
   cancelActionEdit(): void {
     this.editingActionId = null;
+    this.showActionForm = false;
+    this.actionForm.reset({
+      title: '',
+      description: '',
+      responsibleUserId: 0,
+      dueDate: '',
+      completionDate: '',
+      status: 'A_FAIRE'
+    });
+  }
+
+  startNewAction(): void {
+    this.editingActionId = null;
+    this.showActionForm = true;
     this.actionForm.reset({
       title: '',
       description: '',

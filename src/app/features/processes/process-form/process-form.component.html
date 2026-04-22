@@ -3,21 +3,21 @@
   <div class="page-header-bar">
     <div class="page-header-left">
       <div class="page-subtitle">
-        <button type="button" class="link-button" (click)="goBack()">
+        <button type="button" class="btn-back" (click)="goBack()">
           <mat-icon>arrow_back</mat-icon> Retour
         </button>
       </div>
-      <h1 class="page-title">{{ title }}</h1>
+      <h1 class="page-title">{{ isEdit ? ('form.process.editTitle' | t) : ('form.process.newTitle' | t) }}</h1>
     </div>
 
     <div class="page-header-right">
       <button mat-stroked-button type="button" class="cancel-btn" (click)="goBack()" [disabled]="saving">
-        Annuler
+        {{ 'common.cancel' | t }}
       </button>
       <button mat-flat-button color="primary" class="new-process-btn" (click)="submit()"
         [disabled]="saving || processForm.invalid">
         <mat-spinner *ngIf="saving" diameter="18" style="margin-right: 8px;"></mat-spinner>
-        {{ isEdit ? 'Enregistrer' : 'Créer le processus' }}
+        {{ isEdit ? ('common.save' | t) : ('form.process.create' | t) }}
       </button>
     </div>
   </div>
@@ -25,7 +25,7 @@
   <!-- COMPLETION PROGRESS BAR -->
   <div class="form-progress-bar">
     <div class="progress-info">
-      <span>Complétion du formulaire</span>
+      <span>{{ 'common.formCompletion' | t }}</span>
       <strong>{{ completionPercent }}%</strong>
     </div>
     <div class="progress-track">
@@ -35,7 +35,7 @@
 
   <div class="loading-box" *ngIf="loading">
     <mat-spinner diameter="38"></mat-spinner>
-    <span>Chargement du formulaire...</span>
+    <span>{{ 'common.loadingForm' | t }}</span>
   </div>
 
   <form *ngIf="!loading" [formGroup]="processForm" (ngSubmit)="submit()" class="form-body">
@@ -46,42 +46,42 @@
         <div class="section-header">
           <mat-icon>info_outline</mat-icon>
           <div>
-            <h2>Informations Générales</h2>
-            <p>Identité du processus et responsabilités.</p>
+            <h2>{{ 'form.process.generalInfo' | t }}</h2>
+            <p>{{ 'form.process.generalInfoDesc' | t }}</p>
           </div>
         </div>
 
         <div class="section-content grid-two">
           <mat-form-field appearance="outline">
-            <mat-label>Code</mat-label>
+            <mat-label>{{ 'common.code' | t }}</mat-label>
             <input matInput formControlName="code" placeholder="PIL-001" />
-            <mat-error *ngIf="isInvalid('code')">Code requis (format A-Z, 0-9)</mat-error>
+            <mat-error *ngIf="isInvalid('code')">{{ 'form.process.codeError' | t }}</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Nom du processus</mat-label>
-            <input matInput formControlName="name" placeholder="Management de la Qualité" />
-            <mat-error *ngIf="isInvalid('name')">Nom requis (min 3 car.)</mat-error>
+            <mat-label>{{ 'form.process.name' | t }}</mat-label>
+            <input matInput formControlName="name" [placeholder]="'form.process.namePlaceholder' | t" />
+            <mat-error *ngIf="isInvalid('name')">{{ 'form.process.nameError' | t }}</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Type</mat-label>
+            <mat-label>{{ 'common.type' | t }}</mat-label>
             <mat-select formControlName="type">
               <mat-option *ngFor="let option of typeOptions" [value]="option.value">{{ option.label }}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Statut</mat-label>
+            <mat-label>{{ 'common.status' | t }}</mat-label>
             <mat-select formControlName="status">
               <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Pilote Responsable</mat-label>
+            <mat-label>{{ 'form.process.pilotOwner' | t }}</mat-label>
             <mat-select formControlName="pilotUserId">
-              <mat-option [value]="null">Non défini</mat-option>
+              <mat-option [value]="null">{{ 'common.toDefine' | t }}</mat-option>
               <mat-option *ngFor="let pilot of pilots" [value]="pilot.id">
                 {{ pilot.firstName }} {{ pilot.lastName }}
               </mat-option>
@@ -89,7 +89,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Description ou périmètre résumé</mat-label>
+            <mat-label>{{ 'form.process.descriptionScope' | t }}</mat-label>
             <textarea matInput rows="2" formControlName="description"></textarea>
           </mat-form-field>
         </div>
@@ -100,8 +100,8 @@
         <div class="section-header">
           <mat-icon>lan</mat-icon>
           <div>
-            <h2>Cartographie & Interfaces</h2>
-            <p>Flux d'entrée, sortie et parties prenantes.</p>
+            <h2>{{ 'form.process.mappingInterfaces' | t }}</h2>
+            <p>{{ 'form.process.mappingInterfacesDesc' | t }}</p>
           </div>
         </div>
 
@@ -130,8 +130,8 @@
         <div class="section-header">
           <mat-icon>insights</mat-icon>
           <div>
-            <h2>Pilotage & Performance</h2>
-            <p>Finalités et objectifs cibles.</p>
+            <h2>{{ 'form.process.pilotPerformance' | t }}</h2>
+            <p>{{ 'form.process.pilotPerformanceDesc' | t }}</p>
           </div>
         </div>
 

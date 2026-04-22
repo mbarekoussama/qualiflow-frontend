@@ -1,14 +1,14 @@
 <div class="notification-center-page">
-  <!-- HEADER BANNER -->
   <div class="header-banner shadow-sm">
     <div class="banner-info">
       <h1>Centre de notifications</h1>
-      <p>Retrouvez toutes les alertes et événements de votre organisation</p>
+      <p>Retrouvez toutes les alertes et evenements de votre organisation</p>
+      <p class="role-view">{{ roleViewLabel }}</p>
     </div>
     <div class="banner-actions">
       <button mat-stroked-button class="btn-reset" (click)="clearFilters()">
         <mat-icon>restart_alt</mat-icon>
-        Réinitialiser
+        Reinitialiser
       </button>
       <button mat-flat-button class="btn-mark-all" (click)="markAllAsRead()">
         <mat-icon>done_all</mat-icon>
@@ -17,7 +17,6 @@
     </div>
   </div>
 
-  <!-- KPI CARDS -->
   <div class="kpi-row" *ngIf="statistics">
     <div class="kpi-card total shadow-xs">
       <div class="kpi-icon"><mat-icon>notifications</mat-icon></div>
@@ -43,18 +42,18 @@
     <div class="kpi-card high shadow-xs">
       <div class="kpi-icon"><mat-icon>priority_high</mat-icon></div>
       <div class="kpi-data">
-        <span>Priorité Haute</span>
+        <span>Priorite haute</span>
         <strong>{{ statistics.high }}</strong>
       </div>
     </div>
   </div>
 
-  <!-- SYSTEM ALERTS (FOR SUPER ADMIN) -->
   <mat-card class="system-alerts-card shadow-sm" *ngIf="isSuperAdmin && systemAlerts.length > 0">
     <div class="alerts-header">
-      <h2><mat-icon>gpp_maybe</mat-icon> Alertes Système Globales</h2>
+      <h2><mat-icon>gpp_maybe</mat-icon> Alertes systeme globales</h2>
       <button mat-button color="warn" (click)="loadData()">
-        <mat-icon>refresh</mat-icon> Rafraîchir
+        <mat-icon>refresh</mat-icon>
+        Rafraichir
       </button>
     </div>
     <div class="alerts-timeline">
@@ -76,17 +75,16 @@
     </div>
   </mat-card>
 
-  <!-- FILTERS CARD -->
   <mat-card class="filters-card shadow-sm">
     <form class="filters-grid" [formGroup]="filtersForm" (ngSubmit)="onFilter()">
       <mat-form-field appearance="outline">
         <mat-label>Recherche rapide</mat-label>
         <mat-icon matPrefix>search</mat-icon>
-        <input matInput formControlName="search" placeholder="Mot-clé, titre...">
+        <input matInput formControlName="search" placeholder="Mot-cle, titre...">
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>État de lecture</mat-label>
+        <mat-label>Etat de lecture</mat-label>
         <mat-select formControlName="isRead">
           <mat-option value="">Toutes</mat-option>
           <mat-option value="false">Non lues</mat-option>
@@ -95,19 +93,37 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Catégorie</mat-label>
+        <mat-label>Categorie</mat-label>
         <mat-select formControlName="category">
-          <mat-option value="">Toutes les catégories</mat-option>
+          <mat-option value="">Toutes les categories</mat-option>
           <mat-option *ngFor="let option of categoryOptions" [value]="option.value">{{ option.label }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Priorité</mat-label>
+        <mat-label>Priorite</mat-label>
         <mat-select formControlName="priority">
           <mat-option value="">Tous niveaux</mat-option>
           <mat-option *ngFor="let option of priorityOptions" [value]="option.value">{{ option.label }}</mat-option>
         </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="">Tous les types</mat-option>
+          <mat-option *ngFor="let option of typeOptions" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date de debut</mat-label>
+        <input matInput type="date" formControlName="fromDate">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date de fin</mat-label>
+        <input matInput type="date" formControlName="toDate">
       </mat-form-field>
 
       <div class="filters-actions">
@@ -118,14 +134,22 @@
     </form>
   </mat-card>
 
-  <!-- CONTENT CARD -->
   <mat-card class="content-card shadow-sm">
-    <app-notification-list [loading]="loading" [notifications]="notifications" (openNotification)="onOpen($event)"
-      (markRead)="onMarkRead($event)" (archive)="onArchive($event)">
+    <app-notification-list
+      [loading]="loading"
+      [notifications]="notifications"
+      (openNotification)="onOpen($event)"
+      (markRead)="onMarkRead($event)"
+      (archive)="onArchive($event)">
     </app-notification-list>
 
-    <mat-paginator [length]="total" [pageSize]="pageSize" [pageIndex]="pageNumber - 1"
-      [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons (page)="onPageChanged($event)">
+    <mat-paginator
+      [length]="total"
+      [pageSize]="pageSize"
+      [pageIndex]="pageNumber - 1"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      showFirstLastButtons
+      (page)="onPageChanged($event)">
     </mat-paginator>
   </mat-card>
 </div>

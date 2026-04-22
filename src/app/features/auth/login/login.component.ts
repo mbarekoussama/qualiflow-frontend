@@ -34,14 +34,8 @@ export class LoginComponent implements OnInit {
     {
       label: 'Super Admin',
       role: 'SUPER_ADMIN',
-      email: 'superadmin@demo.local',
+      email: 'support.qualiflow@gmail.com',
       password: 'SuperAdmin@123'
-    },
-    {
-      label: 'Super Admin 2',
-      role: 'Fsm admin ',
-      email: 'admin@test.com',
-      password: 'admin@123'
     },
     {
       label: 'Admin Organisation',
@@ -52,7 +46,7 @@ export class LoginComponent implements OnInit {
     {
       label: 'Responsable Qualite',
       role: 'RESPONSABLE_QUALITE',
-      email: 'qualite@demo.local',
+      email: 'mbarek.oussama.dev@gmail.com',
       password: 'Qualite@123'
     },
     {

@@ -24,6 +24,7 @@ import {
   UpdateProcessRequest
 } from '../models/process.models';
 import { ProcessService } from '../services/process.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 type ListFieldKey = 'finalities' | 'scope' | 'suppliers' | 'clients' | 'inputData' | 'outputData' | 'objectives';
 
@@ -48,7 +49,8 @@ interface ListFieldMeta {
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslatePipe
   ],
   templateUrl: './process-form.component.html',
   styleUrls: ['./process-form.component.scss']

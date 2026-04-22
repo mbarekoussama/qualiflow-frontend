@@ -9,8 +9,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UserRole, UserService } from '../services/user.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { DepartmentService } from '../../departments/services/department.service';
+import { DepartmentListItemResponse } from '../../departments/models/department.models';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-users-form',
@@ -23,7 +27,8 @@ import { NotificationService } from '../../../core/services/notification.service
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './users-form.component.html',
   styleUrls: ['./users-form.component.scss']
@@ -35,18 +40,21 @@ export class UsersFormComponent implements OnInit {
   userId?: number;
   initialRole: UserRole = 'UTILISATEUR';
   initialIsActive = true;
+  departments: DepartmentListItemResponse[] = [];
 
   readonly roleOptions: Array<{ value: UserRole; label: string }> = [
-    { value: 'ADMIN_ORG', label: 'Admin org' },
-    { value: 'RESPONSABLE_QUALITE', label: 'Responsable qualite' },
-    { value: 'CHEF_SERVICE', label: 'Chef service' },
-    { value: 'AUDITEUR', label: 'Auditeur' },
-    { value: 'UTILISATEUR', label: 'Utilisateur' }
+    { value: 'ADMIN_ORG', label: 'Administrateur Organisation' },
+    { value: 'RESPONSABLE_QUALITE', label: 'Responsable Qualité' },
+    { value: 'CHEF_SERVICE', label: 'Chef de Service' },
+    { value: 'AUDITEUR', label: 'Auditeur Interne' },
+    { value: 'UTILISATEUR', label: 'Utilisateur Standard' }
   ];
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly userService: UserService,
+    private readonly departmentService: DepartmentService,
+    private readonly authService: AuthService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly notificationService: NotificationService
@@ -54,6 +62,7 @@ export class UsersFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.loadDepartments();
     this.checkEditMode();
   }
 
@@ -67,6 +76,17 @@ export class UsersFormComponent implements OnInit {
       department: [''],
       isActive: [true],
       password: ['', [Validators.minLength(6)]]
+    });
+  }
+
+  private loadDepartments(): void {
+    this.departmentService.getDepartments({ pageSize: 100 }).subscribe({
+      next: (response) => {
+        this.departments = response.items;
+      },
+      error: () => {
+        this.notificationService.showError('Erreur lors du chargement des départements.');
+      }
     });
   }
 
@@ -84,6 +104,7 @@ export class UsersFormComponent implements OnInit {
   }
 
   private loadUser(id: number): void {
+    this.isLoading = true;
     this.userService.getUserById(id).subscribe({
       next: (user) => {
         this.initialRole = user.role as UserRole;
@@ -98,9 +119,10 @@ export class UsersFormComponent implements OnInit {
           department: user.department || '',
           isActive: user.isActive
         });
+        this.isLoading = false;
       },
       error: () => {
-        this.notificationService.showError('Utilisateur non trouve.');
+        this.notificationService.showError('Utilisateur non trouvé.');
         this.goBack();
       }
     });
@@ -141,12 +163,12 @@ export class UsersFormComponent implements OnInit {
 
         afterCreate$.subscribe({
           next: () => {
-            this.notificationService.showSuccess('Utilisateur cree avec succes.');
+            this.notificationService.showSuccess('Utilisateur créé avec succès.');
             this.router.navigate(['/users']);
           },
           error: () => {
             this.isLoading = false;
-            this.notificationService.showError('Erreur lors de la mise a jour du statut utilisateur.');
+            this.notificationService.showError('Erreur lors de la mise à jour du statut utilisateur.');
           },
           complete: () => {
             this.isLoading = false;
@@ -155,7 +177,7 @@ export class UsersFormComponent implements OnInit {
       },
       error: () => {
         this.isLoading = false;
-        this.notificationService.showError('Erreur lors de la creation de l utilisateur.');
+        this.notificationService.showError('Erreur lors de la création de l\'utilisateur.');
       }
     });
   }
@@ -183,11 +205,26 @@ export class UsersFormComponent implements OnInit {
 
     forkJoin(requests).subscribe({
       next: () => {
-        this.notificationService.showSuccess('Utilisateur modifie avec succes.');
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser?.id === id) {
+          this.authService.getProfile().subscribe({
+            next: () => {
+              this.notificationService.showSuccess('Utilisateur modifié avec succès.');
+              this.router.navigate(['/users']);
+            },
+            error: () => {
+              this.notificationService.showSuccess('Utilisateur modifié avec succès.');
+              this.router.navigate(['/users']);
+            }
+          });
+          return;
+        }
+
+        this.notificationService.showSuccess('Utilisateur modifié avec succès.');
         this.router.navigate(['/users']);
       },
       error: () => {
-        this.notificationService.showError('Erreur lors de la mise a jour de l utilisateur.');
+        this.notificationService.showError('Erreur lors de la mise à jour de l\'utilisateur.');
         this.isLoading = false;
       },
       complete: () => {

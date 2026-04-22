@@ -20,6 +20,7 @@ import {
 } from '../models/indicator.models';
 import { IndicatorService } from '../services/indicator.service';
 import { IndicatorValuesComponent } from '../indicator-values/indicator-values.component';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 type IndicatorTab = 'overview' | 'chart' | 'values';
 
@@ -35,7 +36,8 @@ type IndicatorTab = 'overview' | 'chart' | 'values';
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatDialogModule,
-    IndicatorValuesComponent
+    IndicatorValuesComponent,
+    TranslatePipe
   ],
   templateUrl: './indicator-details.component.html',
   styleUrls: ['./indicator-details.component.scss']

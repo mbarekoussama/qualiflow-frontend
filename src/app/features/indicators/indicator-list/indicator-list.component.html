@@ -2,8 +2,8 @@
     <!-- PAGE HEADER -->
     <div class="page-header-bar">
         <div>
-            <h1>Indicateurs KPI</h1>
-            <div class="sub">Pilotage de la performance — {{items.length}} indicateurs actifs</div>
+            <h1>{{ 'list.indicators.title' | t }}</h1>
+            <div class="sub">{{ 'list.indicators.subtitle' | t }} — {{items.length}} {{ 'list.indicators.activeCount' | t }}</div>
         </div>
         <div class="ph-actions">
             <div class="view-toggle">
@@ -25,13 +25,13 @@
             </div>
             <button class="btn btn-secondary" (click)="openDashboard()">
                 <mat-icon>dashboard</mat-icon>
-                Dashboard
+                {{ 'list.indicators.dashboard' | t }}
             </button>
             <button class="btn btn-primary" (click)="create()">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14">
                     <path d="M12 4v16m8-8H4" />
                 </svg>
-                Nouvel indicateur
+                {{ 'list.indicators.new' | t }}
             </button>
         </div>
     </div>
@@ -43,22 +43,22 @@
                 <circle cx="11" cy="11" r="8"></circle>
                 <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input type="text" placeholder="Rechercher par nom ou code..." formControlName="search"
+            <input type="text" [placeholder]="'list.indicators.searchPlaceholder' | t" formControlName="search"
                 (input)="onSearch()">
         </div>
 
         <div class="filter-group">
             <select formControlName="processId" (change)="onSearch()">
-                <option [value]="null">Tous les processus</option>
+                <option [value]="null">{{ 'list.procedures.allProcesses' | t }}</option>
                 <option *ngFor="let p of processes" [value]="p.id">{{p.code}} - {{p.name}}</option>
             </select>
 
             <select formControlName="status" (change)="onSearch()">
-                <option value="">Tous les statuts</option>
+                <option value="">{{ 'common.allStatuses' | t }}</option>
                 <option *ngFor="let opt of statusOptions" [value]="opt.value">{{opt.label}}</option>
             </select>
 
-            <button mat-icon-button (click)="clearFilters()" matTooltip="Réinitialiser">
+            <button mat-icon-button (click)="clearFilters()" [matTooltip]="'common.reset' | t">
                 <mat-icon>filter_alt_off</mat-icon>
             </button>
         </div>
@@ -84,11 +84,11 @@
 
                 <div class="ic-values">
                     <div class="val-item">
-                        <span class="l">Cible:</span>
+                        <span class="l">{{ 'list.indicators.target' | t }}:</span>
                         <span class="v">{{item.targetValue}} {{item.unit}}</span>
                     </div>
                     <div class="val-item">
-                        <span class="l">Dernier:</span>
+                        <span class="l">{{ 'list.indicators.latest' | t }}:</span>
                         <span class="v" [class.alert]="item.isInAlert">{{item.latestValue ?? '-'}}</span>
                     </div>
                 </div>
@@ -101,18 +101,18 @@
 
                 <div class="ic-footer">
                     <span [style.color]="getScoreColor(getPerformanceScore(item))" style="font-weight:700">
-                        {{item.isInAlert ? '⚠ Alerte' : '✓ Conforme'}}
+                        {{item.isInAlert ? ('list.indicators.alert' | t) : ('list.indicators.compliant' | t)}}
                     </span>
                 </div>
 
                 <div class="card-actions" (click)="$event.stopPropagation()">
-                    <button class="row-btn" (click)="edit(item)" matTooltip="Modifier">
+                    <button class="row-btn" (click)="edit(item)" [matTooltip]="'common.edit' | t">
                         <mat-icon>edit</mat-icon>
                     </button>
-                    <button class="row-btn" (click)="openValues(item)" matTooltip="Saisir valeurs">
+                    <button class="row-btn" (click)="openValues(item)" [matTooltip]="'list.indicators.enterValues' | t">
                         <mat-icon>add_chart</mat-icon>
                     </button>
-                    <button class="row-btn del" (click)="delete(item)" matTooltip="Supprimer">
+                    <button class="row-btn del" (click)="delete(item)" [matTooltip]="'common.delete' | t">
                         <mat-icon>delete_outline</mat-icon>
                     </button>
                 </div>
@@ -123,7 +123,7 @@
                     style="width:24px;height:24px">
                     <path d="M12 4v16m8-8H4" />
                 </svg>
-                <div style="font-size:13px;font-weight:600;margin-top:8px">Nouvel indicateur</div>
+                <div style="font-size:13px;font-weight:600;margin-top:8px">{{ 'list.indicators.new' | t }}</div>
             </div>
         </div>
 
@@ -132,14 +132,14 @@
             <table class="indicator-table">
                 <thead>
                     <tr>
-                        <th>Code</th>
-                        <th>Indicateur</th>
-                        <th>Processus</th>
-                        <th>Cible / Seuil</th>
-                        <th>Dernier relevé</th>
-                        <th>Performance</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
+                        <th>{{ 'common.code' | t }}</th>
+                        <th>{{ 'list.indicators.indicator' | t }}</th>
+                        <th>{{ 'list.processes.title' | t }}</th>
+                        <th>{{ 'list.indicators.targetThreshold' | t }}</th>
+                        <th>{{ 'list.indicators.latestReading' | t }}</th>
+                        <th>{{ 'list.processes.performance' | t }}</th>
+                        <th>{{ 'common.status' | t }}</th>
+                        <th>{{ 'common.actions' | t }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -175,18 +175,18 @@
                         </td>
                         <td>
                             <span class="table-status" [style.color]="item.isInAlert ? '#ef4444' : '#00875a'">
-                                {{item.isInAlert ? '⚠ Alerte' : '✓ OK'}}
+                                {{item.isInAlert ? ('list.indicators.alert' | t) : ('list.indicators.ok' | t)}}
                             </span>
                         </td>
                         <td>
                             <div class="table-actions">
-                                <button class="row-btn" (click)="view(item)" matTooltip="Détails">
+                                <button class="row-btn" (click)="view(item)" [matTooltip]="'common.details' | t">
                                     <mat-icon>visibility</mat-icon>
                                 </button>
-                                <button class="row-btn" (click)="edit(item)" matTooltip="Modifier">
+                                <button class="row-btn" (click)="edit(item)" [matTooltip]="'common.edit' | t">
                                     <mat-icon>edit</mat-icon>
                                 </button>
-                                <button class="row-btn del" (click)="delete(item)" matTooltip="Supprimer">
+                                <button class="row-btn del" (click)="delete(item)" [matTooltip]="'common.delete' | t">
                                     <mat-icon>delete_outline</mat-icon>
                                 </button>
                             </div>
@@ -197,9 +197,9 @@
 
             <div *ngIf="items.length === 0" class="empty-state">
                 <mat-icon>search_off</mat-icon>
-                <h3>Aucun indicateur trouvé</h3>
-                <p>Ajustez vos filtres ou créez un nouvel indicateur.</p>
-                <button class="btn btn-primary" (click)="create()">Nouveau indicateur</button>
+                <h3>{{ 'list.indicators.emptyTitle' | t }}</h3>
+                <p>{{ 'list.indicators.emptyText' | t }}</p>
+                <button class="btn btn-primary" (click)="create()">{{ 'list.indicators.new' | t }}</button>
             </div>
         </div>
 

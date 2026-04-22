@@ -13,6 +13,8 @@ export interface UserResponse {
   role: string;
   function?: string;
   department?: string;
+  departmentId?: number | null;
+  departmentName?: string | null;
   isActive: boolean;
   lastLoginAt?: string;
   createdAt: string;
@@ -35,6 +37,7 @@ export interface CreateUserRequest {
   role: string;
   function?: string;
   department?: string;
+  departmentId?: number | null;
 }
 
 export interface UpdateUserRequest {
@@ -43,6 +46,7 @@ export interface UpdateUserRequest {
   email: string;
   function?: string;
   department?: string;
+  departmentId?: number | null;
 }
 
 export interface ChangeUserRoleRequest {

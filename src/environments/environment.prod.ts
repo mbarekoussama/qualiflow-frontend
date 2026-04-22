@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://your-api-url.com'
+  apiUrl: 'https://your-api-url.com',
+  webPushPublicKey: ''
 };
