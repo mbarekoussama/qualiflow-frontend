@@ -283,7 +283,9 @@ export class DocumentVersionsComponent implements OnInit {
 
     this.documentService.updateVersionStatus(this.documentId, version.id, { status, revisionComment }).subscribe({
       next: () => {
-        this.notificationService.showSuccess('Statut de version mis a jour.');
+        this.notificationService.showSuccess(status === 'PUBLIE'
+          ? 'Version publiee avec succes.'
+          : 'Statut de version mis a jour.');
         this.loadDetails();
       },
       error: () => {

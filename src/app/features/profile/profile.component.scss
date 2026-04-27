@@ -226,6 +226,32 @@
   border-top: 1px dashed var(--border);
 }
 
+.monitor-toggle-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-raised);
+
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+
+    mat-icon {
+      color: var(--xl-green-mid);
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
 /* SPECIFIC CARDS */
 .photo-card {
   grid-column: 1 / 2;

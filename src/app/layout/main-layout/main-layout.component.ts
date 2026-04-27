@@ -106,7 +106,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
       'UTILISATEUR',
-      'AUDITEUR',
       'SUPER_ADMIN'
     ]);
   }

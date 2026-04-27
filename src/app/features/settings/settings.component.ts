@@ -15,6 +15,8 @@ import { finalize, map } from 'rxjs/operators';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { SupportService } from './services/support.service';
 import { SupportContactInfoResponse } from './models/support.models';
+import { NotificationSettingsService } from './services/notification-settings.service';
+import { NotificationPreferenceResponse } from './models/notification-preference.models';
 
 @Component({
   selector: 'app-settings',
@@ -35,6 +37,44 @@ import { SupportContactInfoResponse } from './models/support.models';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent {
+  readonly notificationPreferenceOptions: Array<{ type: string; label: string; description: string }> = [
+    {
+      type: 'DOCUMENT_APPROVAL_REQUIRED',
+      label: 'Validation des documents',
+      description: 'Recevoir les demandes de validation et de revue documentaire.'
+    },
+    {
+      type: 'DOCUMENT_EXPIRED',
+      label: 'Documents expirés',
+      description: 'Être averti lorsqu’un document arrive à expiration ou devient périmé.'
+    },
+    {
+      type: 'DOCUMENT_NEW_VERSION',
+      label: 'Nouvelles versions',
+      description: 'Suivre les nouvelles versions publiées des documents.'
+    },
+    {
+      type: 'NONCONFORMITY_CREATED',
+      label: 'Non-conformités',
+      description: 'Recevoir les alertes de création de non-conformités.'
+    },
+    {
+      type: 'CORRECTIVE_ACTION_ASSIGNED',
+      label: 'Actions correctives',
+      description: 'Être notifié lors de l’assignation d’une action corrective.'
+    },
+    {
+      type: 'INDICATOR_ALERT',
+      label: 'Alertes KPI',
+      description: 'Recevoir les alertes liées aux indicateurs en dépassement.'
+    },
+    {
+      type: 'SYSTEM_ALERT',
+      label: 'Alertes système',
+      description: 'Être informé des incidents ou alertes importantes de la plateforme.'
+    }
+  ];
+
   languages: Array<{ value: 'fr' | 'en' | 'ar'; label: string; flag: string }> = [
     { value: 'fr', label: 'Français', flag: '🇫🇷' },
     { value: 'en', label: 'English', flag: '🇬🇧' },
@@ -54,6 +94,8 @@ export class SettingsComponent {
   isSupportPanelOpen = false;
   isSendingSupport = false;
   supportContact: SupportContactInfoResponse | null = null;
+  notificationPreferencesLoading = false;
+  notificationPreferencesSaving = false;
 
   readonly supportForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email, Validators.maxLength(200)]],
@@ -61,6 +103,14 @@ export class SettingsComponent {
     problemType: ['', [Validators.required, Validators.maxLength(120)]],
     description: ['', [Validators.required, Validators.maxLength(4000), Validators.minLength(10)]]
   });
+
+  readonly notificationPreferencesForm = this.fb.group(
+    this.notificationPreferenceOptions.reduce((controls, option) => {
+      controls[`${option.type}_inApp`] = this.fb.nonNullable.control(true);
+      controls[`${option.type}_email`] = this.fb.nonNullable.control(false);
+      return controls;
+    }, {} as Record<string, ReturnType<FormBuilder['nonNullable']['control']>>)
+  );
 
   isDarkMode$ = this.themeService.theme$.pipe(
     map(theme => theme === 'dark')
@@ -71,7 +121,8 @@ export class SettingsComponent {
     public themeService: ThemeService,
     private readonly authService: AuthService,
     private readonly notificationService: NotificationService,
-    private readonly supportService: SupportService
+    private readonly supportService: SupportService,
+    private readonly notificationSettingsService: NotificationSettingsService
   ) {
     const userLang = this.authService.getCurrentUser()?.preferredLanguage;
     const savedLang = localStorage.getItem('language');
@@ -84,6 +135,7 @@ export class SettingsComponent {
     });
 
     this.loadSupportContactInfo();
+    this.loadNotificationPreferences();
   }
 
   toggleTheme(): void {
@@ -148,6 +200,36 @@ export class SettingsComponent {
     });
   }
 
+  saveNotificationPreferences(): void {
+    if (this.notificationPreferencesSaving) {
+      return;
+    }
+
+    this.notificationPreferencesSaving = true;
+
+    const payload = {
+      items: this.notificationPreferenceOptions.map(option => ({
+        notificationType: option.type,
+        inAppEnabled: Boolean(this.notificationPreferencesForm.get(`${option.type}_inApp`)?.value ?? true),
+        emailEnabled: Boolean(this.notificationPreferencesForm.get(`${option.type}_email`)?.value ?? false)
+      }))
+    };
+
+    this.notificationSettingsService.updatePreferences(payload).pipe(
+      finalize(() => {
+        this.notificationPreferencesSaving = false;
+      })
+    ).subscribe({
+      next: (preferences) => {
+        this.applyNotificationPreferences(preferences);
+        this.notificationService.showSuccess('Paramètres de notification mis à jour.');
+      },
+      error: () => {
+        this.notificationService.showError('Impossible de mettre à jour les paramètres de notification.');
+      }
+    });
+  }
+
   private loadSupportContactInfo(): void {
     this.supportService.getContactInfo().subscribe({
       next: (response) => {
@@ -161,6 +243,34 @@ export class SettingsComponent {
         };
       }
     });
+  }
+
+  private loadNotificationPreferences(): void {
+    this.notificationPreferencesLoading = true;
+
+    this.notificationSettingsService.getPreferences().pipe(
+      finalize(() => {
+        this.notificationPreferencesLoading = false;
+      })
+    ).subscribe({
+      next: (preferences) => {
+        this.applyNotificationPreferences(preferences);
+      },
+      error: () => {
+        this.notificationService.showError('Impossible de charger les paramètres de notification.');
+      }
+    });
+  }
+
+  private applyNotificationPreferences(preferences: NotificationPreferenceResponse[]): void {
+    const patch: Record<string, boolean> = {};
+
+    preferences.forEach((preference) => {
+      patch[`${preference.notificationType}_inApp`] = preference.inAppEnabled;
+      patch[`${preference.notificationType}_email`] = preference.emailEnabled;
+    });
+
+    this.notificationPreferencesForm.patchValue(patch);
   }
 
   private normalizeLanguage(value?: string | null): 'fr' | 'en' | 'ar' {

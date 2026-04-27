@@ -14,6 +14,8 @@ export interface OrganizationResponse {
   phone?: string | null;
   logoPath?: string | null;
   status: string;
+  subscriptionDaysRemaining: number;
+  subscriptionMonitorEnabled: boolean;
   createdAt: string;
   updatedAt?: string | null;
 }
@@ -41,6 +43,8 @@ export interface UpdateOrganizationRequest {
   email?: string | null;
   phone?: string | null;
   status: string;
+  subscriptionDaysRemaining?: number | null;
+  subscriptionMonitorEnabled?: boolean | null;
 }
 
 export interface OrganizationLogoResponse {

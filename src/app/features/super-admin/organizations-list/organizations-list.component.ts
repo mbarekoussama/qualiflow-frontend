@@ -54,6 +54,7 @@ export class OrganizationsListComponent implements OnInit {
     'name',
     'type',
     'status',
+    'subscriptionDaysRemaining',
     'usersCount',
     'adminsCount',
     'actions'

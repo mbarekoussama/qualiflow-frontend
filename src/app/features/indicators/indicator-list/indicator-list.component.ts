@@ -112,6 +112,10 @@ export class IndicatorListComponent implements OnInit {
     return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
   }
 
+  get canLoadUsers(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
+  }
+
   create(): void {
     this.router.navigate(['/indicators/new']);
   }
@@ -230,8 +234,12 @@ export class IndicatorListComponent implements OnInit {
     const emptyUsers = { total: 0, page: 1, pageSize: 300, items: [] as UserResponse[] };
     const emptyProcesses = { total: 0, pageNumber: 1, pageSize: 300, items: [] as ProcessListItemResponse[] };
 
+    const usersRequest$ = this.canLoadUsers
+      ? this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsers)))
+      : of(emptyUsers);
+
     forkJoin({
-      users: this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsers))),
+      users: usersRequest$,
       processes: this.processService.getProcesses({ pageNumber: 1, pageSize: 300 }).pipe(catchError(() => of(emptyProcesses)))
     }).subscribe({
       next: ({ users, processes }) => {

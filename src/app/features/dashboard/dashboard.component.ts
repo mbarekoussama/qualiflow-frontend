@@ -68,26 +68,25 @@ export class DashboardComponent implements OnInit {
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR',
       'UTILISATEUR'
     ]);
     this.canReadProcedures = this.authService.hasRole([
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR'
+      'UTILISATEUR'
     ]);
     this.canReadNonConformities = this.authService.hasRole([
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR'
+      'UTILISATEUR'
     ]);
     this.canReadDocuments = this.authService.hasRole([
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR'
+      'UTILISATEUR'
     ]);
     this.canWriteQuality = this.authService.hasRole([
       'ADMIN_ORG',

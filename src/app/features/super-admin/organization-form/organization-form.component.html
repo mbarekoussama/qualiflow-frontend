@@ -80,6 +80,30 @@
         </div>
       </div>
 
+      <div class="form-section">
+        <div class="section-header">
+          <mat-icon>schedule</mat-icon>
+          <h3>Abonnement</h3>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Jours restants abonnement</mat-label>
+            <input matInput type="number" min="0" formControlName="subscriptionDaysRemaining" />
+            <mat-icon matPrefix>timer</mat-icon>
+            <mat-error *ngIf="form.controls.subscriptionDaysRemaining.invalid">
+              Entrez une valeur >= 0
+            </mat-error>
+          </mat-form-field>
+
+          <div class="toggle-inline">
+            <mat-slide-toggle color="primary" formControlName="subscriptionMonitorEnabled">
+              Moniteur auto abonnement
+            </mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
       <!-- Section: Coordonnées -->
       <div class="form-section">
         <div class="section-header">

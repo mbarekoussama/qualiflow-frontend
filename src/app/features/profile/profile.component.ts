@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subscription } from 'rxjs';
 import {
   AuthService,
@@ -37,7 +38,8 @@ import {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatTabsModule
+    MatTabsModule,
+    MatSlideToggleModule
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
@@ -78,7 +80,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
     email: this.fb.control<string>('', Validators.email),
     phone: this.fb.control<string>(''),
     description: this.fb.control<string>(''),
-    status: this.fb.nonNullable.control('ACTIF')
+    status: this.fb.nonNullable.control('ACTIF'),
+    subscriptionDaysRemaining: this.fb.nonNullable.control(30, [Validators.required, Validators.min(0)]),
+    subscriptionMonitorEnabled: this.fb.nonNullable.control(true)
   });
 
   loading = false;
@@ -335,7 +339,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
       email: raw.email?.trim() || null,
       phone: raw.phone?.trim() || null,
       description: raw.description?.trim() || null,
-      status: raw.status
+      status: raw.status,
+      subscriptionDaysRemaining: Number.isFinite(raw.subscriptionDaysRemaining) ? Math.max(raw.subscriptionDaysRemaining, 0) : null,
+      subscriptionMonitorEnabled: raw.subscriptionMonitorEnabled
     };
 
     this.savingOrganization = true;
@@ -420,7 +426,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
           email: organization.email ?? '',
           phone: organization.phone ?? '',
           description: organization.description ?? '',
-          status: organization.status || 'ACTIF'
+          status: organization.status || 'ACTIF',
+          subscriptionDaysRemaining: organization.subscriptionDaysRemaining ?? 30,
+          subscriptionMonitorEnabled: organization.subscriptionMonitorEnabled ?? true
         });
         this.loading = false;
         this.loadLogo();

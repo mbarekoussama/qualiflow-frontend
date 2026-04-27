@@ -277,6 +277,12 @@
     background: #ecfdf5;
   }
 
+  &.publie {
+    color: #0f766e;
+    border-color: #0f766e;
+    background: #f0fdfa;
+  }
+
   &.en_revision {
     color: #d97706;
     border-color: #d97706;
@@ -447,6 +453,10 @@
 
       &.approuve {
         color: #059669;
+      }
+
+      &.publie {
+        color: #0f766e;
       }
 
       &.en_revision {

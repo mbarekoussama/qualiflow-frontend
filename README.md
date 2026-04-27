@@ -207,7 +207,7 @@ Comptes backend seedes (recommandes) :
 - `qualite@demo.local` / `Qualite@123`
 - `chef@demo.local` / `Chef@123`
 - `user@demo.local` / `User@123`
-- `auditeur@demo.local` / `Auditeur@123`
+- `user@demo.local` / `User@123`
 
 Note :
 
@@ -265,4 +265,3 @@ Erreur build `spawn EPERM` (environnement Windows/sandbox) :
 - La route legacy `/processus` redirige vers `/processes`.
 - Le dossier `features/processus` et certains services `core/services/*` correspondent a d anciens flux mock/in-memory.
 - Pour les nouveaux developpements, privilegier les modules sous `features/*` relies a `ApiService`.
-

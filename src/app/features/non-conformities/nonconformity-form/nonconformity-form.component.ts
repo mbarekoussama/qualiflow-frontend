@@ -132,10 +132,14 @@ export class NonconformityFormComponent implements OnInit {
       items: [] as UserResponse[]
     };
 
+    const usersRequest$ = this.canLoadUsers
+      ? this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse)))
+      : of(emptyUsersResponse);
+
     const baseLoad$ = forkJoin({
       processes: this.processService.getProcesses({ pageNumber: 1, pageSize: 300 }),
       procedures: this.procedureService.getProcedures({ pageNumber: 1, pageSize: 300 }),
-      users: this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse)))
+      users: usersRequest$
     });
 
     if (this.isEdit && this.nonConformityId) {
@@ -173,6 +177,10 @@ export class NonconformityFormComponent implements OnInit {
 
   get title(): string {
     return this.isEdit ? 'Modifier une non-conformite' : 'Nouvelle non-conformite';
+  }
+
+  get canLoadUsers(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
   }
 
   get filteredProcedures(): ProcedureListItemResponse[] {

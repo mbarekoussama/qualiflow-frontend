@@ -330,6 +330,12 @@
     border: 1px solid #a7f3d0;
   }
 
+  &.status-publie {
+    background: #f0fdfa;
+    color: #0f766e;
+    border: 1px solid rgba(15, 118, 110, 0.18);
+  }
+
   &.status-en_revision {
     background: #fffbeb;
     color: #92400e;

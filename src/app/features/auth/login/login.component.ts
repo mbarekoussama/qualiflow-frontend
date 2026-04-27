@@ -60,12 +60,6 @@ export class LoginComponent implements OnInit {
       role: 'UTILISATEUR',
       email: 'user@demo.local',
       password: 'User@123'
-    },
-    {
-      label: 'Auditeur',
-      role: 'AUDITEUR',
-      email: 'auditeur@demo.local',
-      password: 'Auditeur@123'
     }
   ];
 

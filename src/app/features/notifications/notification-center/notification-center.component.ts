@@ -229,7 +229,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
   get roleViewLabel(): string {
     switch (this.currentRole) {
       case 'UTILISATEUR':
-        return 'Vue Employé: notifications documentaires et actions personnelles';
+        return 'Vue Utilisateur: notifications documentaires et actions personnelles';
       case 'CHEF_SERVICE':
         return 'Vue Responsable Département: suivi des documents de votre périmètre';
       case 'RESPONSABLE_QUALITE':

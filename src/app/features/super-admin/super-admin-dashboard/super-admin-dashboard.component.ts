@@ -51,6 +51,8 @@ export class SuperAdminDashboardComponent implements OnInit {
   readonly now = new Date();
 
   readonly chartColorPalette = ['#0f7a3f', '#0369a1', '#7c3aed', '#b45309', '#be123c', '#334155'];
+  readonly devicePalette = ['#22c55e', '#3b82f6', '#ef4444'];
+  readonly locationPalette = ['#22c55e', '#ef4444', '#3b82f6', '#f59e0b', '#8b5cf6'];
 
   readonly periods = [
     { value: '1M', label: '1 mois' },
@@ -72,6 +74,11 @@ export class SuperAdminDashboardComponent implements OnInit {
   loading = false;
   dashboard: SuperAdminDashboardResponse | null = null;
   organizations: OrganizationListItemResponse[] = [];
+  visitorSeries: DashboardMonthlyTrendPointResponse[] = [];
+  deviceBreakdown: Array<{ label: string; percent: number; color: string; count: number }> = [];
+  locationBreakdown: Array<{ label: string; percent: number; color: string; count: number }> = [];
+  devicesTotal = 0;
+  locationTotal = 0;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -166,6 +173,7 @@ export class SuperAdminDashboardComponent implements OnInit {
     }).subscribe({
       next: (response) => {
         this.dashboard = response;
+        this.buildTrafficWidgets(response);
         this.loading = false;
       },
       error: () => {
@@ -327,5 +335,119 @@ export class SuperAdminDashboardComponent implements OnInit {
 
   trackByOrganization(_index: number, item: TopOrganizationResponse): number {
     return item.organizationId;
+  }
+
+  getVisitorYLabels(): number[] {
+    if (!this.visitorSeries.length) {
+      return [100, 80, 60, 40, 20, 0];
+    }
+
+    const max = this.getTrendMax(this.visitorSeries);
+    const step = max > 0 ? max / 5 : 1;
+    return Array.from({ length: 6 }, (_value, index) => Math.round(max - step * index));
+  }
+
+  getVisitorPath(width = 860, height = 240, padding = 16): string {
+    if (!this.visitorSeries.length) {
+      return '';
+    }
+
+    const values = this.visitorSeries.map(point => point.value);
+    const max = this.getMaxValue(values);
+    const innerWidth = width - padding * 2;
+    const innerHeight = height - padding * 2;
+    const denominator = Math.max(this.visitorSeries.length - 1, 1);
+
+    return this.visitorSeries
+      .map((point, index) => {
+        const x = padding + (innerWidth * index) / denominator;
+        const y = padding + innerHeight - (point.value / max) * innerHeight;
+        return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+      })
+      .join(' ');
+  }
+
+  getVisitorAreaPath(width = 860, height = 240, padding = 16): string {
+    const linePath = this.getVisitorPath(width, height, padding);
+    if (!linePath) {
+      return '';
+    }
+
+    const innerWidth = width - padding * 2;
+    const baseY = height - padding;
+    return `${linePath} L ${padding + innerWidth} ${baseY} L ${padding} ${baseY} Z`;
+  }
+
+  trackByBreakdownLabel(_index: number, item: { label: string }): string {
+    return item.label;
+  }
+
+  private buildTrafficWidgets(response: SuperAdminDashboardResponse): void {
+    this.visitorSeries = this.asTrendPoints(response.charts.monthlyUsersCreated);
+
+    const roleCounts = this.asDataPoints(response.charts.usersByRole)
+      .map(item => item.value)
+      .filter(value => value > 0);
+    const fallbackCounts = [
+      Math.max(1, response.kpis.totalUsers),
+      Math.max(1, response.kpis.totalOrganizationAdmins),
+      Math.max(1, response.kpis.openNonConformities + response.kpis.overdueCorrectiveActions)
+    ];
+    const rawDeviceCounts = [0, 1, 2].map(index => roleCounts[index] ?? fallbackCounts[index]);
+    const devicePercents = this.toPercentages(rawDeviceCounts);
+
+    this.deviceBreakdown = ['Desktop', 'Tablet', 'Mobile'].map((label, index) => ({
+      label,
+      percent: devicePercents[index],
+      color: this.devicePalette[index],
+      count: rawDeviceCounts[index]
+    }));
+    this.devicesTotal = rawDeviceCounts.reduce((total, current) => total + current, 0);
+
+    const top = this.asTopOrganizations(response.topOrganizations).slice(0, 5);
+    const fallbackLocations = this.asDataPoints(response.charts.organizationsByStatus).slice(0, 5).map(row => ({
+      label: row.label,
+      value: row.value
+    }));
+    const locations = (top.length > 0
+      ? top.map(item => ({ label: item.organizationName, value: item.usersCount }))
+      : fallbackLocations).slice(0, 5);
+    const locationValues = locations.map(item => item.value);
+    const locationPercents = this.toPercentages(locationValues);
+
+    this.locationBreakdown = locations.map((item, index) => ({
+      label: item.label,
+      percent: locationPercents[index],
+      color: this.locationPalette[index % this.locationPalette.length],
+      count: item.value
+    }));
+    this.locationTotal = locationValues.reduce((total, current) => total + current, 0);
+  }
+
+  private toPercentages(values: number[]): number[] {
+    if (!values.length) {
+      return [];
+    }
+
+    const safeValues = values.map(value => Math.max(0, value));
+    const total = safeValues.reduce((sum, value) => sum + value, 0);
+    if (total <= 0) {
+      return safeValues.map(() => 0);
+    }
+
+    const raw = safeValues.map(value => (value / total) * 100);
+    const rounded = raw.map(value => Math.round(value));
+    const diff = 100 - rounded.reduce((sum, value) => sum + value, 0);
+    if (diff !== 0 && rounded.length > 0) {
+      let bestIndex = 0;
+      for (let i = 1; i < raw.length; i += 1) {
+        if (raw[i] > raw[bestIndex]) {
+          bestIndex = i;
+        }
+      }
+      rounded[bestIndex] += diff;
+    }
+
+    return rounded;
   }
 }

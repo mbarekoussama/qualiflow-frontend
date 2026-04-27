@@ -1,4 +1,4 @@
-﻿import { Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { GuestGuard } from './core/guards/guest.guard';
 import { RoleGuard } from './core/guards/role.guard';
@@ -56,7 +56,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
         data: {
           title: 'Dashboard',
-          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR', 'UTILISATEUR']
+          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
         }
       },
       {
@@ -100,7 +100,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/processes/process-list/process-list.component').then(m => m.ProcessListComponent),
             data: {
               title: 'Processus',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR', 'UTILISATEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {
@@ -108,7 +108,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/processes/process-map/process-map.component').then(m => m.ProcessMapComponent),
             data: {
               title: 'Cartographie des processus',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR', 'UTILISATEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {
@@ -132,7 +132,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/processes/process-details/process-details.component').then(m => m.ProcessDetailsComponent),
             data: {
               title: 'Detail processus',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR', 'UTILISATEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           }
         ]
@@ -145,7 +145,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/procedures/procedure-list/procedure-list.component').then(m => m.ProcedureListComponent),
             data: {
               title: 'Procedures',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {
@@ -169,7 +169,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/procedures/procedure-details/procedure-details.component').then(m => m.ProcedureDetailsComponent),
             data: {
               title: 'Detail procedure',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           }
         ]
@@ -182,7 +182,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/non-conformities/nonconformity-list/nonconformity-list.component').then(m => m.NonconformityListComponent),
             data: {
               title: 'Non-conformites',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {
@@ -190,7 +190,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/non-conformities/nonconformity-form/nonconformity-form.component').then(m => m.NonconformityFormComponent),
             data: {
               title: 'Nouvelle non-conformite',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'UTILISATEUR']
             }
           },
           {
@@ -206,7 +206,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/non-conformities/nonconformity-details/nonconformity-details.component').then(m => m.NonconformityDetailsComponent),
             data: {
               title: 'Detail non-conformite',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           }
         ]
@@ -216,7 +216,7 @@ export const routes: Routes = [
         canActivate: [RoleGuard],
         canActivateChild: [RoleGuard],
         data: {
-          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
         },
         children: [
           {
@@ -224,7 +224,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/corrective-actions/corrective-action-list/corrective-action-list.component').then(m => m.CorrectiveActionListComponent),
             data: {
               title: 'Actions correctives',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {
@@ -248,7 +248,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/corrective-actions/corrective-action-details/corrective-action-details.component').then(m => m.CorrectiveActionDetailsComponent),
             data: {
               title: 'Detail action corrective',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           }
         ]
@@ -258,7 +258,7 @@ export const routes: Routes = [
         canActivate: [RoleGuard],
         canActivateChild: [RoleGuard],
         data: {
-          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
         },
         children: [
           {
@@ -266,7 +266,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/indicators/indicator-list/indicator-list.component').then(m => m.IndicatorListComponent),
             data: {
               title: 'Indicateurs KPI',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {
@@ -274,7 +274,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/indicators/indicator-dashboard/indicator-dashboard.component').then(m => m.IndicatorDashboardComponent),
             data: {
               title: 'Dashboard KPI',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {
@@ -298,7 +298,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/indicators/indicator-details/indicator-details.component').then(m => m.IndicatorDetailsComponent),
             data: {
               title: 'Detail indicateur',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           }
         ]
@@ -316,7 +316,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/documents/documents-list/documents-list.component').then(m => m.DocumentsListComponent),
             data: {
               title: 'Documents',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {
@@ -340,7 +340,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/documents/document-versions/document-versions.component').then(m => m.DocumentVersionsComponent),
             data: {
               title: 'Versions document',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {
@@ -348,7 +348,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/documents/document-details/document-details.component').then(m => m.DocumentDetailsComponent),
             data: {
               title: 'Detail document',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           }
         ]
@@ -361,7 +361,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/departments/department-list/department-list.component').then(m => m.DepartmentListComponent),
             data: {
               title: 'Départements',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {
@@ -385,7 +385,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/departments/department-details/department-details.component').then(m => m.DepartmentDetailsComponent),
             data: {
               title: 'Détail département',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'AUDITEUR']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           }
         ]
@@ -395,7 +395,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/notifications/notification-center/notification-center.component').then(m => m.NotificationCenterComponent),
         data: {
           title: 'Notifications',
-          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR', 'AUDITEUR', 'SUPER_ADMIN']
+          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR', 'SUPER_ADMIN']
         }
       },
       {
@@ -403,7 +403,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/chatbot/chatbot-page/chatbot-page.component').then(m => m.ChatbotPageComponent),
         data: {
           title: 'Assistant GED',
-          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR', 'AUDITEUR', 'SUPER_ADMIN']
+          roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR', 'SUPER_ADMIN']
         }
       },
       {

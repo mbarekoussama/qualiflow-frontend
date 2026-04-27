@@ -89,6 +89,22 @@
           </div>
 
           <div class="info-item">
+            <mat-icon>timer</mat-icon>
+            <div class="item-content">
+              <label>Abonnement (jours restants)</label>
+              <p>{{ org.subscriptionDaysRemaining }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>monitor_heart</mat-icon>
+            <div class="item-content">
+              <label>Moniteur abonnement</label>
+              <p>{{ org.subscriptionMonitorEnabled ? 'Activé' : 'Désactivé' }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
             <mat-icon>event</mat-icon>
             <div class="item-content">
               <label>Date de Création</label>

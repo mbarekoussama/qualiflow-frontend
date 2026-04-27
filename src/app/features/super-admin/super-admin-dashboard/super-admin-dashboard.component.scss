@@ -606,6 +606,223 @@
   }
 }
 
+/* TRAFFIC ANALYTICS WIDGET */
+.traffic-analytics-card {
+  .traffic-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+  }
+
+  .traffic-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 16px;
+  }
+
+  .visitor-panel {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    background: #fcfdff;
+  }
+
+  .visitor-chart-wrap {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #64748b;
+    text-align: right;
+    padding: 14px 0 8px;
+  }
+
+  .visitor-svg {
+    width: 100%;
+    height: 260px;
+  }
+
+  .grid-line {
+    stroke: #e2e8f0;
+    stroke-width: 1;
+  }
+
+  .visitor-area {
+    fill: url(#visitorFill);
+  }
+
+  .visitor-line {
+    fill: none;
+    stroke: #3b82f6;
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .x-axis-labels {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
+    gap: 8px;
+    font-size: 10px;
+    color: #64748b;
+    text-align: center;
+  }
+
+  .traffic-side-panels {
+    display: grid;
+    gap: 16px;
+    grid-auto-rows: 1fr;
+  }
+
+  .mini-panel {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 18px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .mini-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    strong {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1;
+      color: #0f172a;
+    }
+  }
+
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-size: 14px;
+      color: #111827;
+      line-height: 1;
+    }
+
+    small {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.1;
+    }
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+
+  .stack-bar {
+    height: 10px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+    display: flex;
+
+    span {
+      height: 100%;
+      min-width: 2px;
+    }
+  }
+
+  .location-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .location-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+
+    strong {
+      color: #111827;
+      font-weight: 700;
+    }
+  }
+
+  .location-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #334155;
+  }
+}
+
+:host-context(.dark-theme) {
+  .traffic-analytics-card {
+    .visitor-panel,
+    .mini-panel {
+      background: var(--bg-white);
+      border-color: var(--border);
+    }
+
+    .traffic-title,
+    .mini-head h3,
+    .mini-head strong,
+    .location-row strong,
+    .legend-text strong {
+      color: var(--text-primary);
+    }
+
+    .legend-text small,
+    .location-name,
+    .x-axis-labels,
+    .y-axis {
+      color: var(--text-secondary);
+    }
+
+    .grid-line {
+      stroke: var(--border);
+    }
+
+    .stack-bar {
+      background: color-mix(in srgb, var(--bg-raised) 75%, #ffffff 25%);
+    }
+  }
+}
+
 /* TIMELINE (ACTIVITIES) - FULL LIST */
 .timeline-list {
   display: flex;
@@ -737,6 +954,10 @@
   .rankings-section {
     grid-template-columns: 1fr;
   }
+
+  .traffic-analytics-card .traffic-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
@@ -751,6 +972,24 @@
       .filter-item {
         min-width: 100%;
       }
+    }
+  }
+
+  .traffic-analytics-card {
+    .legend-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .visitor-chart-wrap {
+      grid-template-columns: 1fr;
+    }
+
+    .y-axis {
+      display: none;
+    }
+
+    .visitor-svg {
+      height: 220px;
     }
   }
 }

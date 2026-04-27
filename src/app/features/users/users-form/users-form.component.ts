@@ -46,7 +46,6 @@ export class UsersFormComponent implements OnInit {
     { value: 'ADMIN_ORG', label: 'Administrateur Organisation' },
     { value: 'RESPONSABLE_QUALITE', label: 'Responsable Qualité' },
     { value: 'CHEF_SERVICE', label: 'Chef de Service' },
-    { value: 'AUDITEUR', label: 'Auditeur Interne' },
     { value: 'UTILISATEUR', label: 'Utilisateur Standard' }
   ];
 

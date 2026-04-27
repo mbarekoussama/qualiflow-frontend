@@ -101,7 +101,7 @@ export class NonconformityListComponent implements OnInit {
       pageSize: 300,
       items: [] as UserResponse[]
     };
-    const usersRequest$ = this.canWrite || this.canCreate
+    const usersRequest$ = this.canLoadUsers
       ? this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse)))
       : of(emptyUsersResponse);
 
@@ -125,8 +125,12 @@ export class NonconformityListComponent implements OnInit {
     return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
   }
 
+  get canLoadUsers(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
+  }
+
   get canCreate(): boolean {
-    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'AUDITEUR']);
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'UTILISATEUR']);
   }
 
   toggleFilters(): void {

@@ -27,6 +27,8 @@ export interface CreateOrganizationRequest {
   email?: string | null;
   phone?: string | null;
   status: OrganizationStatus;
+  subscriptionDaysRemaining?: number | null;
+  subscriptionMonitorEnabled?: boolean | null;
   firstAdmin?: CreateOrganizationAdminRequest | null;
 }
 
@@ -38,6 +40,8 @@ export interface UpdateOrganizationRequest {
   email?: string | null;
   phone?: string | null;
   status: OrganizationStatus;
+  subscriptionDaysRemaining?: number | null;
+  subscriptionMonitorEnabled?: boolean | null;
 }
 
 export interface ToggleOrganizationStatusRequest {
@@ -79,6 +83,8 @@ export interface OrganizationListItemResponse {
   email?: string | null;
   phone?: string | null;
   logoPath?: string | null;
+  subscriptionDaysRemaining: number;
+  subscriptionMonitorEnabled: boolean;
   usersCount: number;
   adminsCount: number;
   createdAt: string;
@@ -95,6 +101,8 @@ export interface OrganizationResponse {
   phone?: string | null;
   logoPath?: string | null;
   status: OrganizationStatus | string;
+  subscriptionDaysRemaining: number;
+  subscriptionMonitorEnabled: boolean;
   usersCount: number;
   adminsCount: number;
   admins: OrganizationAdminSummaryResponse[];

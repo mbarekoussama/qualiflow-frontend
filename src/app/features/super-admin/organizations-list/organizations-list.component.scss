@@ -225,6 +225,15 @@
       color: var(--xl-green-mid);
     }
   }
+
+  &.alert {
+    background: #fff1f2;
+    color: #be123c;
+
+    mat-icon {
+      color: #e11d48;
+    }
+  }
 }
 
 .date-cell {

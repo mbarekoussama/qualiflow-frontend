@@ -48,6 +48,38 @@
         </div>
       </mat-card>
 
+      <mat-card class="panel-card">
+        <h2><mat-icon>notifications_active</mat-icon> Paramètres de notification</h2>
+        <div class="setting-list" *ngIf="!notificationPreferencesLoading; else notificationPrefsLoadingTpl">
+          <div class="notification-pref-head">
+            <span>Type de notification</span>
+            <span>Dans l'application</span>
+            <span>Email</span>
+          </div>
+
+          <div class="notification-pref-row" *ngFor="let option of notificationPreferenceOptions">
+            <div class="item-info">
+              <strong>{{ option.label }}</strong>
+              <p>{{ option.description }}</p>
+            </div>
+
+            <mat-slide-toggle [formControl]="notificationPreferencesForm.controls[option.type + '_inApp']" color="primary">
+            </mat-slide-toggle>
+
+            <mat-slide-toggle [formControl]="notificationPreferencesForm.controls[option.type + '_email']" color="primary">
+            </mat-slide-toggle>
+          </div>
+
+          <div class="notification-pref-actions">
+            <button mat-flat-button color="primary" type="button" (click)="saveNotificationPreferences()"
+              [disabled]="notificationPreferencesSaving">
+              <mat-icon>save</mat-icon>
+              {{ notificationPreferencesSaving ? 'Enregistrement...' : 'Enregistrer les notifications' }}
+            </button>
+          </div>
+        </div>
+      </mat-card>
+
       <!-- ABOUT THE PLATFORM -->
       <mat-card class="panel-card about-panel full-width">
         <h2><mat-icon>info</mat-icon> {{ 'settings.about' | t }}</h2>
@@ -123,4 +155,11 @@
       </mat-card>
     </div>
   </div>
+
+  <ng-template #notificationPrefsLoadingTpl>
+    <div class="loading-notification-prefs">
+      <mat-icon>notifications</mat-icon>
+      <span>Chargement des préférences de notification...</span>
+    </div>
+  </ng-template>
 </section>

@@ -11,6 +11,7 @@ export type DocumentStatus =
   | 'BROUILLON'
   | 'EN_REVISION'
   | 'APPROUVE'
+  | 'PUBLIE'
   | 'REJETE'
   | 'PERIME'
   | 'ARCHIVE';
@@ -212,6 +213,7 @@ export const DOCUMENT_STATUS_OPTIONS: Array<{ value: DocumentStatus; label: stri
   { value: 'BROUILLON', label: 'Brouillon' },
   { value: 'EN_REVISION', label: 'En revision' },
   { value: 'APPROUVE', label: 'Approuve' },
+  { value: 'PUBLIE', label: 'Publie' },
   { value: 'REJETE', label: 'Rejete' },
   { value: 'PERIME', label: 'Perime' },
   { value: 'ARCHIVE', label: 'Archive' }

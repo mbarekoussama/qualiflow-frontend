@@ -31,7 +31,7 @@ import { DocumentService } from '../services/document.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 type ToolbarTypeFilter = '' | 'MANUEL' | 'PROCEDURE' | 'ENREGISTREMENT' | 'FORMULAIRE';
-type ToolbarStatusFilter = '' | 'APPROUVE' | 'EN_REVISION' | 'REJETE' | 'PERIME';
+type ToolbarStatusFilter = '' | 'APPROUVE' | 'PUBLIE' | 'EN_REVISION' | 'REJETE' | 'PERIME';
 
 @Component({
   selector: 'app-documents-list',
@@ -248,6 +248,8 @@ export class DocumentsListComponent implements OnInit {
     switch (status) {
       case 'APPROUVE':
         return 'Approuvé';
+      case 'PUBLIE':
+        return 'Publié';
       case 'EN_REVISION':
         return 'En révision';
       case 'REJETE':

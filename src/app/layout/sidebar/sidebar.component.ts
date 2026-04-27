@@ -33,7 +33,6 @@ export class SidebarComponent {
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR',
       'UTILISATEUR'
     ]);
   }
@@ -44,7 +43,6 @@ export class SidebarComponent {
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
       'UTILISATEUR',
-      'AUDITEUR',
       'SUPER_ADMIN'
     ]);
   }
@@ -54,7 +52,7 @@ export class SidebarComponent {
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR'
+      'UTILISATEUR'
     ]);
   }
 
@@ -63,7 +61,7 @@ export class SidebarComponent {
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR'
+      'UTILISATEUR'
     ]);
   }
 
@@ -72,7 +70,6 @@ export class SidebarComponent {
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR',
       'UTILISATEUR'
     ]);
   }
@@ -89,7 +86,7 @@ export class SidebarComponent {
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR'
+      'UTILISATEUR'
     ]);
   }
 
@@ -98,7 +95,7 @@ export class SidebarComponent {
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR'
+      'UTILISATEUR'
     ]);
   }
 
@@ -107,7 +104,7 @@ export class SidebarComponent {
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR'
+      'UTILISATEUR'
     ]);
   }
 
@@ -116,7 +113,7 @@ export class SidebarComponent {
       'ADMIN_ORG',
       'RESPONSABLE_QUALITE',
       'CHEF_SERVICE',
-      'AUDITEUR'
+      'UTILISATEUR'
     ]);
   }
 

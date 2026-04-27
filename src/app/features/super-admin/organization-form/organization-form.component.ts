@@ -53,6 +53,8 @@ export class OrganizationFormComponent implements OnInit {
     email: this.fb.control<string>('', Validators.email),
     phone: this.fb.control<string>(''),
     status: this.fb.nonNullable.control<OrganizationStatus>('ACTIF', Validators.required),
+    subscriptionDaysRemaining: this.fb.nonNullable.control(30, [Validators.required, Validators.min(0)]),
+    subscriptionMonitorEnabled: this.fb.nonNullable.control(true),
     createFirstAdmin: this.fb.nonNullable.control(false),
     firstAdminFirstName: this.fb.control<string>(''),
     firstAdminLastName: this.fb.control<string>(''),
@@ -95,6 +97,8 @@ export class OrganizationFormComponent implements OnInit {
             email: organization.email ?? '',
             phone: organization.phone ?? '',
             status: (organization.status as OrganizationStatus) ?? 'ACTIF',
+            subscriptionDaysRemaining: organization.subscriptionDaysRemaining ?? 30,
+            subscriptionMonitorEnabled: organization.subscriptionMonitorEnabled ?? true,
             createFirstAdmin: false
           });
           this.loading = false;
@@ -135,7 +139,9 @@ export class OrganizationFormComponent implements OnInit {
         address: payload.address,
         email: payload.email,
         phone: payload.phone,
-        status: payload.status
+        status: payload.status,
+        subscriptionDaysRemaining: payload.subscriptionDaysRemaining ?? null,
+        subscriptionMonitorEnabled: payload.subscriptionMonitorEnabled ?? null
       };
 
       this.organizationService.updateOrganization(this.organizationId, updatePayload).subscribe({
@@ -186,6 +192,8 @@ export class OrganizationFormComponent implements OnInit {
       email: raw.email?.trim() || null,
       phone: raw.phone?.trim() || null,
       status: raw.status,
+      subscriptionDaysRemaining: Number.isFinite(raw.subscriptionDaysRemaining) ? Math.max(raw.subscriptionDaysRemaining, 0) : null,
+      subscriptionMonitorEnabled: raw.subscriptionMonitorEnabled,
       firstAdmin: null
     };
 

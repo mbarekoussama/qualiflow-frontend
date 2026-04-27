@@ -1,397 +1,153 @@
-<!-- Navbar -->
 <nav class="navbar" [class.scrolled]="isScrolled">
-    <div class="container container-nav">
-        <div class="logo-block" (click)="scrollToSection('home')">
-            <img src="assets/logo2.png" alt="QualiFlow Logo" class="main-logo">
-        </div>
+  <div class="container nav-inner">
+    <button class="logo" (click)="scrollToSection('home')" aria-label="Aller en haut">
+      <img src="assets/logo2.png" alt="QualiFlow" class="main-logo">
+    </button>
 
-        <div class="nav-links" [class.open]="isMenuOpen">
-            <a (click)="scrollToSection('home')">Accueil</a>
-            <a (click)="scrollToSection('about')">À propos</a>
-            <a (click)="scrollToSection('features')">Fonctions</a>
-            <a (click)="scrollToSection('modules')">Modules</a>
-            <a (click)="scrollToSection('workflow')">Fonctionnement</a>
-            <a (click)="scrollToSection('contact')">Contact</a>
-            <div class="nav-actions mobile-only">
-                <button class="btn btn-outline" routerLink="/login">Connexion</button>
-                <button class="btn btn-primary" routerLink="/register">Commencer</button>
-            </div>
-        </div>
-
-        <div class="nav-actions desktop-only">
-            <button class="btn btn-outline" routerLink="/login">Connexion</button>
-            <button class="btn btn-primary" routerLink="/register">Commencer</button>
-        </div>
-
-        <button class="menu-toggle" (click)="toggleMenu()">
-            <i class="material-icons">{{ isMenuOpen ? 'close' : 'menu' }}</i>
-        </button>
+    <div class="nav-links" [class.open]="isMenuOpen">
+      <a (click)="scrollToSection('home')">Accueil</a>
+      <a (click)="scrollToSection('about')">À propos</a>
+      <a (click)="scrollToSection('features')">Fonctionnalités</a>
+      <a (click)="scrollToSection('workflow')">Étapes</a>
+      <a (click)="scrollToSection('contact')">Contact</a>
+      <div class="mobile-actions">
+        <button class="btn btn-outline" routerLink="/login">Connexion</button>
+        <button class="btn btn-primary" routerLink="/register">Commencer</button>
+      </div>
     </div>
+
+    <div class="desktop-actions">
+      <button class="btn btn-outline" routerLink="/login">Connexion</button>
+      <button class="btn btn-primary" routerLink="/register">Commencer</button>
+    </div>
+
+    <button class="menu-toggle" (click)="toggleMenu()" aria-label="Ouvrir le menu">
+      <i class="material-icons">{{ isMenuOpen ? 'close' : 'menu' }}</i>
+    </button>
+  </div>
 </nav>
 
-<div class="main-content">
-    <!-- Hero Section -->
-    <section id="home" class="hero-section">
-        <div class="container hero-grid">
-            <div class="hero-content">
-                <span class="badge">Système de Management de la Qualité</span>
-                <h1>QualiFlow – Plateforme intelligente de gestion documentaire</h1>
-                <p>
-                    Centralisez vos processus, procédures, documents et non-conformités.
-                    Une solution moderne pour une traçabilité totale et une amélioration continue garantie.
-                </p>
-                <div class="hero-actions">
-                    <button class="btn btn-lg btn-primary" routerLink="/register">Get Started</button>
-                    <button class="btn btn-lg btn-secondary" routerLink="/login">Sign In</button>
-                </div>
-            </div>
-            <div class="hero-visual">
-                <div class="dashboard-image-wrapper">
-                    <img src="assets/dashboard-preview.png" class="dashboard-image" alt="QualiFlow Dashboard">
-                </div>
-            </div>
+<main class="home-page">
+  <section id="home" class="hero section">
+    <div class="container hero-grid">
+      <div>
+        <span class="kicker">Plateforme Qualité tout-en-un</span>
+        <h1>Une seule page d’accueil claire pour présenter QualiFlow</h1>
+        <p>
+          Centralisez vos processus, documents, non-conformités et indicateurs dans une solution moderne,
+          collaborative et traçable.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" routerLink="/register">Créer un compte</button>
+          <button class="btn btn-outline" routerLink="/login">Accéder au portail</button>
         </div>
-    </section>
+      </div>
 
-    <!-- About Section -->
-    <section id="about" class="section about-section bg-dark">
-        <div class="container">
-            <div class="section-header white">
-                <h2>À propos de QualiFlow</h2>
-                <p>Transformation digitale de la gestion qualité</p>
-            </div>
-            <div class="about-grid">
-                <div class="about-text">
-                    <p>
-                        Dans un environnement normatif de plus en plus exigeant, la gestion manuelle des documents et
-                        des processus qualité devient un frein à l'efficacité.
-                        <strong>QualiFlow</strong> est né du besoin de moderniser et de simplifier le Management de la
-                        Qualité.
-                    </p>
-                    <p>
-                        Notre plateforme offre une solution complète pour la transition numérique de vos systèmes de
-                        management.
-                        Elle permet aux organisations de passer d'une gestion documentaire statique à un écosystème
-                        dynamique, collaboratif et hautement traçable.
-                    </p>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <h3>100%</h3>
-                            <span>Traçabilité</span>
-                        </div>
-                        <div class="stat-item">
-                            <h3>0%</h3>
-                            <span>Papier</span>
-                        </div>
-                        <div class="stat-item">
-                            <h3>24/7</h3>
-                            <span>Accès</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="about-image">
-                    <div class="abstract-shape">
-                        <i class="material-icons">verified_user</i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="section features-section bg-dark">
-        <div class="container">
-            <div class="section-header white">
-                <h2>Fonctionnalités Principales</h2>
-                <p>Une suite complète d'outils pour piloter votre excellence opérationnelle</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card" *ngFor="let f of features">
-                    <div class="feature-icon">
-                        <i class="material-icons">{{ f.icon }}</i>
-                    </div>
-                    <h3>{{ f.title }}</h3>
-                    <p>{{ f.description }}</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Modules Section -->
-    <section id="modules" class="section modules-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>Modules Détaillés</h2>
-                <p>Des composants modulaires adaptés à vos besoins spécifiques</p>
-            </div>
-            <div class="modules-accordion">
-                <div class="module-item" *ngFor="let m of modules">
-                    <div class="module-main">
-                        <div class="module-icon-circle">
-                            <i class="material-icons">{{ m.icon }}</i>
-                        </div>
-                        <div class="module-text">
-                            <h3>{{ m.name }}</h3>
-                            <p>{{ m.description }}</p>
-                            <div class="benefit-tag">
-                                <i class="material-icons">star</i>
-                                Bénéfice : {{ m.benefit }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Advantages Section -->
-    <section class="section advantages-section dark-section">
-        <div class="container">
-            <div class="section-header white">
-                <h2>Pourquoi choisir QualiFlow ?</h2>
-                <p>Les bénéfices concrets pour votre organisation</p>
-            </div>
-            <div class="advantages-grid">
-                <div class="adv-card">
-                    <i class="material-icons">center_focus_strong</i>
-                    <h3>Centralisation</h3>
-                    <p>Toutes vos données qualité dans un seul point d'accès sécurisé.</p>
-                </div>
-                <div class="adv-card">
-                    <i class="material-icons">history</i>
-                    <h3>Traçabilité</h3>
-                    <p>Historique complet des modifications et validations (Versioning).</p>
-                </div>
-                <div class="adv-card">
-                    <i class="material-icons">speed</i>
-                    <h3>Performance</h3>
-                    <p>Suivi en temps réel des KPI et des objectifs processus.</p>
-                </div>
-                <div class="adv-card">
-                    <i class="material-icons">security</i>
-                    <h3>Conformité</h3>
-                    <p>Respect strict des exigences normatives (ISO 9001, 21001...).</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Workflow Section -->
-    <section id="workflow" class="section workflow-section bg-light">
-        <div class="container">
-            <div class="section-header">
-                <h2>Comment ça fonctionne ?</h2>
-                <p>Adoptez QualiFlow en 4 étapes simples</p>
-            </div>
-            <div class="workflow-timeline">
-                <div class="step" *ngFor="let s of steps; let i = index">
-                    <div class="step-number">{{ i + 1 }}</div>
-                    <div class="step-content">
-                        <h3>{{ s.title }}</h3>
-                        <p>{{ s.desc }}</p>
-                    </div>
-                    <div class="step-connector" *ngIf="i < steps.length - 1"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Dashboard Preview -->
-    <section class="section dashboard-preview">
-        <div class="container">
-            <div class="section-header">
-                <h2>Tableau de Bord Intelligent</h2>
-                <p>Un pilotage visuel et interactif pour les responsables qualité.</p>
-            </div>
-            <div class="preview-container">
-                <div class="preview-overlay">
-                    <button class="btn btn-primary" routerLink="/login">Explorer le Dashboard</button>
-                </div>
-                <img src="assets/dashboard-preview.png" class="preview-image-full" alt="Statistiques QualiFlow">
-            </div>
-        </div>
-    </section>
-
-    <!-- Document Management Preview -->
-    <section class="section document-preview bg-dark">
-        <div class="container">
-            <div class="section-header white">
-                <h2>Gestion Documentaire (GED)</h2>
-                <p>Maîtrisez tout le cycle de vie de vos documents avec une interface intuitive.</p>
-            </div>
-            <div class="preview-container-alt">
-                <div class="preview-overlay">
-                    <button class="btn btn-lg btn-primary" routerLink="/register">Essayer Gratuitement</button>
-                </div>
-                <img src="assets/docs-preview.png" class="preview-image-full framed"
-                    alt="Gestion Documentaire QualiFlow">
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="section contact-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>Contactez-nous</h2>
-                <p>Une question ou un projet ? Notre équipe est à votre écoute.</p>
-            </div>
-
-            <div class="contact-grid">
-                <!-- Contact Info -->
-                <div class="contact-info">
-                    <div class="info-card">
-                        <div class="info-icon">
-                            <i class="material-icons">email</i>
-                        </div>
-                        <div class="info-text">
-                            <h4>Email</h4>
-                            <p>contact&#64;qualiflow.com</p>
-                        </div>
-                    </div>
-
-                    <div class="info-card">
-                        <div class="info-icon">
-                            <i class="material-icons">phone</i>
-                        </div>
-                        <div class="info-text">
-                            <h4>Téléphone</h4>
-                            <p>+216 71 000 000</p>
-                        </div>
-                    </div>
-
-                    <div class="info-card">
-                        <div class="info-icon">
-                            <i class="material-icons">location_on</i>
-                        </div>
-                        <div class="info-text">
-                            <h4>Adresse</h4>
-                            <p>Technopark El Ghazala, Tunis, Tunisie</p>
-                        </div>
-                    </div>
-
-                    <div class="contact-social">
-                        <h4>Suivez-nous</h4>
-                        <div class="social-icons">
-                            <i class="fa-brands fa-linkedin"></i>
-                            <i class="fa-brands fa-twitter"></i>
-                            <i class="fa-brands fa-facebook"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contact Form -->
-                <div class="contact-form-wrapper">
-                    <form action="https://formsubmit.co/support.qualiflow@gmail.com" method="POST" class="contact-form">
-                        <input type="hidden" name="_next" value="http://localhost:4200/#contact">
-                        <input type="hidden" name="_captcha" value="false">
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Nom complet</label>
-                                <input type="text" name="name" placeholder="Votre nom" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Email professionnel</label>
-                                <input type="email" name="email" placeholder="votre@email.com" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Sujet</label>
-                            <select name="subject" required>
-                                <option value="" disabled selected>Choisissez un sujet</option>
-                                <option value="demo">Demander une démo</option>
-                                <option value="support">Support technique</option>
-                                <option value="sales">Commercial</option>
-                                <option value="other">Autre</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Message</label>
-                            <textarea name="message" rows="5" placeholder="Comment pouvons-nous vous aider ?"
-                                required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            Envoyer le message
-                            <i class="material-icons">send</i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Final CTA -->
-    <section class="section cta-final">
-        <div class="container text-center">
-            <h2>Transformez votre gestion qualité avec QualiFlow</h2>
-            <p>Commencez dès aujourd'hui avec une plateforme centralisée, moderne et collaborative.</p>
-            <div class="cta-actions">
-                <button class="btn btn-lg btn-white" routerLink="/register">Get Started</button>
-                <button class="btn btn-lg btn-outline-white" routerLink="/login">Sign In</button>
-            </div>
-        </div>
-    </section>
-</div>
-
-<!-- Footer -->
-<footer class="footer">
-    <div class="container">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <div class="logo-block" (click)="scrollToSection('home')">
-                    <img src="assets/logo2.png" alt="QualiFlow Logo" class="main-logo">
-                </div>
-                <p>Plateforme intelligente de gestion documentaire et de management de la qualité.</p>
-                <div class="social-links">
-                    <i class="material-icons">linked_camera</i>
-                    <i class="material-icons">facebook</i>
-                    <i class="material-icons">language</i>
-                </div>
-            </div>
-
-            <div class="footer-links">
-                <h4>Navigation</h4>
-                <ul>
-                    <li><a (click)="scrollToSection('home')">Accueil</a></li>
-                    <li><a (click)="scrollToSection('about')">À propos</a></li>
-                    <li><a (click)="scrollToSection('features')">Fonctions</a></li>
-                    <li><a (click)="scrollToSection('modules')">Modules</a></li>
-                    <li><a (click)="scrollToSection('contact')">Contact</a></li>
-                    <li><a routerLink="/login">Connexion</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-links">
-                <h4>Modules</h4>
-                <ul>
-                    <li><a href="#">Processus</a></li>
-                    <li><a href="#">Procédures</a></li>
-                    <li><a href="#">Documents (GED)</a></li>
-                    <li><a href="#">Non-conformités</a></li>
-                    <li><a href="#">Actions Correctives</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-contact">
-                <h4>Contact</h4>
-                <ul>
-                    <li><i class="material-icons">email</i> contact&#64;qualiflow.com</li>
-                    <li><i class="material-icons">phone</i> +216 71 000 000</li>
-                    <li><i class="material-icons">location_on</i> Tunis, Tunisie</li>
-                    <li><i class="material-icons">info</i> Version 1.0.0</li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; {{ getYear() }} QualiFlow. Tous droits réservés.</p>
-            <div class="footer-legal">
-                <a href="#">CGU</a>
-                <a href="#">Confidentialité</a>
-            </div>
-        </div>
+      <div class="preview-card">
+        <img src="assets/dashboard-preview.png" alt="Aperçu dashboard QualiFlow">
+      </div>
     </div>
+  </section>
+
+  <section id="about" class="section section-soft">
+    <div class="container">
+      <div class="section-head">
+        <h2>Pourquoi QualiFlow</h2>
+        <p>Un socle unique pour piloter la qualité, réduire les erreurs et accélérer les audits.</p>
+      </div>
+
+      <div class="stats">
+        <article>
+          <strong>100%</strong>
+          <span>Traçabilité</span>
+        </article>
+        <article>
+          <strong>24/7</strong>
+          <span>Disponibilité</span>
+        </article>
+        <article>
+          <strong>0 Papier</strong>
+          <span>GED centralisée</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2>Fonctionnalités clés</h2>
+        <p>Les briques essentielles de votre management qualité numérique.</p>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature-card" *ngFor="let f of features">
+          <i class="material-icons">{{ f.icon }}</i>
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.description }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="modules" class="section section-soft">
+    <div class="container">
+      <div class="section-head">
+        <h2>Modules principaux</h2>
+        <p>Une architecture modulaire pour grandir avec votre organisation.</p>
+      </div>
+
+      <div class="module-grid">
+        <article class="module-card" *ngFor="let m of modules">
+          <div class="module-icon"><i class="material-icons">{{ m.icon }}</i></div>
+          <div>
+            <h3>{{ m.name }}</h3>
+            <p>{{ m.description }}</p>
+            <small>{{ m.benefit }}</small>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="workflow" class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2>Mise en place en 4 étapes</h2>
+        <p>Un démarrage simple pour déployer rapidement votre gouvernance qualité.</p>
+      </div>
+
+      <div class="step-grid">
+        <article class="step" *ngFor="let s of steps; let i = index">
+          <span class="step-index">{{ i + 1 }}</span>
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.desc }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section cta">
+    <div class="container cta-inner">
+      <div>
+        <h2>Prêt à transformer votre gestion qualité ?</h2>
+        <p>Créez votre espace QualiFlow et centralisez vos opérations dans une plateforme unique.</p>
+      </div>
+      <div class="cta-actions">
+        <button class="btn btn-primary" routerLink="/register">Démarrer maintenant</button>
+        <button class="btn btn-outline light" routerLink="/login">Se connecter</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>© {{ getYear() }} QualiFlow. Tous droits réservés.</p>
+    <div class="footer-links">
+      <a (click)="scrollToSection('home')">Accueil</a>
+      <a (click)="scrollToSection('features')">Fonctionnalités</a>
+      <a (click)="scrollToSection('contact')">Contact</a>
+    </div>
+  </div>
 </footer>

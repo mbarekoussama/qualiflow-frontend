@@ -165,6 +165,8 @@ export class DocumentDetailsComponent implements OnInit {
     switch (status) {
       case 'APPROUVE':
         return 'Approuve';
+      case 'PUBLIE':
+        return 'Publie';
       case 'EN_REVISION':
         return 'En revision';
       case 'REJETE':

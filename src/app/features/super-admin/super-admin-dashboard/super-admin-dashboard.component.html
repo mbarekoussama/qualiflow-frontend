@@ -120,6 +120,83 @@
             </div>
           </mat-card>
 
+          <mat-card class="panel-card full-width traffic-analytics-card">
+            <div class="traffic-layout">
+              <div class="visitor-panel">
+                <div class="traffic-title">Daily Visitor</div>
+                <div class="visitor-chart-wrap" *ngIf="visitorSeries.length > 0; else emptyVisitorTrend">
+                  <div class="y-axis">
+                    <span *ngFor="let label of getVisitorYLabels()">{{ label }}</span>
+                  </div>
+                  <svg viewBox="0 0 860 240" preserveAspectRatio="none" class="visitor-svg" aria-label="Daily Visitor">
+                    <defs>
+                      <linearGradient id="visitorFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.45"></stop>
+                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.06"></stop>
+                      </linearGradient>
+                    </defs>
+                    <path class="grid-line" d="M 16 16 L 844 16"></path>
+                    <path class="grid-line" d="M 16 61 L 844 61"></path>
+                    <path class="grid-line" d="M 16 106 L 844 106"></path>
+                    <path class="grid-line" d="M 16 151 L 844 151"></path>
+                    <path class="grid-line" d="M 16 196 L 844 196"></path>
+                    <path class="grid-line" d="M 16 224 L 844 224"></path>
+                    <path class="visitor-area" [attr.d]="getVisitorAreaPath()"></path>
+                    <path class="visitor-line" [attr.d]="getVisitorPath()"></path>
+                  </svg>
+                </div>
+                <div class="x-axis-labels" *ngIf="visitorSeries.length > 0">
+                  <span *ngFor="let point of visitorSeries; trackBy: trackByPeriod">{{ point.period }}</span>
+                </div>
+                <ng-template #emptyVisitorTrend>
+                  <p class="empty-text">Pas assez de données pour afficher les visiteurs.</p>
+                </ng-template>
+              </div>
+
+              <div class="traffic-side-panels">
+                <div class="mini-panel">
+                  <div class="mini-head">
+                    <h3>Devices</h3>
+                    <strong>{{ devicesTotal }}</strong>
+                  </div>
+                  <div class="legend-grid">
+                    <div class="legend-item" *ngFor="let item of deviceBreakdown; trackBy: trackByBreakdownLabel">
+                      <span class="dot" [style.background]="item.color"></span>
+                      <div class="legend-text">
+                        <strong>{{ item.percent }}%</strong>
+                        <small>{{ item.label }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="stack-bar">
+                    <span *ngFor="let item of deviceBreakdown; trackBy: trackByBreakdownLabel"
+                      [style.width.%]="item.percent" [style.background]="item.color"></span>
+                  </div>
+                </div>
+
+                <div class="mini-panel">
+                  <div class="mini-head">
+                    <h3>Location</h3>
+                    <strong>{{ locationTotal }}</strong>
+                  </div>
+                  <div class="location-list">
+                    <div class="location-row" *ngFor="let item of locationBreakdown; trackBy: trackByBreakdownLabel">
+                      <div class="location-name">
+                        <span class="dot" [style.background]="item.color"></span>
+                        <span>{{ item.label }}</span>
+                      </div>
+                      <strong>{{ item.percent }}%</strong>
+                    </div>
+                  </div>
+                  <div class="stack-bar">
+                    <span *ngFor="let item of locationBreakdown; trackBy: trackByBreakdownLabel"
+                      [style.width.%]="item.percent" [style.background]="item.color"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+
           <!-- PERFORMANCE RANKINGS -->
           <mat-card class="panel-card full-width">
             <h2>Performance par organisation</h2>

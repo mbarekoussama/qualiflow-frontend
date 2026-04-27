@@ -103,6 +103,10 @@ export class CorrectiveActionListComponent implements OnInit {
     return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
   }
 
+  get canLoadUsers(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
+  }
+
   toggleFilters(): void {
     this.showFilters = !this.showFilters;
   }
@@ -239,8 +243,12 @@ export class CorrectiveActionListComponent implements OnInit {
       items: [] as NonConformityListItemResponse[]
     };
 
+    const usersRequest$ = this.canLoadUsers
+      ? this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse)))
+      : of(emptyUsersResponse);
+
     forkJoin({
-      users: this.userService.getAll(1, 300).pipe(catchError(() => of(emptyUsersResponse))),
+      users: usersRequest$,
       nonConformities: this.nonConformityService
         .getNonConformities({ pageNumber: 1, pageSize: 300 })
         .pipe(catchError(() => of(emptyNonConformityResponse)))

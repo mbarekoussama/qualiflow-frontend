@@ -343,6 +343,24 @@
                                             placeholder="Présentez brièvement votre organisation..."></textarea>
                                     </mat-form-field>
 
+                                    <div class="form-grid">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Abonnement (jours restants)</mat-label>
+                                            <mat-icon matIconPrefix>timer</mat-icon>
+                                            <input title="subscriptionDaysRemaining" matInput type="number" min="0"
+                                                formControlName="subscriptionDaysRemaining">
+                                        </mat-form-field>
+
+                                        <div class="monitor-toggle-box">
+                                            <div class="toggle-label">
+                                                <mat-icon>monitor_heart</mat-icon>
+                                                <span>Moniteur automatique abonnement</span>
+                                            </div>
+                                            <mat-slide-toggle color="primary"
+                                                formControlName="subscriptionMonitorEnabled"></mat-slide-toggle>
+                                        </div>
+                                    </div>
+
                                     <div class="card-actions-right">
                                         <button mat-flat-button color="primary" (click)="saveOrganization()"
                                             [disabled]="savingOrganization">
