@@ -7,8 +7,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import {
   DocumentDetailsResponse,
   DocumentStatus,
@@ -30,6 +32,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
     MatTableModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MatDialogModule,
     TranslatePipe
   ],
   templateUrl: './document-details.component.html',
@@ -47,6 +50,7 @@ export class DocumentDetailsComponent implements OnInit {
     private readonly router: Router,
     private readonly documentService: DocumentService,
     private readonly authService: AuthService,
+    private readonly dialog: MatDialog,
     private readonly notificationService: NotificationService
   ) {}
 
@@ -97,6 +101,41 @@ export class DocumentDetailsComponent implements OnInit {
 
   openVersions(): void {
     this.router.navigate(['/documents', this.documentId, 'versions']);
+  }
+
+  deleteDocument(event?: Event): void {
+    this.blurEventTarget(event);
+
+    if (!this.details?.document) {
+      return;
+    }
+
+    const documentRef = this.details.document.code || this.details.document.title;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Supprimer le document',
+        message: `Confirmer la suppression logique de ${documentRef} ?`,
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.documentService.deleteDocument(this.documentId).subscribe({
+        next: () => {
+          this.notificationService.showSuccess('Document supprime.');
+          this.router.navigate(['/documents']);
+        },
+        error: () => {
+          this.notificationService.showError('Suppression impossible.');
+        }
+      });
+    });
   }
 
   downloadCurrent(): void {
@@ -201,5 +240,18 @@ export class DocumentDetailsComponent implements OnInit {
     link.download = fileName;
     link.click();
     URL.revokeObjectURL(objectUrl);
+  }
+
+  private blurEventTarget(event?: Event): void {
+    const activeElement = document.activeElement as HTMLElement | null;
+    if (activeElement && typeof activeElement.blur === 'function') {
+      activeElement.blur();
+    }
+
+    const target = event?.target as HTMLElement | null;
+    const button = target?.closest('button') as HTMLElement | null;
+    if (button && typeof button.blur === 'function') {
+      button.blur();
+    }
   }
 }

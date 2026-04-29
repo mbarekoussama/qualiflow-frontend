@@ -26,6 +26,7 @@ export interface DocumentQueryParams {
   procedureId?: number | null;
   ownerUserId?: number | null;
   departmentId?: number | null;
+  pendingValidationOnly?: boolean;
 }
 
 export interface CreateDocumentRequest {

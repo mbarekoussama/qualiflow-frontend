@@ -11,8 +11,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { forkJoin, map, of, switchMap } from 'rxjs';
+import { AuthService, MeResponse } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
-import { UserResponse, UserService } from '../../../core/services/user.service';
+import { UserListResponse, UserResponse, UserService } from '../../../core/services/user.service';
 import { ProcessListItemResponse } from '../../processes/models/process.models';
 import { ProcessService } from '../../processes/services/process.service';
 import { ProcedureListItemResponse } from '../../procedures/models/procedure.models';
@@ -114,6 +115,7 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
     private readonly procedureService: ProcedureService,
     private readonly departmentService: DepartmentService,
     private readonly userService: UserService,
+    private readonly authService: AuthService,
     private readonly notificationService: NotificationService
   ) { }
 
@@ -222,12 +224,21 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
     this.documentId = idParam ? Number(idParam) : null;
     this.isEdit = this.documentId !== null && !Number.isNaN(this.documentId);
     this.startWithImport = this.route.snapshot.queryParamMap.get('mode') === 'import';
+    if (!this.canValidateStatus) {
+      this.documentForm.controls.initialVersionStatus.disable({ emitEvent: false });
+    }
+    if (!this.isEdit) {
+      this.documentForm.controls.initialEffectiveDate.setValue(this.getTodayInputDate());
+    }
 
     this.loading = true;
+    const currentUser = this.authService.getCurrentUser();
 
     const baseData$ = forkJoin({
       processes: this.processService.getProcesses({ pageNumber: 1, pageSize: 300 }),
-      users: this.userService.getAll(1, 300),
+      users: this.canSelectOwner
+        ? this.userService.getAll(1, 300)
+        : of<UserListResponse>({ total: 0, page: 1, pageSize: 0, items: [] }),
       departments: this.departmentService.getDepartments({ pageNumber: 1, pageSize: 300 })
     });
 
@@ -241,6 +252,10 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
           this.owners = base.users.items.filter(user => user.isActive);
           this.departments = base.departments.items.filter(dept => dept.status === 'ACTIF');
           this.patchDocument(details.document);
+          if (!this.canSelectOwner && currentUser?.id) {
+            this.ensureCurrentUserAsOwnerOption(currentUser);
+            this.documentForm.controls.ownerUserId.setValue(currentUser.id);
+          }
 
           if (details.document.processId) {
             this.loadProceduresForProcess(details.document.processId, details.document.procedureId ?? null);
@@ -263,6 +278,10 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
         this.processes = processes.items;
         this.owners = users.items.filter(user => user.isActive);
         this.departments = departments.items.filter(dept => dept.status === 'ACTIF');
+        if (!this.canSelectOwner && currentUser?.id) {
+          this.ensureCurrentUserAsOwnerOption(currentUser);
+          this.documentForm.controls.ownerUserId.setValue(currentUser.id);
+        }
         this.loading = false;
       },
       error: () => {
@@ -296,6 +315,14 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
     return this.startWithImport
       ? 'Importe le fichier et cree la premiere version.'
       : 'Definis les metadonnees du document GED.';
+  }
+
+  get canValidateStatus(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
+  }
+
+  get canSelectOwner(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
   }
 
   onProcessChanged(): void {
@@ -341,6 +368,9 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
     }
 
     const payload = this.buildDocumentPayload();
+    if (!this.canValidateStatus) {
+      this.documentForm.controls.initialVersionStatus.setValue('EN_REVISION');
+    }
     this.saving = true;
 
     const save$ = this.isEdit && this.documentId
@@ -370,9 +400,14 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
 
           this.router.navigate(['/documents', documentId]);
         },
-        error: () => {
+        error: (error) => {
           this.saving = false;
-          this.notificationService.showError('Enregistrement impossible. Verifie les champs puis recommence.');
+          const backendMessage = error?.error?.message;
+          this.notificationService.showError(
+            typeof backendMessage === 'string' && backendMessage.trim().length > 0
+              ? backendMessage
+              : 'Enregistrement impossible. Verifie les champs puis recommence.'
+          );
         }
       });
   }
@@ -416,7 +451,7 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
 
     return {
       versionNumber: raw.initialVersionNumber.trim(),
-      status: raw.initialVersionStatus,
+      status: this.canValidateStatus ? raw.initialVersionStatus : 'EN_REVISION',
       revisionComment: raw.initialRevisionComment?.trim() || null,
       effectiveDate: raw.initialEffectiveDate || null,
       expiryDate: raw.initialExpiryDate || null
@@ -459,5 +494,39 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
         this.notificationService.showWarning('Impossible de charger les procedures du processus.');
       }
     });
+  }
+
+  private ensureCurrentUserAsOwnerOption(currentUser: MeResponse): void {
+    const alreadyExists = this.owners.some(owner => owner.id === currentUser.id);
+    if (alreadyExists) {
+      return;
+    }
+
+    this.owners = [
+      {
+        id: currentUser.id,
+        organizationId: currentUser.organizationId,
+        organizationName: currentUser.organizationName,
+        firstName: currentUser.firstName,
+        lastName: currentUser.lastName,
+        email: currentUser.email,
+        role: currentUser.role,
+        function: currentUser.function,
+        department: currentUser.department,
+        departmentId: null,
+        departmentName: null,
+        isActive: currentUser.isActive,
+        createdAt: currentUser.createdAt
+      },
+      ...this.owners
+    ];
+  }
+
+  private getTodayInputDate(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = `${now.getMonth() + 1}`.padStart(2, '0');
+    const day = `${now.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

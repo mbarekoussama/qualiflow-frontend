@@ -11,11 +11,11 @@
           [matTooltip]="'common.refresh' | t">
           <mat-icon>refresh</mat-icon>
         </button>
-        <button *ngIf="canWrite" mat-stroked-button class="btn-import" (click)="openImport()">
+        <button *ngIf="canSubmit" mat-stroked-button class="btn-import" (click)="openImport()">
           <mat-icon>upload_file</mat-icon>
           {{ 'list.documents.import' | t }}
         </button>
-        <button *ngIf="canWrite" mat-flat-button color="primary" class="btn-create" (click)="createDocument()">
+        <button *ngIf="canSubmit" mat-flat-button color="primary" class="btn-create" (click)="createDocument()">
           <mat-icon>add</mat-icon>
           {{ 'list.documents.new' | t }}
         </button>
@@ -62,13 +62,18 @@
         </div>
 
         <div class="filter-buttons">
+          <button *ngIf="canTrackMyUploads" mat-button type="button"
+            class="btn-mine"
+            [class.btn-active-filter]="isMineOnlyFilterActive" (click)="toggleMineOnlyFilter()">
+            <mat-icon>{{ isMineOnlyFilterActive ? 'group' : 'person' }}</mat-icon>
+            {{ isMineOnlyFilterActive ? 'Tous les documents' : 'Mes documents' }}
+          </button>
           <button mat-flat-button class="btn-apply" type="submit">
             <mat-icon>filter_list</mat-icon>
             {{ 'common.filter' | t }}
           </button>
-          <button mat-stroked-button class="btn-reset" type="button" (click)="clearFilters()">
+          <button mat-icon-button class="btn-reset" type="button" (click)="clearFilters()" [matTooltip]="'common.reset' | t">
             <mat-icon>restart_alt</mat-icon>
-            {{ 'common.reset' | t }}
           </button>
         </div>
       </div>
@@ -95,7 +100,8 @@
       <span class="sc-subtext">{{ 'list.documents.readyToUse' | t }}</span>
     </div>
 
-    <div class="summary-card card-warning shadow-sm" [class.active]="statistics.inReview > 0">
+    <div class="summary-card card-warning shadow-sm" [class.active]="statistics.inReview > 0" [class.clickable]="canWrite"
+      (click)="canWrite ? focusPendingReviews() : null">
       <span class="sc-label">{{ 'list.documents.inReview' | t }}</span>
       <div class="sc-value">
         <mat-icon class="icon-warning">pending_actions</mat-icon>
@@ -111,6 +117,20 @@
         {{ statistics.expired }}
       </div>
       <span class="sc-subtext">{{ 'list.documents.needAction' | t }}</span>
+    </div>
+  </div>
+
+  <div class="quality-queue-banner" *ngIf="canWrite && statistics">
+    <div class="queue-main">
+      <mat-icon>fact_check</mat-icon>
+      <div>
+        <strong>File de validation qualité</strong>
+        <span>{{ statistics.inReview }} document(s) en attente de validation</span>
+      </div>
+    </div>
+    <div class="queue-actions">
+      <button mat-flat-button color="primary" type="button" (click)="focusPendingReviews()">Voir à valider</button>
+      <button mat-stroked-button type="button" *ngIf="isPendingValidationMode || hasPendingReviewFilter" (click)="showAllDocuments()">Voir tous</button>
     </div>
   </div>
 
@@ -226,7 +246,7 @@
                   <mat-icon>download</mat-icon>
                 </button>
                 <button *ngIf="canWrite" mat-icon-button class="action-btn delete-btn" matTooltip="Supprimer"
-                  (click)="$event.stopPropagation(); deleteDocument(item)">
+                  (click)="$event.stopPropagation(); deleteDocument(item, $event)">
                   <mat-icon>delete_outline</mat-icon>
                 </button>
 
@@ -243,7 +263,8 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns" class="clickable-row" (click)="viewDocument(row)">
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" class="clickable-row"
+            [class.pending-review-row]="isPendingReview(row)" (click)="viewDocument(row)">
           </tr>
         </table>
 

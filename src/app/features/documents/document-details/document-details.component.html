@@ -17,6 +17,9 @@
       <button *ngIf="canWrite" mat-stroked-button type="button" (click)="editDocument()">
         <mat-icon>edit</mat-icon> {{ 'common.edit' | t }}
       </button>
+      <button *ngIf="canWrite" mat-stroked-button type="button" color="warn" (click)="deleteDocument($event)">
+        <mat-icon>delete_outline</mat-icon> Supprimer
+      </button>
       <button mat-flat-button color="primary" type="button" (click)="downloadCurrent()">
         <mat-icon>download</mat-icon> {{ 'common.download' | t }}
       </button>
@@ -134,6 +137,13 @@
                   <span class="tag-status mini" [ngClass]="row.status.toLowerCase()">
                     {{ getStatusLabel(row.status) }}
                   </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="file">
+                <th mat-header-cell *matHeaderCellDef>Fichier</th>
+                <td mat-cell *matCellDef="let row" class="text-truncate" style="max-width: 170px;">
+                  {{ row.originalFileName || row.fileName || '-' }}
                 </td>
               </ng-container>
 

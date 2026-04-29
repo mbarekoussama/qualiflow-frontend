@@ -1,0 +1,20 @@
+<header class="topbar">
+  <a class="brand" routerLink="/">
+    <span class="brand-mark">QF</span>
+    <span class="brand-text">QualiFlow</span>
+  </a>
+
+  <nav class="nav-links" aria-label="Navigation principale">
+    <a *ngFor="let item of navItems" 
+       (click)="selectSection(item.section)" 
+       [class.active]="activeSection === item.section"
+       href="javascript:void(0)">
+       {{ item.label }}
+    </a>
+  </nav>
+
+  <div class="actions">
+    <a class="btn btn-ghost" routerLink="/login">Se connecter</a>
+    <a class="btn btn-primary" routerLink="/register">Commencer</a>
+  </div>
+</header>

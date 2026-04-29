@@ -1,0 +1,26 @@
+<div class="home-page">
+  <app-header-home (sectionChange)="setSection($event)"></app-header-home>
+
+  <main>
+    <div *ngIf="currentSection === 'all' || currentSection === 'accueil'">
+      <app-accueil-home id="accueil" class="reveal"></app-accueil-home>
+    </div>
+    
+    <div *ngIf="currentSection === 'all' || currentSection === 'services'">
+      <app-services-home id="services" class="reveal"></app-services-home>
+      <app-features-home id="fonctionnalites" class="reveal"></app-features-home>
+    </div>
+    
+    <div *ngIf="currentSection === 'all' || currentSection === 'iso'">
+      <app-news-home id="iso-21001" class="reveal"></app-news-home>
+      <app-why-home class="reveal"></app-why-home>
+      <app-stats-home class="reveal"></app-stats-home>
+    </div>
+    
+    <div *ngIf="currentSection === 'all' || currentSection === 'contact'">
+      <app-contact-home id="contact" class="reveal"></app-contact-home>
+    </div>
+  </main>
+
+  <app-footer-home></app-footer-home>
+</div>

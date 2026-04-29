@@ -7,8 +7,13 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadComponent: () => import('./features/public/home/home.component').then(m => m.HomeComponent),
+    loadComponent: () => import('./home/home.component').then(m => m.HomeComponent),
     data: { title: 'QualiFlow - Accueil' }
+  },
+  {
+    path: 'home',
+    redirectTo: '',
+    pathMatch: 'full'
   },
   {
     path: 'login',
@@ -324,7 +329,7 @@ export const routes: Routes = [
             loadComponent: () => import('./features/documents/document-form/document-form.component').then(m => m.DocumentFormComponent),
             data: {
               title: 'Nouveau document',
-              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE']
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
             }
           },
           {

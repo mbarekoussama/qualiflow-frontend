@@ -201,6 +201,9 @@
             <mat-option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</mat-option>
           </mat-select>
         </mat-form-field>
+        <p class="full-width" *ngIf="!canValidateStatus">
+          Le document sera déposé en statut <strong>En révision</strong> et publié après validation du responsable.
+        </p>
 
         <mat-form-field appearance="outline">
           <mat-label>Date d'effet</mat-label>

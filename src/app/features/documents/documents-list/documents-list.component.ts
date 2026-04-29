@@ -32,6 +32,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 type ToolbarTypeFilter = '' | 'MANUEL' | 'PROCEDURE' | 'ENREGISTREMENT' | 'FORMULAIRE';
 type ToolbarStatusFilter = '' | 'APPROUVE' | 'PUBLIE' | 'EN_REVISION' | 'REJETE' | 'PERIME';
+type ListMode = 'GLOBAL' | 'PENDING_VALIDATION';
 
 @Component({
   selector: 'app-documents-list',
@@ -64,7 +65,9 @@ export class DocumentsListComponent implements OnInit {
   readonly filtersForm = this.fb.group({
     search: [''],
     type: ['' as ToolbarTypeFilter],
-    status: ['' as ToolbarStatusFilter]
+    status: ['' as ToolbarStatusFilter],
+    mineOnly: [false],
+    listMode: ['GLOBAL' as ListMode]
   });
 
   loading = false;
@@ -89,6 +92,30 @@ export class DocumentsListComponent implements OnInit {
 
   get canWrite(): boolean {
     return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
+  }
+
+  get canSubmit(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']);
+  }
+
+  get isQualityManager(): boolean {
+    return this.authService.hasRole('RESPONSABLE_QUALITE');
+  }
+
+  get hasPendingReviewFilter(): boolean {
+    return this.filtersForm.get('status')?.value === 'EN_REVISION';
+  }
+
+  get isPendingValidationMode(): boolean {
+    return this.filtersForm.get('listMode')?.value === 'PENDING_VALIDATION';
+  }
+
+  get canTrackMyUploads(): boolean {
+    return this.authService.hasRole(['UTILISATEUR', 'CHEF_SERVICE']);
+  }
+
+  get isMineOnlyFilterActive(): boolean {
+    return this.filtersForm.get('mineOnly')?.value === true;
   }
 
   refresh(): void {
@@ -119,7 +146,39 @@ export class DocumentsListComponent implements OnInit {
     this.filtersForm.reset({
       search: '',
       type: '',
-      status: ''
+      status: '',
+      mineOnly: false,
+      listMode: 'GLOBAL'
+    });
+    this.pageNumber = 1;
+    this.refresh();
+  }
+
+  toggleMineOnlyFilter(): void {
+    const current = this.filtersForm.get('mineOnly')?.value === true;
+    this.filtersForm.patchValue({ mineOnly: !current });
+    this.pageNumber = 1;
+    this.refresh();
+  }
+
+  focusPendingReviews(): void {
+    if (this.isQualityManager) {
+      this.filtersForm.patchValue({
+        listMode: 'PENDING_VALIDATION',
+        status: ''
+      });
+    } else {
+      this.filtersForm.patchValue({
+        status: 'EN_REVISION'
+      });
+    }
+    this.pageNumber = 1;
+    this.refresh();
+  }
+
+  showAllDocuments(): void {
+    this.filtersForm.patchValue({
+      listMode: 'GLOBAL'
     });
     this.pageNumber = 1;
     this.refresh();
@@ -151,7 +210,9 @@ export class DocumentsListComponent implements OnInit {
     this.router.navigate(['/documents', item.id, 'versions']);
   }
 
-  deleteDocument(item: DocumentListItemResponse): void {
+  deleteDocument(item: DocumentListItemResponse, event?: Event): void {
+    this.blurEventTarget(event);
+
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Supprimer le document',
@@ -316,6 +377,10 @@ export class DocumentsListComponent implements OnInit {
     return item.id;
   }
 
+  isPendingReview(item: DocumentListItemResponse): boolean {
+    return item.status === 'EN_REVISION';
+  }
+
   private applyPage(page: PagedDocumentResponse): void {
     this.documents = page.items;
     this.total = page.total;
@@ -325,13 +390,17 @@ export class DocumentsListComponent implements OnInit {
 
   private buildQuery(): DocumentQueryParams {
     const raw = this.filtersForm.getRawValue();
+    const currentUserId = this.authService.getCurrentUser()?.id ?? null;
+    const useMineOnly = this.canTrackMyUploads && raw.mineOnly === true && !!currentUserId;
 
     return {
       pageNumber: this.pageNumber,
       pageSize: this.pageSize,
       search: raw.search?.trim() || undefined,
       type: (raw.type as DocumentType | '') || undefined,
-      status: (raw.status as DocumentStatus | '') || undefined
+      status: (raw.status as DocumentStatus | '') || undefined,
+      ownerUserId: useMineOnly ? currentUserId : undefined,
+      pendingValidationOnly: this.isQualityManager && raw.listMode === 'PENDING_VALIDATION'
     };
   }
 
@@ -342,5 +411,18 @@ export class DocumentsListComponent implements OnInit {
     link.download = fileName;
     link.click();
     URL.revokeObjectURL(objectUrl);
+  }
+
+  private blurEventTarget(event?: Event): void {
+    const activeElement = document.activeElement as HTMLElement | null;
+    if (activeElement && typeof activeElement.blur === 'function') {
+      activeElement.blur();
+    }
+
+    const target = event?.target as HTMLElement | null;
+    const button = target?.closest('button') as HTMLElement | null;
+    if (button && typeof button.blur === 'function') {
+      button.blur();
+    }
   }
 }
