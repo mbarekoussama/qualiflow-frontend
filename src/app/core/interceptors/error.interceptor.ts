@@ -47,7 +47,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       } else {
         switch (error.status) {
           case 0:
-            errorMessage = `Impossible de joindre l'API (${environment.apiUrl}). Verifiez que le backend est demarre.`;
+            errorMessage = `Impossible de joindre l'API (${environment.apiUrl}). Verifiez que le backend est demarre et que CORS autorise l'origine du frontend.`;
             break;
           case 401:
             errorMessage = error.error?.message || 'Non autorise. Veuillez vous reconnecter.';
