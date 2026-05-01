@@ -51,7 +51,8 @@ import { DepartmentService } from '../services/department.service';
   styleUrls: ['./department-list.component.scss']
 })
 export class DepartmentListComponent implements OnInit {
-  readonly displayedColumns: string[] = ['name', 'code', 'manager', 'counts', 'status', 'actions'];
+  readonly displayedColumnsAdmin: string[] = ['name', 'code', 'manager', 'counts', 'status', 'actions'];
+  readonly displayedColumnsUser: string[] = ['name', 'code', 'manager', 'counts', 'status', 'actions'];
   readonly statusOptions = DEPARTMENT_STATUS_OPTIONS;
 
   departments: DepartmentListItemResponse[] = [];
@@ -78,6 +79,18 @@ export class DepartmentListComponent implements OnInit {
 
   get canWrite(): boolean {
     return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE']);
+  }
+
+  get isUtilisateur(): boolean {
+    return this.authService.hasRole('UTILISATEUR');
+  }
+
+  get displayedColumns(): string[] {
+    return this.isUtilisateur ? this.displayedColumnsUser : this.displayedColumnsAdmin;
+  }
+
+  get userDepartmentName(): string {
+    return this.authService.getCurrentUser()?.department?.trim() || '';
   }
 
   loadDepartments(): void {
@@ -206,12 +219,14 @@ export class DepartmentListComponent implements OnInit {
   }
 
   private buildQuery() {
+    const currentUserId = this.authService.getCurrentUser()?.id ?? null;
     return {
       pageNumber: this.pageNumber,
       pageSize: this.pageSize,
       search: this.search.trim() || undefined,
       status: this.status || undefined,
-      managerUserId: this.managerUserId ?? undefined
+      managerUserId: this.managerUserId ?? undefined,
+      userId: this.isUtilisateur && currentUserId ? currentUserId : undefined
     };
   }
 }

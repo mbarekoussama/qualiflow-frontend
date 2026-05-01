@@ -412,3 +412,46 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .document-versions-page {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+
+    h1 {
+      font-size: 20px;
+    }
+  }
+
+  .create-card,
+  .table-card {
+    padding: 14px;
+  }
+
+  .dropzone {
+    padding: 20px 12px;
+  }
+
+  .signature-container {
+    overflow-x: auto;
+  }
+
+  .signature-container canvas {
+    min-width: 520px;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .versions-table {
+    min-width: 900px;
+  }
+}

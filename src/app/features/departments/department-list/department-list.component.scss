@@ -206,6 +206,8 @@ mat-form-field {
 
 .table-wrap {
   position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .department-table {
@@ -384,9 +386,11 @@ mat-paginator {
 
   .filter-buttons {
     width: 100%;
+    flex-direction: column;
 
     .btn {
-      flex: 1 1 140px;
+      width: 100%;
+      min-height: 44px;
     }
   }
 
@@ -398,5 +402,15 @@ mat-paginator {
 
   .department-table {
     min-width: 760px;
+  }
+
+  .action-buttons {
+    gap: 8px;
+
+    button {
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+    }
   }
 }

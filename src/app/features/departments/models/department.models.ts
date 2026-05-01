@@ -6,6 +6,7 @@ export interface DepartmentQueryParams {
   search?: string;
   status?: DepartmentStatus | '';
   managerUserId?: number | null;
+  userId?: number | null;
 }
 
 export interface CreateDepartmentRequest {

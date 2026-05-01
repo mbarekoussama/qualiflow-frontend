@@ -10,6 +10,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { forkJoin, map, of, switchMap } from 'rxjs';
 import { AuthService, MeResponse } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -47,6 +49,8 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     TranslatePipe
   ],
   templateUrl: './document-form.component.html',
@@ -89,8 +93,8 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
     initialVersionNumber: this.fb.nonNullable.control('v1.0', [Validators.maxLength(30)]),
     initialVersionStatus: this.fb.nonNullable.control<DocumentStatus>('BROUILLON'),
     initialRevisionComment: this.fb.control<string>(''),
-    initialEffectiveDate: this.fb.control<string>(''),
-    initialExpiryDate: this.fb.control<string>(''),
+    initialEffectiveDate: this.fb.control<Date | null>(null),
+    initialExpiryDate: this.fb.control<Date | null>(null),
     signature: this.fb.control<string | null>(null)
   });
 
@@ -228,7 +232,7 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
       this.documentForm.controls.initialVersionStatus.disable({ emitEvent: false });
     }
     if (!this.isEdit) {
-      this.documentForm.controls.initialEffectiveDate.setValue(this.getTodayInputDate());
+      this.documentForm.controls.initialEffectiveDate.setValue(new Date());
     }
 
     this.loading = true;
@@ -453,8 +457,8 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
       versionNumber: raw.initialVersionNumber.trim(),
       status: this.canValidateStatus ? raw.initialVersionStatus : 'EN_REVISION',
       revisionComment: raw.initialRevisionComment?.trim() || null,
-      effectiveDate: raw.initialEffectiveDate || null,
-      expiryDate: raw.initialExpiryDate || null
+      effectiveDate: this.formatDateForApi(raw.initialEffectiveDate) || this.getTodayInputDate(),
+      expiryDate: this.formatDateForApi(raw.initialExpiryDate)
     };
   }
 
@@ -474,8 +478,8 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
       initialVersionNumber: document.currentVersionNumber ?? 'v1.0',
       initialVersionStatus: document.currentVersionStatus ?? 'BROUILLON',
       initialRevisionComment: '',
-      initialEffectiveDate: '',
-      initialExpiryDate: '',
+      initialEffectiveDate: document.currentVersionNumber ? new Date() : null,
+      initialExpiryDate: null,
       signature: document.signature ?? null
     });
     this.signaturePreview = document.signature ?? null;
@@ -527,6 +531,21 @@ export class DocumentFormComponent implements OnInit, AfterViewInit {
     const year = now.getFullYear();
     const month = `${now.getMonth() + 1}`.padStart(2, '0');
     const day = `${now.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private formatDateForApi(value: Date | string | null | undefined): string | null {
+    if (!value) {
+      return null;
+    }
+
+    if (typeof value === 'string') {
+      return value.trim() || null;
+    }
+
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
 }

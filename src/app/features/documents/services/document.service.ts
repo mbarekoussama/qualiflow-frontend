@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map, throwError } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
 import { environment } from '../../../../environments/environment';
 import {
@@ -110,10 +111,22 @@ export class DocumentService {
     return this.apiService.patch<DocumentVersionResponse>(`${this.endpoint}/${documentId}/versions/${versionId}/status`, payload);
   }
 
+  downloadLatest(documentId: number): Observable<{ blob: Blob; version: DocumentVersionResponse }> {
+    return this.getLatestVersion(documentId).pipe(
+      switchMap(latest => {
+        if (!latest) {
+          return throwError(() => ({ status: 404 }));
+        }
+
+        return this.downloadVersion(documentId, latest.id).pipe(
+          map(blob => ({ blob, version: latest }))
+        );
+      })
+    );
+  }
+
   downloadCurrent(documentId: number): Observable<Blob> {
-    return this.http.get(`${this.apiBase}/${this.endpoint}/${documentId}/download-current`, {
-      responseType: 'blob'
-    });
+    return this.downloadLatest(documentId).pipe(map(result => result.blob));
   }
 
   downloadVersion(documentId: number, versionId: number): Observable<Blob> {
@@ -126,5 +139,29 @@ export class DocumentService {
     return this.http.get(`${this.apiBase}/${this.endpoint}/${documentId}/preview-current`, {
       responseType: 'blob'
     });
+  }
+
+  previewCurrentOrLatest(documentId: number): Observable<Blob> {
+    return this.getLatestVersion(documentId).pipe(
+      switchMap(latest => {
+        if (!latest) {
+          return throwError(() => ({ status: 404 }));
+        }
+
+        return this.downloadVersion(documentId, latest.id);
+      })
+    );
+  }
+
+  private getLatestVersion(documentId: number): Observable<DocumentVersionResponse | null> {
+    return this.getVersions(documentId).pipe(
+      map(versions => {
+        return [...versions].sort((a, b) => {
+          const aTime = new Date(a.effectiveDate ?? a.createdAt).getTime();
+          const bTime = new Date(b.effectiveDate ?? b.createdAt).getTime();
+          return bTime - aTime;
+        })[0] ?? null;
+      })
+    );
   }
 }

@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://qualiflow-backend-oagk.onrender.com',
+  apiUrl: 'http://localhost:5185',
   webPushPublicKey: ''
 };

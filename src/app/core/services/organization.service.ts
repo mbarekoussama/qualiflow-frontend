@@ -12,6 +12,8 @@ export interface OrganizationResponse {
   address?: string | null;
   email?: string | null;
   phone?: string | null;
+  fax?: string | null;
+  website?: string | null;
   logoPath?: string | null;
   status: string;
   subscriptionDaysRemaining: number;
@@ -33,6 +35,8 @@ export interface CreateOrganizationRequest {
   address?: string | null;
   email?: string | null;
   phone?: string | null;
+  fax?: string | null;
+  website?: string | null;
 }
 
 export interface UpdateOrganizationRequest {
@@ -42,6 +46,8 @@ export interface UpdateOrganizationRequest {
   address?: string | null;
   email?: string | null;
   phone?: string | null;
+  fax?: string | null;
+  website?: string | null;
   status: string;
   subscriptionDaysRemaining?: number | null;
   subscriptionMonitorEnabled?: boolean | null;

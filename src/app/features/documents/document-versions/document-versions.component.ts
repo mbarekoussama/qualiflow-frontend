@@ -49,7 +49,7 @@ export class DocumentVersionsComponent implements OnInit {
     versionNumber: this.fb.nonNullable.control('v1.0', [Validators.required, Validators.maxLength(30)]),
     status: this.fb.nonNullable.control<DocumentStatus>('BROUILLON', Validators.required),
     revisionComment: this.fb.control<string>(''),
-    effectiveDate: this.fb.control<string>(''),
+    effectiveDate: this.fb.control<string>(this.getTodayAsInputDate()),
     expiryDate: this.fb.control<string>('')
   });
 
@@ -219,6 +219,10 @@ export class DocumentVersionsComponent implements OnInit {
       this.createVersionForm.markAllAsTouched();
       return;
     }
+    if (!this.selectedFile) {
+      this.notificationService.showWarning('Veuillez selectionner un fichier avant de creer une version.');
+      return;
+    }
 
     const raw = this.createVersionForm.getRawValue();
 
@@ -235,7 +239,7 @@ export class DocumentVersionsComponent implements OnInit {
       versionNumber: raw.versionNumber.trim(),
       status: raw.status,
       revisionComment: raw.revisionComment?.trim() || null,
-      effectiveDate: raw.effectiveDate || null,
+      effectiveDate: raw.effectiveDate || this.getTodayAsInputDate(),
       expiryDate: raw.expiryDate || null,
       signature: signatureBase64
     };
@@ -247,9 +251,7 @@ export class DocumentVersionsComponent implements OnInit {
 
     this.submitting = true;
 
-    const request$ = this.selectedFile
-      ? this.documentService.uploadVersion(this.documentId, this.selectedFile, payload)
-      : this.documentService.createVersion(this.documentId, payload);
+    const request$ = this.documentService.uploadVersion(this.documentId, this.selectedFile, payload);
 
     request$.subscribe({
       next: () => {
@@ -260,7 +262,7 @@ export class DocumentVersionsComponent implements OnInit {
           versionNumber: this.nextVersionNumber(),
           status: 'BROUILLON',
           revisionComment: '',
-          effectiveDate: '',
+          effectiveDate: this.getTodayAsInputDate(),
           expiryDate: ''
         });
         this.notificationService.showSuccess('Version enregistree avec succes.');
@@ -297,7 +299,8 @@ export class DocumentVersionsComponent implements OnInit {
   downloadVersion(version: DocumentVersionResponse): void {
     this.documentService.downloadVersion(this.documentId, version.id).subscribe({
       next: (blob) => {
-        const fileName = version.originalFileName || `${this.documentCode}_${version.versionNumber}.bin`;
+        const sourceName = version.originalFileName ?? version.fileName ?? undefined;
+        const fileName = this.buildDownloadFileName(this.documentCode, version.versionNumber, sourceName);
         this.saveBlob(blob, fileName);
       },
       error: () => {
@@ -347,6 +350,34 @@ export class DocumentVersionsComponent implements OnInit {
     link.download = fileName;
     link.click();
     URL.revokeObjectURL(objectUrl);
+  }
+
+  private buildDownloadFileName(code: string, version: string, sourceName?: string): string {
+    const safeCode = (code || 'document').trim();
+    const safeVersion = (version || 'current').trim();
+    const extension = this.extractExtension(sourceName) ?? 'bin';
+    return `${safeCode}_${safeVersion}.${extension}`;
+  }
+
+  private extractExtension(fileName?: string): string | null {
+    if (!fileName) {
+      return null;
+    }
+
+    const dotIndex = fileName.lastIndexOf('.');
+    if (dotIndex <= 0 || dotIndex === fileName.length - 1) {
+      return null;
+    }
+
+    return fileName.slice(dotIndex + 1).toLowerCase();
+  }
+
+  private getTodayAsInputDate(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = `${now.getMonth() + 1}`.padStart(2, '0');
+    const day = `${now.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private isCanvasBlank(canvas: HTMLCanvasElement): boolean {

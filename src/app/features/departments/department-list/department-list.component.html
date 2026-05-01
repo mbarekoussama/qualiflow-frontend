@@ -2,9 +2,11 @@
   <header class="page-header-bar">
     <div class="page-header-left">
       <span class="page-subtitle">Organisation & pilotage</span>
-      <h1 class="page-title">Départements et services</h1>
+      <h1 class="page-title">{{ isUtilisateur ? 'Mon département' : 'Départements et services' }}</h1>
       <p class="page-intro">
-        Structurez les équipes, attribuez les responsables et reliez les documents métier au bon service.
+        {{ isUtilisateur
+          ? 'Consultez votre département, ses utilisateurs et ses documents liés.'
+          : 'Structurez les équipes, attribuez les responsables et reliez les documents métier au bon service.' }}
       </p>
     </div>
 
@@ -21,7 +23,7 @@
   </header>
 
   <div class="content-scroll">
-    <section class="stats-grid" *ngIf="statistics">
+    <section class="stats-grid" *ngIf="statistics && !isUtilisateur">
       <article class="stat-card accent">
         <span class="st-label">Départements</span>
         <strong class="st-value">{{ statistics.total }}</strong>
@@ -68,7 +70,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" *ngIf="!isUtilisateur">
           <mat-label>ID chef</mat-label>
           <input matInput type="number" [(ngModel)]="managerUserId" />
         </mat-form-field>
@@ -176,11 +178,12 @@
         <div class="empty-state" *ngIf="departments.length === 0">
           <mat-icon>domain</mat-icon>
           <h3>Aucun département trouvé</h3>
-          <p>Affinez vos filtres ou créez le premier service de l'organisation.</p>
+          <p>{{ isUtilisateur ? 'Aucun département associé à votre compte.' : 'Affinez vos filtres ou créez le premier service de l\'organisation.' }}</p>
         </div>
       </div>
 
       <mat-paginator
+        *ngIf="!isUtilisateur"
         [length]="total"
         [pageSize]="pageSize"
         [pageIndex]="pageNumber - 1"

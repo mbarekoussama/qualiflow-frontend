@@ -228,8 +228,44 @@
 }
 
 @media (max-width: 768px) {
+  .page-header-bar {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .modern-form-container {
+    padding: 12px 12px 120px;
+    gap: 14px;
+  }
+
+  .form-section-clean .section-content {
+    padding: 14px;
+  }
+
+  .form-section-clean .section-header {
+    padding: 12px 14px;
+  }
+
   .grid-2-cols {
     grid-template-columns: 1fr !important;
+  }
+
+  .form-actions-bar {
+    padding: 10px 12px;
+  }
+
+  .submit-btn {
+    padding: 0 14px !important;
+  }
+
+  .signature-pad-wrapper {
+    height: 170px;
+  }
+
+  .signature-actions {
+    flex-wrap: wrap;
   }
 }
 

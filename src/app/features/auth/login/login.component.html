@@ -54,6 +54,30 @@
           </div>
 
           <div class="form-field">
+            <label for="organizationCode">Code organisation (optionnel)</label>
+            <div class="input-group">
+              <span class="input-icon">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M15 9h.01M9 13h.01M15 13h.01"></path>
+                </svg>
+              </span>
+              <input id="organizationCode" type="text" formControlName="organizationCode"
+                placeholder="Ex: DEMO" autocomplete="organization">
+            </div>
+            <div *ngIf="organizationChoices.length > 0" class="field-help">
+              <p>Plusieurs organisations sont associées à ce compte. Sélectionnez votre organisation :</p>
+              <div class="organization-choice-list">
+                <button type="button" *ngFor="let org of organizationChoices" class="organization-choice-item"
+                  [class.selected]="loginForm.value.organizationCode === (org.organizationCode ?? '')"
+                  (click)="selectOrganization(org)">
+                  <span class="org-name">{{ org.organizationName }}</span>
+                  <span class="org-meta">{{ org.organizationCode || 'PLATEFORME' }} • {{ org.role }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field">
             <div class="field-label-row">
               <label for="password">Mot de passe</label>
               <a routerLink="/forgot-password" class="forgot-link">Oublié ?</a>

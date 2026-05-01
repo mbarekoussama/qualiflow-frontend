@@ -207,12 +207,16 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Date d'effet</mat-label>
-          <input matInput type="date" formControlName="initialEffectiveDate" />
+          <input matInput [matDatepicker]="effectiveDatePicker" formControlName="initialEffectiveDate" />
+          <mat-datepicker-toggle matSuffix [for]="effectiveDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #effectiveDatePicker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Date d'expiration</mat-label>
-          <input matInput type="date" formControlName="initialExpiryDate" />
+          <input matInput [matDatepicker]="expiryDatePicker" formControlName="initialExpiryDate" />
+          <mat-datepicker-toggle matSuffix [for]="expiryDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #expiryDatePicker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">

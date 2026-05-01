@@ -1,6 +1,6 @@
 <div class="profile-container">
     <!-- BANNER WITH AVATAR -->
-    <div class="header-banner">
+    <div class="header-banner" *ngIf="!organizationOnlyView">
         <div class="header-content">
             <div class="avatar-section">
                 <div class="avatar-circle shadow-sm">
@@ -21,17 +21,17 @@
         </div>
     </div>
 
-    <div class="tabs-wrapper">
-        <mat-tab-group animationDuration="400ms" headerPosition="above">
+    <div class="tabs-wrapper" [class.organization-only]="organizationOnlyView">
+        <mat-tab-group animationDuration="400ms" headerPosition="above" [class.organization-only-tabs]="organizationOnlyView">
             <!-- TAB 1: MON PROFIL -->
-            <mat-tab>
+            <mat-tab *ngIf="!organizationOnlyView">
                 <ng-template mat-tab-label>
                     <mat-icon class="tab-icon">account_circle</mat-icon>
                     <span>Mon Profil</span>
                 </ng-template>
 
                 <div class="tab-content">
-                    <div class="grid-layout">
+                    <div class="grid-layout" [class.organization-layout]="organizationOnlyView">
                         <!-- PHOTO DE PROFIL -->
                         <mat-card class="modern-card photo-card glass-card">
                             <mat-card-header>
@@ -179,6 +179,51 @@
                                         </button>
                                     </div>
                                 </form>
+
+                                <form [formGroup]="resetWithCodeForm" class="modern-form" *ngIf="forgotPasswordStep > 0">
+                                    <div *ngIf="forgotPasswordStep === 1">
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-label>Code de validation</mat-label>
+                                            <input matInput type="text" maxlength="6" formControlName="code"
+                                                placeholder="Code à 6 chiffres">
+                                        </mat-form-field>
+
+                                        <div class="card-actions-right">
+                                            <button mat-stroked-button color="primary" type="button"
+                                                (click)="verifyResetCodeFromProfile()"
+                                                [disabled]="sendingResetEmail || verifyingResetCode">
+                                                <mat-spinner diameter="20" *ngIf="verifyingResetCode"></mat-spinner>
+                                                <mat-icon *ngIf="!verifyingResetCode">mark_email_read</mat-icon>
+                                                <span *ngIf="!verifyingResetCode">Valider le code</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="forgotPasswordStep === 2">
+                                        <div class="form-grid">
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Nouveau mot de passe</mat-label>
+                                                <input matInput type="password" formControlName="newPassword"
+                                                    placeholder="Minimum 8 caractères">
+                                            </mat-form-field>
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Confirmer le nouveau mot de passe</mat-label>
+                                                <input matInput type="password" formControlName="confirmPassword"
+                                                    placeholder="Minimum 8 caractères">
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="card-actions-right">
+                                            <button mat-flat-button color="primary" type="button"
+                                                (click)="resetPasswordWithCode()"
+                                                [disabled]="resettingPasswordWithCode">
+                                                <mat-spinner diameter="20" *ngIf="resettingPasswordWithCode"></mat-spinner>
+                                                <mat-icon *ngIf="!resettingPasswordWithCode">lock_reset</mat-icon>
+                                                <span *ngIf="!resettingPasswordWithCode">Réinitialiser le mot de passe</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
                             </mat-card-content>
                         </mat-card>
 
@@ -298,6 +343,11 @@
                                 </div>
                             </mat-card-header>
                             <mat-card-content>
+                                <div class="org-summary-row" *ngIf="organization">
+                                    <span class="org-pill">{{ organization.code }}</span>
+                                    <span class="org-pill subtle">{{ organization.status || 'ACTIF' }}</span>
+                                </div>
+
                                 <div class="loading-state" *ngIf="loading">
                                     <mat-spinner diameter="48"></mat-spinner>
                                     <p>Chargement des données...</p>
@@ -305,6 +355,10 @@
 
                                 <form [formGroup]="organizationForm" class="modern-form" *ngIf="!loading">
                                     <div class="form-grid">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Code organisation</mat-label>
+                                            <input matInput [value]="organization?.code || ''" readonly>
+                                        </mat-form-field>
                                         <mat-form-field appearance="outline">
                                             <mat-label>Nom de l'organisation</mat-label>
                                             <input title="organisation" matInput formControlName="name">
@@ -321,6 +375,11 @@
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-label>Adresse complète</mat-label>
                                         <mat-icon matIconPrefix>place</mat-icon>
+                                        <button mat-icon-button matSuffix type="button" (click)="fillAddressFromGps()"
+                                            [disabled]="locatingAddress" aria-label="Utiliser ma position GPS">
+                                            <mat-icon *ngIf="!locatingAddress">my_location</mat-icon>
+                                            <mat-spinner *ngIf="locatingAddress" diameter="18"></mat-spinner>
+                                        </button>
                                         <input title="address" matInput formControlName="address">
                                     </mat-form-field>
 
@@ -334,6 +393,19 @@
                                             <mat-label>Téléphone support</mat-label>
                                             <mat-icon matIconPrefix>phone</mat-icon>
                                             <input title="phone" matInput formControlName="phone">
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div class="form-grid">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Numéro de fax</mat-label>
+                                            <mat-icon matIconPrefix>print</mat-icon>
+                                            <input title="fax" matInput formControlName="fax">
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Site officiel</mat-label>
+                                            <mat-icon matIconPrefix>language</mat-icon>
+                                            <input title="website" matInput formControlName="website" placeholder="https://votre-site.com">
                                         </mat-form-field>
                                     </div>
 

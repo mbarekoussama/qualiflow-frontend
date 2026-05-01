@@ -242,6 +242,8 @@
 
 .table-container-mini {
   padding: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modern-table-compact {
@@ -325,5 +327,18 @@
   .summary-cards,
   .details-main-grid {
     grid-template-columns: 1fr;
+  }
+
+  .action-row {
+    justify-content: stretch;
+
+    button {
+      width: 100%;
+      min-height: 44px;
+    }
+  }
+
+  .modern-table-compact {
+    min-width: 720px;
   }
 }

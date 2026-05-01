@@ -11,6 +11,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import {
   AuthService,
   ChangePasswordRequest,
@@ -72,6 +74,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
     newEmail: this.fb.nonNullable.control('', [Validators.required, Validators.email]),
     code: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)])
   });
+  readonly resetWithCodeForm = this.fb.group({
+    code: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
+    newPassword: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(8)]),
+    confirmPassword: this.fb.nonNullable.control('', [Validators.required])
+  });
 
   readonly organizationForm = this.fb.group({
     name: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
@@ -79,6 +86,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     address: this.fb.control<string>(''),
     email: this.fb.control<string>('', Validators.email),
     phone: this.fb.control<string>(''),
+    fax: this.fb.control<string>(''),
+    website: this.fb.control<string>(''),
     description: this.fb.control<string>(''),
     status: this.fb.nonNullable.control('ACTIF'),
     subscriptionDaysRemaining: this.fb.nonNullable.control(30, [Validators.required, Validators.min(0)]),
@@ -94,6 +103,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   savingOrganization = false;
   uploadingLogo = false;
   sendingResetEmail = false;
+  verifyingResetCode = false;
+  resettingPasswordWithCode = false;
+  resetCodeVerified = false;
+  resetEmailTarget = '';
+  forgotPasswordStep: 0 | 1 | 2 = 0;
+  locatingAddress = false;
 
   organization: OrganizationResponse | null = null;
   logoObjectUrl: string | null = null;
@@ -101,15 +116,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   profilePhotoObjectUrl: string | null = null;
   selectedProfilePhoto: File | null = null;
+  organizationOnlyView = false;
 
   constructor(
     private readonly fb: FormBuilder,
+    private readonly route: ActivatedRoute,
+    private readonly http: HttpClient,
     private readonly authService: AuthService,
     private readonly organizationService: OrganizationService,
     private readonly notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
+    this.subscriptions.add(
+      this.route.queryParamMap.subscribe(params => {
+        const requestedView = params.get('view');
+        this.organizationOnlyView = requestedView === 'organization' && this.canManageOrganization;
+      })
+    );
+
     this.loadProfile();
     this.loadProfilePhoto();
 
@@ -212,20 +237,111 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   initiatePasswordReset(): void {
-    const user = this.currentUser;
-    if (!user || !user.email) {
-      return;
-    }
+    this.resetCodeVerified = false;
+    this.resetWithCodeForm.patchValue({ code: '' });
+    this.forgotPasswordStep = 0;
 
     this.sendingResetEmail = true;
-    this.authService.forgotPassword({ email: user.email }).subscribe({
-      next: () => {
-        this.sendingResetEmail = false;
-        this.notificationService.showSuccess(`Un code de réinitialisation a été envoyé à ${user.email}`);
+    this.authService.getProfile().subscribe({
+      next: (profile) => {
+        const email = String(profile?.email ?? '').trim().toLowerCase();
+        const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+        if (!isValidEmail) {
+          this.sendingResetEmail = false;
+          this.notificationService.showError('Adresse email invalide sur votre profil. Veuillez la corriger puis réessayer.');
+          return;
+        }
+
+        this.authService.forgotPassword({ email }).subscribe({
+          next: () => {
+            this.sendingResetEmail = false;
+            this.resetEmailTarget = email;
+            this.forgotPasswordStep = 1;
+            this.notificationService.showSuccess(`Un code de réinitialisation a été envoyé à ${email}`);
+          },
+          error: () => {
+            this.sendingResetEmail = false;
+            this.notificationService.showError('Impossible d\'envoyer le code de réinitialisation.');
+          }
+        });
       },
       error: () => {
         this.sendingResetEmail = false;
-        this.notificationService.showError('Impossible d\'envoyer le code de réinitialisation.');
+        this.notificationService.showError('Impossible de charger votre profil pour vérifier l\'email.');
+      }
+    });
+  }
+
+  verifyResetCodeFromProfile(): void {
+    const code = String(this.resetWithCodeForm.value.code ?? '').trim();
+    if (!code) {
+      this.resetWithCodeForm.controls.code.markAsTouched();
+      return;
+    }
+
+    const email = this.resetEmailTarget || String(this.currentUser?.email ?? '').trim().toLowerCase();
+    if (!email) {
+      this.notificationService.showError('Email introuvable. Cliquez d abord sur "J ai oublié mon mot de passe actuel."');
+      return;
+    }
+
+    this.verifyingResetCode = true;
+    this.authService.verifyResetCode({ email, code }).subscribe({
+      next: () => {
+        this.verifyingResetCode = false;
+        this.resetCodeVerified = true;
+        this.forgotPasswordStep = 2;
+        this.notificationService.showSuccess('Code valide. Vous pouvez maintenant définir un nouveau mot de passe.');
+      },
+      error: () => {
+        this.verifyingResetCode = false;
+        this.resetCodeVerified = false;
+        this.notificationService.showError('Code invalide ou expiré.');
+      }
+    });
+  }
+
+  resetPasswordWithCode(): void {
+    if (this.resetWithCodeForm.invalid) {
+      this.resetWithCodeForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.resetWithCodeForm.getRawValue();
+    if (raw.newPassword !== raw.confirmPassword) {
+      this.notificationService.showError('La confirmation du mot de passe ne correspond pas.');
+      return;
+    }
+
+    const email = this.resetEmailTarget || String(this.currentUser?.email ?? '').trim().toLowerCase();
+    if (!email) {
+      this.notificationService.showError('Email introuvable. Cliquez d abord sur "J ai oublié mon mot de passe actuel."');
+      return;
+    }
+
+    this.resettingPasswordWithCode = true;
+    this.authService.resetPassword({
+      email,
+      code: raw.code.trim(),
+      newPassword: raw.newPassword,
+      confirmPassword: raw.confirmPassword
+    }).subscribe({
+      next: () => {
+        this.resettingPasswordWithCode = false;
+        this.resetCodeVerified = false;
+        this.forgotPasswordStep = 0;
+        this.resetWithCodeForm.reset({
+          code: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        this.notificationService.showSuccess('Mot de passe réinitialisé avec succès. Déconnexion en cours...');
+        this.authService.forceLogout();
+      },
+      error: () => {
+        this.resettingPasswordWithCode = false;
+        this.notificationService.showError('Impossible de réinitialiser le mot de passe.');
       }
     });
   }
@@ -338,6 +454,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
       address: raw.address?.trim() || null,
       email: raw.email?.trim() || null,
       phone: raw.phone?.trim() || null,
+      fax: raw.fax?.trim() || null,
+      website: raw.website?.trim() || null,
       description: raw.description?.trim() || null,
       status: raw.status,
       subscriptionDaysRemaining: Number.isFinite(raw.subscriptionDaysRemaining) ? Math.max(raw.subscriptionDaysRemaining, 0) : null,
@@ -356,6 +474,82 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.notificationService.showError('Mise a jour organisation impossible.');
       }
     });
+  }
+
+  fillAddressFromGps(): void {
+    if (!this.canManageOrganization || this.locatingAddress) {
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      this.notificationService.showError('La geolocalisation n est pas supportee sur ce navigateur.');
+      return;
+    }
+
+    this.locatingAddress = true;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        this.http.get<{
+          address?: {
+            road?: string;
+            pedestrian?: string;
+            city?: string;
+            town?: string;
+            village?: string;
+            municipality?: string;
+            county?: string;
+            state?: string;
+            postcode?: string;
+            country?: string;
+          };
+          display_name?: string;
+        }>('https://nominatim.openstreetmap.org/reverse', {
+          params: {
+            format: 'jsonv2',
+            lat: String(lat),
+            lon: String(lon),
+            addressdetails: '1'
+          }
+        }).subscribe({
+          next: (result) => {
+            const addr = result?.address;
+            const street = addr?.road || addr?.pedestrian || '';
+            const city = addr?.city || addr?.town || addr?.village || addr?.municipality || addr?.county || addr?.state || '';
+            const postalCode = addr?.postcode || '';
+            const country = addr?.country || '';
+
+            const completeAddress = [street, city, postalCode, country]
+              .map(part => part?.trim())
+              .filter(part => !!part)
+              .join(', ');
+
+            this.organizationForm.patchValue({
+              address: completeAddress || result?.display_name || ''
+            });
+
+            this.locatingAddress = false;
+            this.notificationService.showSuccess('Adresse remplie automatiquement depuis votre position GPS.');
+          },
+          error: () => {
+            this.locatingAddress = false;
+            this.notificationService.showError('Impossible de recuperer l adresse depuis votre position GPS.');
+          }
+        });
+      },
+      () => {
+        this.locatingAddress = false;
+        this.notificationService.showError('Acces a la position refuse ou indisponible.');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
   }
 
   uploadLogo(): void {
@@ -425,6 +619,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
           address: organization.address ?? '',
           email: organization.email ?? '',
           phone: organization.phone ?? '',
+          fax: organization.fax ?? '',
+          website: organization.website ?? '',
           description: organization.description ?? '',
           status: organization.status || 'ACTIF',
           subscriptionDaysRemaining: organization.subscriptionDaysRemaining ?? 30,

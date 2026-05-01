@@ -38,15 +38,21 @@ export interface RegisterResponse {
 }
 
 export interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
+  accessToken?: string;
+  refreshToken?: string;
   expiresAt: string;
   userId: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  role?: string;
   organizationId?: number;
+  requiresOrganizationSelection?: boolean;
+  organizations?: Array<{
+    organizationCode?: string | null;
+    organizationName: string;
+    role: string;
+  }>;
 }
 
 export interface MeResponse {
@@ -146,8 +152,10 @@ export class AuthService {
   login(request: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request).pipe(
       tap(response => {
-        this.setTokens(response.accessToken, response.refreshToken);
-        this.isAuthenticatedSubject.next(true);
+        if (response.accessToken && response.refreshToken) {
+          this.setTokens(response.accessToken, response.refreshToken);
+          this.isAuthenticatedSubject.next(true);
+        }
       })
     );
   }

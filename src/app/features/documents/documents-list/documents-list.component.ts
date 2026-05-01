@@ -274,10 +274,10 @@ export class DocumentsListComponent implements OnInit {
   }
 
   downloadCurrent(item: DocumentListItemResponse): void {
-    this.documentService.downloadCurrent(item.id).subscribe({
-      next: (blob) => {
-        const fallbackName = `${item.code}_${item.versionNumber ?? 'current'}.bin`;
-        const fileName = item.fileName || fallbackName;
+    this.documentService.downloadLatest(item.id).subscribe({
+      next: ({ blob, version }) => {
+        const sourceName = version.originalFileName ?? version.fileName ?? item.fileName ?? undefined;
+        const fileName = this.buildDownloadFileName(item.code, version.versionNumber, sourceName);
         this.saveBlob(blob, fileName);
       },
       error: () => {
@@ -411,6 +411,26 @@ export class DocumentsListComponent implements OnInit {
     link.download = fileName;
     link.click();
     URL.revokeObjectURL(objectUrl);
+  }
+
+  private buildDownloadFileName(code: string, version: string, sourceName?: string): string {
+    const safeCode = (code || 'document').trim();
+    const safeVersion = (version || 'current').trim();
+    const extension = this.extractExtension(sourceName) ?? 'bin';
+    return `${safeCode}_${safeVersion}.${extension}`;
+  }
+
+  private extractExtension(fileName?: string): string | null {
+    if (!fileName) {
+      return null;
+    }
+
+    const dotIndex = fileName.lastIndexOf('.');
+    if (dotIndex <= 0 || dotIndex === fileName.length - 1) {
+      return null;
+    }
+
+    return fileName.slice(dotIndex + 1).toLowerCase();
   }
 
   private blurEventTarget(event?: Event): void {

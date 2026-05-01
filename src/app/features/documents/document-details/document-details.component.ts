@@ -139,10 +139,11 @@ export class DocumentDetailsComponent implements OnInit {
   }
 
   downloadCurrent(): void {
-    this.documentService.downloadCurrent(this.documentId).subscribe({
-      next: (blob) => {
-        const fileName = this.details?.currentVersion?.originalFileName
-          ?? `${this.details?.document.code ?? 'document'}_current.bin`;
+    this.documentService.downloadLatest(this.documentId).subscribe({
+      next: ({ blob, version }) => {
+        const code = this.details?.document.code ?? 'document';
+        const sourceName = version.originalFileName ?? version.fileName ?? undefined;
+        const fileName = this.buildDownloadFileName(code, version.versionNumber, sourceName);
         this.saveBlob(blob, fileName);
       },
       error: () => {
@@ -154,7 +155,9 @@ export class DocumentDetailsComponent implements OnInit {
   downloadVersion(version: DocumentVersionResponse): void {
     this.documentService.downloadVersion(this.documentId, version.id).subscribe({
       next: (blob) => {
-        const fileName = version.originalFileName || `${this.details?.document.code ?? 'document'}_${version.versionNumber}.bin`;
+        const code = this.details?.document.code ?? 'document';
+        const sourceName = version.originalFileName ?? version.fileName ?? undefined;
+        const fileName = this.buildDownloadFileName(code, version.versionNumber, sourceName);
         this.saveBlob(blob, fileName);
       },
       error: () => {
@@ -164,19 +167,14 @@ export class DocumentDetailsComponent implements OnInit {
   }
 
   previewCurrent(): void {
-    if (!this.details?.currentVersion) {
-      this.notificationService.showWarning('Aucune version courante disponible.');
-      return;
-    }
-
-    this.documentService.previewCurrent(this.documentId).subscribe({
+    this.documentService.previewCurrentOrLatest(this.documentId).subscribe({
       next: (blob) => {
         const objectUrl = URL.createObjectURL(blob);
         window.open(objectUrl, '_blank', 'noopener');
         setTimeout(() => URL.revokeObjectURL(objectUrl), 120000);
       },
       error: () => {
-        this.notificationService.showError('Previsualisation impossible.');
+        this.notificationService.showError('Previsualisation impossible (aucune version disponible).');
       }
     });
   }
@@ -240,6 +238,26 @@ export class DocumentDetailsComponent implements OnInit {
     link.download = fileName;
     link.click();
     URL.revokeObjectURL(objectUrl);
+  }
+
+  private buildDownloadFileName(code: string, version: string, sourceName?: string): string {
+    const safeCode = (code || 'document').trim();
+    const safeVersion = (version || 'current').trim();
+    const extension = this.extractExtension(sourceName) ?? 'bin';
+    return `${safeCode}_${safeVersion}.${extension}`;
+  }
+
+  private extractExtension(fileName?: string): string | null {
+    if (!fileName) {
+      return null;
+    }
+
+    const dotIndex = fileName.lastIndexOf('.');
+    if (dotIndex <= 0 || dotIndex === fileName.length - 1) {
+      return null;
+    }
+
+    return fileName.slice(dotIndex + 1).toLowerCase();
   }
 
   private blurEventTarget(event?: Event): void {

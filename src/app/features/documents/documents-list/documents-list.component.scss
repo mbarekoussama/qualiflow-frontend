@@ -782,6 +782,37 @@ mat-paginator {
     gap: 16px;
   }
 
+  .glass-header {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .header-main {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+
+    .header-actions {
+      width: 100%;
+      flex-wrap: wrap;
+
+      .btn-import,
+      .btn-create {
+        flex: 1;
+        min-width: 140px;
+      }
+    }
+  }
+
+  .glass-filters .filter-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .glass-filters .filter-buttons {
+    flex-wrap: wrap;
+  }
+
   .summary-cards {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
@@ -798,6 +829,19 @@ mat-paginator {
   .quality-queue-banner {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .documents-table {
+    min-width: 980px;
+  }
+
+  .table-actions {
+    flex-wrap: nowrap;
   }
 }
 

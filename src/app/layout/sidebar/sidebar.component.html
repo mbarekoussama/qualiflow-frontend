@@ -119,7 +119,7 @@
 
   <div class="nav-section" *ngIf="isAdminOrg">
     <div class="nav-section-title">{{ 'sidebar.orgAdmin' | t }}</div>
-    <a routerLink="/profile" class="nav-item" routerLinkActive="active" (click)="onNavClick()">
+    <a routerLink="/profile" [queryParams]="{ view: 'organization' }" class="nav-item" routerLinkActive="active" (click)="onNavClick()">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path d="M3 21h18M5 21V7l7-4 7 4v14M9 10h6M9 14h6" />
       </svg>
@@ -139,7 +139,7 @@
 
   <div class="nav-section">
     <div class="nav-section-title">{{ 'sidebar.account' | t }}</div>
-    <a routerLink="/profile" class="nav-item" routerLinkActive="active" (click)="onNavClick()">
+    <a routerLink="/profile" [queryParams]="{ view: 'profile' }" class="nav-item" routerLinkActive="active" (click)="onNavClick()">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path d="M20 21a8 8 0 10-16 0" />
         <circle cx="12" cy="7" r="4" />

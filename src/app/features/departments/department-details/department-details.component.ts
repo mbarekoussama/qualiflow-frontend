@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -45,7 +46,7 @@ import { UserResponse, UserService } from '../../users/services/user.service';
 })
 export class DepartmentDetailsComponent implements OnInit {
   readonly userColumns = ['name', 'email', 'role', 'status'];
-  readonly documentColumns = ['code', 'title', 'type', 'docStatus'];
+  readonly documentColumns = ['code', 'title', 'type', 'docStatus', 'actions'];
 
   loading = false;
   savingUsers = false;
@@ -93,6 +94,10 @@ export class DepartmentDetailsComponent implements OnInit {
     return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE']);
   }
 
+  get canLoadAllUsers(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
+  }
+
   get department(): DepartmentDetailsResponse['department'] | null {
     return this.details?.department ?? null;
   }
@@ -130,12 +135,26 @@ export class DepartmentDetailsComponent implements OnInit {
 
     forkJoin({
       details: this.departmentService.getDepartmentById(this.departmentId),
-      users: this.userService.getUsers(1, 500),
+      users: this.canLoadAllUsers
+        ? this.userService.getUsers(1, 500).pipe(catchError(() => of({ items: [] as UserResponse[] })))
+        : of({ items: [] as UserResponse[] }),
       documentsPage: this.documentService.getDocuments({ pageNumber: 1, pageSize: 500 })
     }).subscribe({
       next: ({ details, users, documentsPage }) => {
         this.details = details;
-        this.allUsers = users.items;
+        this.allUsers = this.canLoadAllUsers
+          ? users.items
+          : details.users.map(user => ({
+              id: user.id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              email: user.email,
+              role: user.role,
+              isActive: user.isActive,
+              organizationId: user.organizationId ?? undefined,
+              departmentId: user.departmentId ?? null,
+              createdAt: user.createdAt
+            }));
         this.allDocuments = documentsPage.items;
 
         this.usersForm.patchValue({
@@ -274,11 +293,57 @@ export class DepartmentDetailsComponent implements OnInit {
     return (this.documentsForm.getRawValue().documentIds || []).includes(documentId);
   }
 
+  viewDocument(documentId: number): void {
+    this.router.navigate(['/documents', documentId]);
+  }
+
+  downloadDocument(document: DepartmentDocumentResponse): void {
+    this.documentService.downloadLatest(document.id).subscribe({
+      next: ({ blob, version }) => {
+        const sourceName = version.originalFileName ?? version.fileName ?? undefined;
+        const fileName = this.buildDownloadFileName(document.code, version.versionNumber, sourceName);
+        this.saveBlob(blob, fileName);
+      },
+      error: () => {
+        this.notificationService.showError('Telechargement impossible.');
+      }
+    });
+  }
+
   managerLabel(): string {
     if (!this.department) {
       return 'Non affecté';
     }
 
     return this.department.managerFullName || 'Non affecté';
+  }
+
+  private saveBlob(blob: Blob, fileName: string): void {
+    const objectUrl = URL.createObjectURL(blob);
+    const link = window.document.createElement('a');
+    link.href = objectUrl;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(objectUrl);
+  }
+
+  private buildDownloadFileName(code: string, version: string, sourceName?: string): string {
+    const safeCode = (code || 'document').trim();
+    const safeVersion = (version || 'current').trim();
+    const extension = this.extractExtension(sourceName) ?? 'bin';
+    return `${safeCode}_${safeVersion}.${extension}`;
+  }
+
+  private extractExtension(fileName?: string): string | null {
+    if (!fileName) {
+      return null;
+    }
+
+    const dotIndex = fileName.lastIndexOf('.');
+    if (dotIndex <= 0 || dotIndex === fileName.length - 1) {
+      return null;
+    }
+
+    return fileName.slice(dotIndex + 1).toLowerCase();
   }
 }
