@@ -7,7 +7,6 @@ import { environment } from '../../../environments/environment';
 
 export interface LoginRequest {
   email: string;
-  organizationCode?: string;
   password: string;
 }
 
@@ -38,8 +37,8 @@ export interface RegisterResponse {
 }
 
 export interface LoginResponse {
-  accessToken?: string;
-  refreshToken?: string;
+  accessToken: string;
+  refreshToken: string;
   expiresAt: string;
   userId: number;
   firstName?: string;
@@ -47,12 +46,6 @@ export interface LoginResponse {
   email?: string;
   role?: string;
   organizationId?: number;
-  requiresOrganizationSelection?: boolean;
-  organizations?: Array<{
-    organizationCode?: string | null;
-    organizationName: string;
-    role: string;
-  }>;
 }
 
 export interface MeResponse {

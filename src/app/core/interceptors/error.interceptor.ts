@@ -45,11 +45,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.error instanceof ErrorEvent) {
         errorMessage = `Erreur: ${error.error.message}`;
       } else {
-        if (error?.status === 409 && error?.error?.requiresOrganizationSelection) {
-          // Multi-organization login is handled by login component UI.
-          return throwError(() => error);
-        }
-
         switch (error.status) {
           case 0:
             errorMessage = `Impossible de joindre l'API (${environment.apiUrl}). Verifiez que le backend est demarre et que CORS autorise l'origine du frontend.`;

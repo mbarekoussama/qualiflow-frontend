@@ -11,31 +11,40 @@
 
   <div class="settings-content">
     <div class="settings-grid">
-      <!-- APPEARANCE & THEME -->
-      <mat-card class="panel-card">
-        <h2><mat-icon>palette</mat-icon> {{ 'settings.appearance' | t }}</h2>
-        <div class="setting-list">
-          <div class="setting-item">
-            <div class="item-info">
-              <strong>{{ 'settings.darkMode' | t }}</strong>
-              <p>{{ 'settings.darkModeDesc' | t }}</p>
-            </div>
-            <mat-slide-toggle [checked]="isDarkMode$ | async" (change)="toggleTheme()" color="primary">
-            </mat-slide-toggle>
+      <mat-card class="panel-card settings-section-card full-width">
+        <div class="section-title">
+          <mat-icon>tune</mat-icon>
+          <div>
+            <h2>Général</h2>
+            <p>Paramètres principaux de l'interface.</p>
           </div>
         </div>
-      </mat-card>
 
-      <!-- LANGUAGE & LOCALE -->
-      <mat-card class="panel-card">
-        <h2><mat-icon>translate</mat-icon> {{ 'settings.language' | t }}</h2>
-        <div class="setting-list">
-          <div class="setting-item vertical">
-            <div class="item-info">
-              <strong>{{ 'settings.preferredLanguage' | t }}</strong>
-              <p>{{ 'settings.preferredLanguageDesc' | t }}</p>
+        <div class="setting-list grouped-list">
+          <div class="setting-item grouped-item">
+            <div class="item-heading">
+              <mat-icon>palette</mat-icon>
+              <div class="item-info">
+                <strong>{{ 'settings.appearance' | t }}</strong>
+                <p>{{ 'settings.darkModeDesc' | t }}</p>
+              </div>
             </div>
-            <mat-form-field appearance="outline" class="full-width">
+            <div class="item-control">
+              <span>{{ 'settings.darkMode' | t }}</span>
+              <mat-slide-toggle [checked]="isDarkMode$ | async" (change)="toggleTheme()" color="primary">
+              </mat-slide-toggle>
+            </div>
+          </div>
+
+          <div class="setting-item grouped-item">
+            <div class="item-heading">
+              <mat-icon>translate</mat-icon>
+              <div class="item-info">
+                <strong>{{ 'settings.language' | t }}</strong>
+                <p>{{ 'settings.preferredLanguageDesc' | t }}</p>
+              </div>
+            </div>
+            <mat-form-field appearance="outline" class="language-field">
               <mat-label>{{ 'settings.selectLanguage' | t }}</mat-label>
               <mat-select [value]="selectedLanguage" [disabled]="isSavingLanguage"
                 (selectionChange)="onLanguageChange($event.value)">
@@ -48,8 +57,15 @@
         </div>
       </mat-card>
 
-      <mat-card class="panel-card">
-        <h2><mat-icon>notifications_active</mat-icon> Paramètres de notification</h2>
+      <mat-card class="panel-card settings-section-card full-width">
+        <div class="section-title">
+          <mat-icon>notifications_active</mat-icon>
+          <div>
+            <h2>Notifications</h2>
+            <p>Paramètres des alertes dans l'application et par email.</p>
+          </div>
+        </div>
+
         <div class="setting-list" *ngIf="!notificationPreferencesLoading; else notificationPrefsLoadingTpl">
           <div class="notification-pref-head">
             <span>Type de notification</span>

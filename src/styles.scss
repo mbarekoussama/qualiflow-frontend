@@ -829,9 +829,34 @@ app-root {
 }
 
 .notification-toast-panel {
+    position: fixed !important;
+    top: 18px !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+
+    .mdc-snackbar__label {
+        padding: 0 !important;
+    }
+
     .mdc-snackbar__surface {
         background: transparent !important;
         box-shadow: none !important;
         padding: 0 !important;
+        min-width: 0 !important;
+        max-width: min(92vw, 460px) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .mat-mdc-snack-bar-container.notification-toast-panel {
+        top: 12px !important;
+        left: 12px !important;
+        right: 12px !important;
+        transform: none !important;
+    }
+
+    .notification-toast-panel .mdc-snackbar__surface {
+        max-width: 100% !important;
     }
 }

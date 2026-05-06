@@ -35,6 +35,10 @@ export class DocumentService {
     return this.apiService.get<PagedDocumentResponse>(this.endpoint, params);
   }
 
+  getTrash(params: DocumentQueryParams = {}): Observable<PagedDocumentResponse> {
+    return this.apiService.get<PagedDocumentResponse>(`${this.endpoint}/trash`, params);
+  }
+
   getDocumentById(id: number): Observable<DocumentDetailsResponse> {
     return this.apiService.get<DocumentDetailsResponse>(`${this.endpoint}/${id}`);
   }
@@ -49,6 +53,14 @@ export class DocumentService {
 
   deleteDocument(id: number): Observable<void> {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);
+  }
+
+  restoreDocument(id: number): Observable<void> {
+    return this.apiService.patch<void>(`${this.endpoint}/${id}/restore`, {});
+  }
+
+  permanentDeleteDocument(id: number): Observable<void> {
+    return this.apiService.delete<void>(`${this.endpoint}/${id}/permanent`);
   }
 
   toggleDocumentStatus(id: number): Observable<DocumentResponse> {

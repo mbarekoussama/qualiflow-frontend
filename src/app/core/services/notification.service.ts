@@ -47,11 +47,13 @@ export class NotificationService {
     }
 
     showRealtimeNotification(title: string, message: string, category: NotificationCategory = 'INFO'): void {
+        const categoryClass = `realtime-${category.toLowerCase()}`;
+
         this.snackBar.openFromComponent(NotificationToastComponent, {
             duration: 4000,
-            horizontalPosition: 'right',
+            horizontalPosition: 'center',
             verticalPosition: 'top',
-            panelClass: ['notification-toast-panel'],
+            panelClass: ['notification-toast-panel', 'realtime-snackbar', categoryClass],
             data: {
                 title,
                 message,

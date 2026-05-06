@@ -18,6 +18,16 @@ export interface CreateOrganizationAdminRequest {
   temporaryPassword: string;
 }
 
+export interface CreateOrganizationUserRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: string;
+  function?: string | null;
+  department?: string | null;
+}
+
 export interface CreateOrganizationRequest {
   name: string;
   code: string;

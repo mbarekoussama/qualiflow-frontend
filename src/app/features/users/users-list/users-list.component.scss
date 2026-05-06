@@ -265,50 +265,50 @@
 
 .actions-cell {
   display: flex;
-  gap: 8px;
+  gap: 14px;
+  align-items: center;
 
   .action-btn {
-    width: 36px;
-    height: 36px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 24px !important;
+    height: 24px !important;
+    padding: 0 !important;
+    border-radius: 4px !important;
+    background: transparent !important;
+    border: 0 !important;
+    color: #8796a8 !important;
+    line-height: 24px !important;
+    transition: color 0.16s ease, transform 0.16s ease, background-color 0.16s ease;
 
     mat-icon {
       font-size: 18px;
       width: 18px;
       height: 18px;
+      color: currentColor;
+      line-height: 18px;
     }
 
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      background: #f1f5f9 !important;
+      color: #64748b !important;
+      transform: translateY(-1px);
     }
 
     &.edit:hover {
-      color: #3182ce;
-      background: #ebf8ff;
-      border-color: #bee3f8;
+      color: #64748b !important;
     }
 
     &.status {
       &.active:hover {
-        color: #d69e2e;
-        background: #fffaf0;
-        border-color: #fefcbf;
+        color: #64748b !important;
       }
 
       &:not(.active):hover {
-        color: #38a169;
-        background: #e6fffa;
-        border-color: #b2f5ea;
+        color: #64748b !important;
       }
     }
 
     &.delete:hover {
-      color: #e53e3e;
-      background: #fff5f5;
-      border-color: #feb2b2;
+      color: #64748b !important;
     }
   }
 }

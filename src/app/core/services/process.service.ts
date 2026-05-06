@@ -20,7 +20,7 @@ export class ProcessService {
       nextReview: '2026-05-15',
       conformityScore: 94,
       status: ProcessStatus.CONFORME,
-      kpis: ['Taux de conformité audits', 'Nombre d\'actions correctives'],
+      kpis: ['Taux de conformité qualité', 'Nombre d\'actions correctives'],
       clauseISO: '§5 - Leadership',
       proceduresCount: 5,
       documentsCount: 3

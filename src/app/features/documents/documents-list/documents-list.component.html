@@ -11,11 +11,19 @@
           [matTooltip]="'common.refresh' | t">
           <mat-icon>refresh</mat-icon>
         </button>
-        <button *ngIf="canSubmit" mat-stroked-button class="btn-import" (click)="openImport()">
+        <button *ngIf="canWrite && !showingTrash" mat-stroked-button class="btn-trash" type="button" (click)="openTrash()">
+          <mat-icon>delete_sweep</mat-icon>
+          Corbeille
+        </button>
+        <button *ngIf="showingTrash" mat-stroked-button class="btn-trash" type="button" (click)="closeTrash()">
+          <mat-icon>arrow_back</mat-icon>
+          Retour aux documents
+        </button>
+        <button *ngIf="canSubmit && !showingTrash" mat-stroked-button class="btn-import" (click)="openImport()">
           <mat-icon>upload_file</mat-icon>
           {{ 'list.documents.import' | t }}
         </button>
-        <button *ngIf="canSubmit" mat-flat-button color="primary" class="btn-create" (click)="createDocument()">
+        <button *ngIf="canSubmit && !showingTrash" mat-flat-button color="primary" class="btn-create" (click)="createDocument()">
           <mat-icon>add</mat-icon>
           {{ 'list.documents.new' | t }}
         </button>
@@ -23,7 +31,7 @@
     </div>
 
     <!-- MODERN FILTERS -->
-    <form class="glass-filters" [formGroup]="filtersForm" (ngSubmit)="onSearch()">
+    <form class="glass-filters" *ngIf="!showingTrash" [formGroup]="filtersForm" (ngSubmit)="onSearch()">
       <div class="filter-grid">
         <div class="filter-item">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -81,7 +89,7 @@
   </div>
 
   <!-- SUMMARY CARDS -->
-  <div class="summary-cards" *ngIf="statistics">
+  <div class="summary-cards" *ngIf="statistics && !showingTrash">
     <div class="summary-card shadow-sm">
       <span class="sc-label">{{ 'list.documents.totalDocuments' | t }}</span>
       <div class="sc-value">
@@ -120,7 +128,7 @@
     </div>
   </div>
 
-  <div class="quality-queue-banner" *ngIf="canWrite && statistics">
+  <div class="quality-queue-banner" *ngIf="canWrite && statistics && !showingTrash">
     <div class="queue-main">
       <mat-icon>fact_check</mat-icon>
       <div>
@@ -143,9 +151,9 @@
 
     <ng-container *ngIf="!loading">
       <div class="empty-box" *ngIf="documents.length === 0">
-        <mat-icon>folder_open</mat-icon>
-        <h3>{{ 'list.documents.emptyTitle' | t }}</h3>
-        <p>{{ 'list.documents.emptyText' | t }}</p>
+        <mat-icon>{{ showingTrash ? 'delete_sweep' : 'folder_open' }}</mat-icon>
+        <h3>{{ showingTrash ? 'Corbeille vide' : ('list.documents.emptyTitle' | t) }}</h3>
+        <p>{{ showingTrash ? 'Aucun document supprimé pendant les 30 derniers jours.' : ('list.documents.emptyText' | t) }}</p>
       </div>
 
       <div class="table-container" *ngIf="documents.length > 0">
@@ -213,6 +221,24 @@
             </td>
           </ng-container>
 
+          <!-- Deleted date Column -->
+          <ng-container matColumnDef="deletedAt">
+            <th mat-header-cell *matHeaderCellDef>Supprimé le</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="date-text">{{ item.deletedAt | date: 'dd/MM/yyyy' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Retention Column -->
+          <ng-container matColumnDef="retention">
+            <th mat-header-cell *matHeaderCellDef>Conservation</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="retention-pill" [class.urgent]="(item.daysUntilPermanentDelete || 0) <= 5">
+                {{ getTrashRetentionLabel(item) }}
+              </span>
+            </td>
+          </ng-container>
+
           <!-- Responsable Column -->
           <ng-container matColumnDef="owner">
             <th mat-header-cell *matHeaderCellDef>{{ 'common.responsible' | t }}</th>
@@ -226,9 +252,10 @@
 
           <!-- Actions Column -->
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef style="width: 220px;"></th>
+            <th mat-header-cell *matHeaderCellDef style="width: 200px;"></th>
             <td mat-cell *matCellDef="let item">
               <div class="table-actions">
+                <ng-container *ngIf="!showingTrash; else trashActions">
                 <button mat-icon-button class="action-btn view-btn" matTooltip="Consulter"
                   (click)="$event.stopPropagation(); viewDocument(item)">
                   <mat-icon>visibility</mat-icon>
@@ -239,7 +266,7 @@
                 </button>
                 <button *ngIf="canWrite" mat-icon-button class="action-btn status-btn" matTooltip="Changer l'état"
                   [matMenuTriggerFor]="statusMenu" (click)="$event.stopPropagation()">
-                  <mat-icon>published_with_changes</mat-icon>
+                  <mat-icon>sync</mat-icon>
                 </button>
                 <button mat-icon-button class="action-btn dl-btn" matTooltip="Télécharger"
                   (click)="$event.stopPropagation(); downloadCurrent(item)">
@@ -249,6 +276,18 @@
                   (click)="$event.stopPropagation(); deleteDocument(item, $event)">
                   <mat-icon>delete_outline</mat-icon>
                 </button>
+                </ng-container>
+
+                <ng-template #trashActions>
+                  <button mat-icon-button class="action-btn restore-btn" matTooltip="Restaurer"
+                    (click)="$event.stopPropagation(); restoreDocument(item, $event)">
+                    <mat-icon>restore_from_trash</mat-icon>
+                  </button>
+                  <button mat-icon-button class="action-btn delete-btn" matTooltip="Supprimer définitivement"
+                    (click)="$event.stopPropagation(); permanentDeleteDocument(item, $event)">
+                    <mat-icon>delete_forever</mat-icon>
+                  </button>
+                </ng-template>
 
                 <!-- Status Selection Menu -->
                 <mat-menu #statusMenu="matMenu" class="modern-status-menu">
@@ -264,7 +303,8 @@
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns" class="clickable-row"
-            [class.pending-review-row]="isPendingReview(row)" (click)="viewDocument(row)">
+            [class.pending-review-row]="isPendingReview(row)" [class.trash-row]="showingTrash"
+            (click)="showingTrash ? null : viewDocument(row)">
           </tr>
         </table>
 

@@ -59,7 +59,8 @@ type ListMode = 'GLOBAL' | 'PENDING_VALIDATION';
   styleUrls: ['./documents-list.component.scss']
 })
 export class DocumentsListComponent implements OnInit {
-  readonly displayedColumns: string[] = ['document', 'type', 'process', 'status', 'revision', 'updatedAt', 'owner', 'actions'];
+  readonly activeColumns: string[] = ['document', 'type', 'process', 'status', 'revision', 'updatedAt', 'owner', 'actions'];
+  readonly trashColumns: string[] = ['document', 'type', 'deletedAt', 'retention', 'owner', 'actions'];
   readonly statusOptions = DOCUMENT_STATUS_OPTIONS;
 
   readonly filtersForm = this.fb.group({
@@ -76,6 +77,7 @@ export class DocumentsListComponent implements OnInit {
   total = 0;
   pageNumber = 1;
   pageSize = 10;
+  showingTrash = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -114,12 +116,33 @@ export class DocumentsListComponent implements OnInit {
     return this.authService.hasRole(['UTILISATEUR', 'CHEF_SERVICE']);
   }
 
+  get displayedColumns(): string[] {
+    return this.showingTrash ? this.trashColumns : this.activeColumns;
+  }
+
   get isMineOnlyFilterActive(): boolean {
     return this.filtersForm.get('mineOnly')?.value === true;
   }
 
   refresh(): void {
     this.loading = true;
+
+    if (this.showingTrash) {
+      this.documentService.getTrash({
+        pageNumber: this.pageNumber,
+        pageSize: this.pageSize
+      }).subscribe({
+        next: page => {
+          this.applyPage(page);
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
+          this.notificationService.showError('Erreur lors du chargement de la corbeille.');
+        }
+      });
+      return;
+    }
 
     forkJoin({
       page: this.documentService.getDocuments(this.buildQuery()),
@@ -150,6 +173,18 @@ export class DocumentsListComponent implements OnInit {
       mineOnly: false,
       listMode: 'GLOBAL'
     });
+    this.pageNumber = 1;
+    this.refresh();
+  }
+
+  openTrash(): void {
+    this.showingTrash = true;
+    this.pageNumber = 1;
+    this.refresh();
+  }
+
+  closeTrash(): void {
+    this.showingTrash = false;
     this.pageNumber = 1;
     this.refresh();
   }
@@ -216,8 +251,8 @@ export class DocumentsListComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Supprimer le document',
-        message: `Confirmer la suppression logique de ${item.code} ?`,
-        confirmText: 'Supprimer',
+        message: `Envoyer ${item.code} dans la corbeille ? Il restera restaurable pendant 30 jours.`,
+        confirmText: 'Mettre dans la corbeille',
         cancelText: 'Annuler',
         type: 'danger'
       }
@@ -230,11 +265,71 @@ export class DocumentsListComponent implements OnInit {
 
       this.documentService.deleteDocument(item.id).subscribe({
         next: () => {
-          this.notificationService.showSuccess('Document supprime.');
+          this.notificationService.showSuccess('Document placé dans la corbeille.');
           this.refresh();
         },
         error: () => {
           this.notificationService.showError('Suppression impossible.');
+        }
+      });
+    });
+  }
+
+  restoreDocument(item: DocumentListItemResponse, event?: Event): void {
+    this.blurEventTarget(event);
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Restaurer le document',
+        message: `Restaurer ${item.code} dans la liste des documents ?`,
+        confirmText: 'Restaurer',
+        cancelText: 'Annuler',
+        type: 'info'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.documentService.restoreDocument(item.id).subscribe({
+        next: () => {
+          this.notificationService.showSuccess('Document restauré.');
+          this.refresh();
+        },
+        error: () => {
+          this.notificationService.showError('Restauration impossible.');
+        }
+      });
+    });
+  }
+
+  permanentDeleteDocument(item: DocumentListItemResponse, event?: Event): void {
+    this.blurEventTarget(event);
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Suppression définitive',
+        message: `Supprimer définitivement ${item.code} ? Cette action est irréversible.`,
+        confirmText: 'Supprimer définitivement',
+        cancelText: 'Annuler',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.documentService.permanentDeleteDocument(item.id).subscribe({
+        next: () => {
+          this.notificationService.showSuccess('Document supprimé définitivement.');
+          this.refresh();
+        },
+        error: () => {
+          this.notificationService.showError('Suppression définitive impossible.');
         }
       });
     });
@@ -356,6 +451,15 @@ export class DocumentsListComponent implements OnInit {
     }
 
     return 'Valide';
+  }
+
+  getTrashRetentionLabel(item: DocumentListItemResponse): string {
+    const days = item.daysUntilPermanentDelete ?? 0;
+    if (days <= 0) {
+      return 'Suppression définitive imminente';
+    }
+
+    return `${days} jour${days > 1 ? 's' : ''} restant${days > 1 ? 's' : ''}`;
   }
 
   getOwnerInitials(fullName?: string | null): string {

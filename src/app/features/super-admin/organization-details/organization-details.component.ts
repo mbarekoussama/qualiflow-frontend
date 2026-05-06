@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../../core/services/notification.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -27,6 +29,7 @@ import { OrganizationService } from '../services/organization.service';
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     RouterModule,
     MatCardModule,
     MatButtonModule,
@@ -35,6 +38,7 @@ import { OrganizationService } from '../services/organization.service';
     MatTableModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatInputModule,
     MatProgressSpinnerModule,
     MatDialogModule
   ],
@@ -47,17 +51,31 @@ export class OrganizationDetailsComponent implements OnInit {
   readonly roleOptions: string[] = ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR'];
 
   loading = false;
+  creatingUser = false;
+  showCreateUserForm = false;
+  createUserForm: FormGroup;
   organization: OrganizationResponse | null = null;
   organizationUsers: OrganizationUserSummaryResponse[] = [];
   roleDraftByUserId: Record<number, string> = {};
 
   constructor(
+    private readonly fb: FormBuilder,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly organizationService: OrganizationService,
     private readonly notificationService: NotificationService,
     private readonly dialog: MatDialog
-  ) { }
+  ) {
+    this.createUserForm = this.fb.group({
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      role: ['UTILISATEUR', [Validators.required]],
+      function: [''],
+      department: ['']
+    });
+  }
 
   ngOnInit(): void {
     const rawId = this.route.snapshot.paramMap.get('id');
@@ -194,6 +212,56 @@ export class OrganizationDetailsComponent implements OnInit {
       error: () => {
         this.roleDraftByUserId[user.id] = user.role;
         this.notificationService.showError('Echec de mise a jour du role utilisateur.');
+      }
+    });
+  }
+
+  toggleCreateUserForm(): void {
+    this.showCreateUserForm = !this.showCreateUserForm;
+  }
+
+  createUser(): void {
+    if (!this.organization) {
+      return;
+    }
+
+    if (this.createUserForm.invalid) {
+      this.createUserForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.createUserForm.value;
+    this.creatingUser = true;
+
+    this.organizationService.createOrganizationUser(this.organization.id, {
+      firstName: raw.firstName,
+      lastName: raw.lastName,
+      email: raw.email,
+      password: raw.password,
+      role: raw.role,
+      function: raw.function || null,
+      department: raw.department || null
+    }).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Utilisateur créé et email envoyé.');
+        this.createUserForm.reset({
+          firstName: '',
+          lastName: '',
+          email: '',
+          password: '',
+          role: 'UTILISATEUR',
+          function: '',
+          department: ''
+        });
+        this.showCreateUserForm = false;
+        this.loadOrganizationUsers(this.organization!.id);
+      },
+      error: () => {
+        this.notificationService.showError('Création utilisateur impossible.');
+        this.creatingUser = false;
+      },
+      complete: () => {
+        this.creatingUser = false;
       }
     });
   }

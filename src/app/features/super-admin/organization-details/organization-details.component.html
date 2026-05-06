@@ -204,7 +204,57 @@
             <mat-icon>groups</mat-icon>
             <h2>Utilisateurs et rôles</h2>
           </div>
+          <button mat-flat-button color="primary" type="button" class="btn-add-user" (click)="toggleCreateUserForm()">
+            <mat-icon>{{ showCreateUserForm ? 'close' : 'person_add' }}</mat-icon>
+            {{ showCreateUserForm ? 'Fermer' : 'Créer utilisateur' }}
+          </button>
         </div>
+
+        <form class="create-user-panel" *ngIf="showCreateUserForm" [formGroup]="createUserForm" (ngSubmit)="createUser()">
+          <div class="create-user-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Prénom</mat-label>
+              <input matInput formControlName="firstName" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nom</mat-label>
+              <input matInput formControlName="lastName" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Mot de passe</mat-label>
+              <input matInput type="text" formControlName="password" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Rôle</mat-label>
+              <mat-select formControlName="role">
+                <mat-option *ngFor="let role of roleOptions" [value]="role">{{ role }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Fonction</mat-label>
+              <input matInput formControlName="function" />
+            </mat-form-field>
+          </div>
+
+          <div class="create-user-actions">
+            <button mat-stroked-button type="button" (click)="toggleCreateUserForm()" [disabled]="creatingUser">
+              Annuler
+            </button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="creatingUser">
+              <mat-icon *ngIf="!creatingUser">send</mat-icon>
+              {{ creatingUser ? 'Création...' : 'Créer et envoyer email' }}
+            </button>
+          </div>
+        </form>
 
         <div class="table-container">
           <table mat-table [dataSource]="organizationUsers" class="modern-table">

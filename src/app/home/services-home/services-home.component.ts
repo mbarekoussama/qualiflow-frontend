@@ -57,7 +57,7 @@ export class ServicesHomeComponent {
       title: 'Pilotage Qualité', 
       subtitle: 'KPI et Tableaux de bord',
       description: 'Prenez des décisions basées sur des données précises et actualisées.',
-      features: ['Statistiques en temps réel', 'Exports rapports d\'audit', 'Suivi des objectifs annuels'],
+      features: ['Statistiques en temps réel', 'Exports rapports qualité', 'Suivi des objectifs annuels'],
       color: '#10b981'
     },
     { 

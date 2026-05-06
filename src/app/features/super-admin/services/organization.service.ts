@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import {
   CreateOrganizationRequest,
+  CreateOrganizationUserRequest,
   OrganizationListQueryParams,
   OrganizationResponse,
   OrganizationUsersListResponse,
@@ -45,6 +46,10 @@ export class OrganizationService {
 
   getOrganizationUsers(id: number, page = 1, pageSize = 200): Observable<OrganizationUsersListResponse> {
     return this.apiService.get<OrganizationUsersListResponse>(`${this.endpoint}/${id}/users`, { page, pageSize });
+  }
+
+  createOrganizationUser(organizationId: number, payload: CreateOrganizationUserRequest): Observable<number> {
+    return this.apiService.post<number>(`${this.endpoint}/${organizationId}/users`, payload);
   }
 
   changeOrganizationUserRole(organizationId: number, userId: number, role: string): Observable<void> {

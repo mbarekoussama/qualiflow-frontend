@@ -156,7 +156,7 @@ export class UsersListComponent implements OnInit {
   }
 
   deleteUser(user: UserResponse): void {
-    if (!confirm(`Confirmer la suppression DÉFINITIVE de ${user.firstName} ${user.lastName} ?\n\nAttention: Cette action est irréversible et supprimera toutes les données associées qui ne sont pas soumises à des restrictions d'audit.`)) {
+    if (!confirm(`Confirmer la suppression DÉFINITIVE de ${user.firstName} ${user.lastName} ?\n\nAttention: Cette action est irréversible et supprimera toutes les données associées qui ne sont pas soumises à des restrictions applicatives.`)) {
       return;
     }
 

@@ -8,11 +8,15 @@ import { NotificationService } from './notification.service';
   providedIn: 'root'
 })
 export class BrowserNotificationService {
-  private readonly soundUrl = '/assets/sounds/notification.mp3';
+  private readonly soundUrl = this.resolveSoundUrl();
   private audio: HTMLAudioElement | null = null;
+  private audioContext: AudioContext | null = null;
+  private audioUnlockInitialized = false;
   private lastSoundAt = 0;
 
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) {
+    this.setupAudioUnlockListeners();
+  }
 
   async registerServiceWorker(): Promise<void> {
     if (!('serviceWorker' in navigator)) {
@@ -82,16 +86,31 @@ export class BrowserNotificationService {
     this.lastSoundAt = now;
 
     try {
-      if (!this.audio) {
-        this.audio = new Audio(this.soundUrl);
-        this.audio.preload = 'auto';
+      this.ensureAudioInstance();
+      const audio = this.audio;
+      if (!audio) {
+        return;
       }
 
-      this.audio.currentTime = 0;
-      await this.audio.play();
+      audio.currentTime = 0;
+      await audio.play();
       return;
     } catch {
-      this.playFallbackBeep();
+      await this.unlockAudioPlayback();
+
+      try {
+        this.ensureAudioInstance();
+        const audio = this.audio;
+        if (!audio) {
+          return;
+        }
+
+        audio.currentTime = 0;
+        await audio.play();
+        return;
+      } catch {
+        this.playFallbackBeep();
+      }
     }
   }
 
@@ -147,13 +166,95 @@ export class BrowserNotificationService {
     return route.startsWith('/') ? route : `/${route}`;
   }
 
-  private playFallbackBeep(): void {
-    const audioContextCtor = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext | undefined;
-    if (!audioContextCtor) {
+  private ensureAudioInstance(): void {
+    if (!this.audio) {
+      this.audio = new Audio(this.soundUrl);
+      this.audio.preload = 'auto';
+    }
+  }
+
+  private setupAudioUnlockListeners(): void {
+    if (this.audioUnlockInitialized || typeof window === 'undefined') {
       return;
     }
 
-    const audioContext = new audioContextCtor();
+    this.audioUnlockInitialized = true;
+
+    const unlock = () => {
+      void this.unlockAudioPlayback();
+    };
+
+    window.addEventListener('pointerdown', unlock, { once: true, passive: true });
+    window.addEventListener('touchstart', unlock, { once: true, passive: true });
+    window.addEventListener('keydown', unlock, { once: true });
+  }
+
+  private async unlockAudioPlayback(): Promise<void> {
+    this.ensureAudioInstance();
+    const audio = this.audio;
+    if (!audio) {
+      return;
+    }
+
+    const audioContext = this.getAudioContext();
+
+    try {
+      if (audioContext?.state === 'suspended') {
+        await audioContext.resume();
+      }
+    } catch {
+      // Ignore context resume failures; playback fallback is handled separately.
+    }
+
+    try {
+      audio.muted = true;
+      const playPromise = audio.play();
+      if (playPromise) {
+        await playPromise;
+      }
+      audio.pause();
+      audio.currentTime = 0;
+    } catch {
+      // Browser may still block; we keep fallback beep.
+    } finally {
+      audio.muted = false;
+    }
+  }
+
+  private resolveSoundUrl(): string {
+    if (typeof document === 'undefined') {
+      return 'assets/sounds/notification.mp3';
+    }
+
+    return new URL('assets/sounds/notification.mp3', document.baseURI).toString();
+  }
+
+  private getAudioContext(): AudioContext | null {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+
+    if (this.audioContext) {
+      return this.audioContext;
+    }
+
+    const audioContextCtor = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext | undefined;
+    if (!audioContextCtor) {
+      return null;
+    }
+
+    this.audioContext = new audioContextCtor();
+    return this.audioContext;
+  }
+
+  private playFallbackBeep(): void {
+    const audioContext = this.getAudioContext();
+    if (!audioContext) {
+      return;
+    }
+    if (audioContext.state === 'suspended') {
+      void audioContext.resume();
+    }
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
 

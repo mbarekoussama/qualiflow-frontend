@@ -185,7 +185,7 @@
               <button mat-icon-button [class.btn-suspend]="row.status === 'ACTIF'"
                 [class.btn-activate]="row.status !== 'ACTIF'" (click)="toggleStatus(row)"
                 [matTooltip]="row.status === 'ACTIF' ? 'Suspendre' : 'Activer'">
-                <mat-icon>{{ row.status === 'ACTIF' ? 'pause_circle' : 'play_circle' }}</mat-icon>
+                <mat-icon>sync</mat-icon>
               </button>
               <button mat-icon-button class="btn-delete" (click)="deleteOrganization(row)" matTooltip="Supprimer">
                 <mat-icon>delete_outline</mat-icon>

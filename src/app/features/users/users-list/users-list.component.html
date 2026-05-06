@@ -123,16 +123,16 @@
                         <div class="actions-cell" *ngIf="isAdminOrg()">
                             <button mat-icon-button class="action-btn edit" [routerLink]="['/users', user.id]"
                                 matTooltip="Modifier les informations">
-                                <mat-icon>edit_calendar</mat-icon>
+                                <mat-icon>edit</mat-icon>
                             </button>
                             <button mat-icon-button class="action-btn status" [class.active]="user.isActive"
                                 (click)="toggleStatus(user)"
                                 [matTooltip]="user.isActive ? 'Désactiver l\'accès' : 'Réactiver l\'accès'">
-                                <mat-icon>{{ user.isActive ? 'lock_person' : 'lock_open' }}</mat-icon>
+                                <mat-icon>sync</mat-icon>
                             </button>
                             <button mat-icon-button class="action-btn delete" (click)="deleteUser(user)"
                                 matTooltip="Supprimer définitivement">
-                                <mat-icon>person_remove</mat-icon>
+                                <mat-icon>delete_outline</mat-icon>
                             </button>
                         </div>
                     </td>

@@ -12,13 +12,6 @@ interface DemoAccount {
   role: string;
   email: string;
   password: string;
-  organizationCode?: string;
-}
-
-interface LoginOrganizationOption {
-  organizationCode?: string | null;
-  organizationName: string;
-  role: string;
 }
 
 @Component({
@@ -35,7 +28,6 @@ export class LoginComponent implements OnInit {
 
   antiBotQuestion = '';
   antiBotError: string | null = null;
-  organizationChoices: LoginOrganizationOption[] = [];
   private antiBotExpectedAnswer = 0;
 
   readonly demoAccounts: DemoAccount[] = [
@@ -49,29 +41,25 @@ export class LoginComponent implements OnInit {
       label: 'Admin Organisation',
       role: 'ADMIN_ORG',
       email: 'admin@demo.local',
-      password: 'Admin@123',
-      organizationCode: 'DEMO'
+      password: 'Admin@123'
     },
     {
       label: 'Responsable Qualite',
       role: 'RESPONSABLE_QUALITE',
       email: 'qualite@demo.local',
-      password: 'Qualite@123',
-      organizationCode: 'DEMO'
+      password: 'Qualite@123'
     },
     {
       label: 'Chef Service',
       role: 'CHEF_SERVICE',
       email: 'chef@demo.local',
-      password: 'Chef@123',
-      organizationCode: 'DEMO'
+      password: 'Chef@123'
     },
     {
       label: 'Utilisateur',
       role: 'UTILISATEUR',
       email: 'user@demo.local',
-      password: 'User@123',
-      organizationCode: 'DEMO'
+      password: 'User@123'
     }
   ];
 
@@ -90,7 +78,6 @@ export class LoginComponent implements OnInit {
   private initForm(): void {
     this.loginForm = this.fb.group({
       email: [this.demoAccounts[0].email, [Validators.required, Validators.email]],
-      organizationCode: [this.demoAccounts[0].organizationCode ?? ''],
       password: [this.demoAccounts[0].password, [Validators.required]],
       antiBotAnswer: ['', [Validators.required, Validators.pattern(/^\d+$/)]]
     });
@@ -101,7 +88,6 @@ export class LoginComponent implements OnInit {
     if (emailFromQuery) {
       this.loginForm.patchValue({
         email: emailFromQuery,
-        organizationCode: '',
         password: '',
         antiBotAnswer: ''
       });
@@ -111,11 +97,9 @@ export class LoginComponent implements OnInit {
   useDemoAccount(account: DemoAccount): void {
     this.loginForm.patchValue({
       email: account.email,
-      organizationCode: account.organizationCode ?? '',
       password: account.password,
       antiBotAnswer: ''
     });
-    this.organizationChoices = [];
 
     this.antiBotError = null;
     this.hidePassword = true;
@@ -130,12 +114,6 @@ export class LoginComponent implements OnInit {
     this.antiBotExpectedAnswer = first + second;
     this.antiBotError = null;
     this.loginForm?.patchValue({ antiBotAnswer: '' });
-  }
-
-  selectOrganization(choice: LoginOrganizationOption): void {
-    this.loginForm.patchValue({
-      organizationCode: choice.organizationCode ?? ''
-    });
   }
 
   onSubmit(): void {
@@ -154,23 +132,11 @@ export class LoginComponent implements OnInit {
 
     const payload: LoginRequest = {
       email: String(this.loginForm.value.email ?? '').trim(),
-      organizationCode: String(this.loginForm.value.organizationCode ?? '').trim() || undefined,
       password: String(this.loginForm.value.password ?? '')
     };
 
     this.authService.login(payload).pipe(
       switchMap((response: LoginResponse) => {
-        if (response.requiresOrganizationSelection && Array.isArray(response.organizations)) {
-          this.organizationChoices = response.organizations as LoginOrganizationOption[];
-          if (!this.loginForm.value.organizationCode && this.organizationChoices.length > 0) {
-            this.loginForm.patchValue({
-              organizationCode: this.organizationChoices[0].organizationCode ?? ''
-            });
-          }
-          this.notificationService.showInfo('Plusieurs organisations trouvées. Sélectionnez une organisation pour continuer.');
-          return of(null);
-        }
-
         if (!response.accessToken || !response.refreshToken) {
           return of(null);
         }
@@ -210,7 +176,6 @@ export class LoginComponent implements OnInit {
         }
 
         this.regenerateAntiBotChallenge();
-        this.organizationChoices = [];
         return of(null);
       }),
       finalize(() => {

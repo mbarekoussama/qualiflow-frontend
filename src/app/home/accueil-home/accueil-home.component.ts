@@ -45,8 +45,8 @@ export class AccueilHomeComponent {
       color: '#f59e0b'
     },
     {
-      title: 'Audit & Conformité',
-      description: 'Préparez vos audits ISO (9001, 21001) avec une traçabilité totale.',
+      title: 'Conformité qualité',
+      description: 'Pilotez vos exigences ISO (9001, 21001) avec une vision claire.',
       icon: 'fact_check',
       color: '#8b5cf6'
     },

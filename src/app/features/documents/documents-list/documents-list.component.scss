@@ -22,6 +22,21 @@
   }
 }
 
+.btn-trash {
+  height: 44px;
+  padding: 0 18px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  border: 1.5px solid #cbd5e1 !important;
+  transition: all 0.2s !important;
+
+  &:hover {
+    background: #f8fafc !important;
+    transform: translateY(-1px);
+  }
+}
+
 .btn-create {
   height: 44px;
   padding: 0 24px !important;
@@ -612,6 +627,22 @@
   border-radius: 6px;
 }
 
+.retention-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+
+  &.urgent {
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+}
+
 .owner-cell {
   display: flex;
   align-items: center;
@@ -634,69 +665,63 @@
 
 .table-actions {
   display: flex;
-  gap: 6px;
+  gap: 14px;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .action-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: white;
-  border: 1px solid var(--border);
-  transition: all 0.2s;
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  border: 0 !important;
+  color: #8796a8 !important;
+  line-height: 24px !important;
+  transition: color 0.16s ease, transform 0.16s ease, background-color 0.16s ease;
 
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: var(--text-secondary);
+    color: currentColor;
+    line-height: 18px;
   }
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background: #f1f5f9 !important;
+    color: #64748b !important;
     transform: translateY(-1px);
 
     &.view-btn {
-      border-color: #2563eb;
-
-      mat-icon {
-        color: #2563eb;
-      }
+      color: #64748b !important;
     }
 
     &.edit-btn {
-      border-color: #059669;
-
-      mat-icon {
-        color: #059669;
-      }
+      color: #64748b !important;
     }
 
     &.status-btn {
-      border-color: #7c3aed;
-
-      mat-icon {
-        color: #7c3aed;
-      }
+      color: #64748b !important;
     }
 
     &.dl-btn {
-      border-color: #0891b2;
-
-      mat-icon {
-        color: #0891b2;
-      }
+      color: #64748b !important;
     }
 
     &.delete-btn {
-      border-color: #dc2626;
+      color: #64748b !important;
+    }
 
-      mat-icon {
-        color: #dc2626;
-      }
+    &.restore-btn {
+      color: #64748b !important;
     }
   }
+}
+
+.trash-row {
+  cursor: default !important;
 }
 
 /* MENUS */
@@ -797,6 +822,7 @@ mat-paginator {
       flex-wrap: wrap;
 
       .btn-import,
+      .btn-trash,
       .btn-create {
         flex: 1;
         min-width: 140px;

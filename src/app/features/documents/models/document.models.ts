@@ -83,6 +83,8 @@ export interface DocumentListItemResponse {
   departmentName?: string | null;
   fileName?: string | null;
   isActive: boolean;
+  deletedAt?: string | null;
+  daysUntilPermanentDelete?: number | null;
 }
 
 export interface DocumentResponse {
@@ -141,23 +143,10 @@ export interface DocumentVersionResponse {
   updatedAt?: string | null;
 }
 
-export interface DocumentAuditLogResponse {
-  id: number;
-  organizationId: number;
-  documentId: number;
-  documentVersionId?: number | null;
-  action: string;
-  userId: number;
-  userFullName?: string | null;
-  details?: string | null;
-  createdAt: string;
-}
-
 export interface DocumentDetailsResponse {
   document: DocumentResponse;
   currentVersion?: DocumentVersionResponse | null;
   versions: DocumentVersionResponse[];
-  auditLogs: DocumentAuditLogResponse[];
 }
 
 export interface PagedDocumentResponse {
