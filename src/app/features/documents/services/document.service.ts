@@ -6,6 +6,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { environment } from '../../../../environments/environment';
 import {
   CreateDocumentRequest,
+  DocumentActionLogResponse,
   CreateDocumentVersionRequest,
   DocumentDetailsResponse,
   DocumentExpiringResponse,
@@ -81,6 +82,10 @@ export class DocumentService {
 
   getVersions(documentId: number): Observable<DocumentVersionResponse[]> {
     return this.apiService.get<DocumentVersionResponse[]>(`${this.endpoint}/${documentId}/versions`);
+  }
+
+  getActionLogs(documentId: number): Observable<DocumentActionLogResponse[]> {
+    return this.apiService.get<DocumentActionLogResponse[]>(`${this.endpoint}/${documentId}/action-logs`);
   }
 
   getVersionById(documentId: number, versionId: number): Observable<DocumentVersionResponse> {

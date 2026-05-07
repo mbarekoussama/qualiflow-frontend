@@ -10,6 +10,11 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface LoginByPhoneRequest {
+  phoneNumber: string;
+  password: string;
+}
+
 export interface RegisterRequest {
   firstName: string;
   lastName: string;
@@ -144,6 +149,17 @@ export class AuthService {
 
   login(request: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request).pipe(
+      tap(response => {
+        if (response.accessToken && response.refreshToken) {
+          this.setTokens(response.accessToken, response.refreshToken);
+          this.isAuthenticatedSubject.next(true);
+        }
+      })
+    );
+  }
+
+  loginByPhone(request: LoginByPhoneRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login-by-phone`, request).pipe(
       tap(response => {
         if (response.accessToken && response.refreshToken) {
           this.setTokens(response.accessToken, response.refreshToken);

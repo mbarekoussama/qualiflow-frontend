@@ -149,6 +149,21 @@ export interface DocumentDetailsResponse {
   versions: DocumentVersionResponse[];
 }
 
+export interface DocumentActionLogResponse {
+  id: number;
+  organizationId: number;
+  documentId: number;
+  documentVersionId?: number | null;
+  versionNumber?: string | null;
+  actionType: string;
+  oldValue?: string | null;
+  newValue?: string | null;
+  comment?: string | null;
+  performedByUserId: number;
+  performedByFullName?: string | null;
+  performedAt: string;
+}
+
 export interface PagedDocumentResponse {
   total: number;
   pageNumber: number;

@@ -91,3 +91,27 @@ Build at: 2026-05-06T23:37:30.243Z - Hash: 83aa810df4b248f9 - Time: 19879ms
 Build at: 2026-05-06T23:37:34.239Z - Hash: 83aa810df4b248f9 - Time: 3601ms
 
 √ Compiled successfully.
+
+Initial chunk files                                | Names                                | Raw size
+runtime.js                                         | runtime                              | 12.67 kB | 
+
+Lazy chunk files                                   | Names                                | Raw size
+src_app_features_settings_settings_component_ts.js | features-settings-settings-component | 69.08 kB | 
+
+66 unchanged chunks
+
+Build at: 2026-05-06T23:42:25.327Z - Hash: fd80add0afa11410 - Time: 3377ms
+
+√ Compiled successfully.
+
+Initial chunk files                                | Names                                | Raw size
+runtime.js                                         | runtime                              | 12.67 kB | 
+
+Lazy chunk files                                   | Names                                | Raw size
+src_app_features_settings_settings_component_ts.js | features-settings-settings-component | 74.51 kB | 
+
+66 unchanged chunks
+
+Build at: 2026-05-06T23:42:32.170Z - Hash: 1e67353da9c82d81 - Time: 1756ms
+
+√ Compiled successfully.

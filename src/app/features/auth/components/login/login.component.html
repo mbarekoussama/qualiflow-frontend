@@ -2,9 +2,32 @@
   <div class="login-box">
     <h2>QualiFlow - Authentification</h2>
     
+    <!-- Toggle between Email and Phone login -->
+    <div class="login-mode-toggle mb-3">
+      <div class="btn-group w-100" role="group">
+        <button 
+          type="button" 
+          class="btn btn-outline-primary"
+          [class.active]="loginMode === 'email'"
+          (click)="toggleLoginMode()"
+          *ngIf="loginMode === 'phone'">
+          📧 Email
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-outline-primary"
+          [class.active]="loginMode === 'phone'"
+          (click)="toggleLoginMode()"
+          *ngIf="loginMode === 'email'">
+          📱 Téléphone
+        </button>
+      </div>
+    </div>
+    
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       
-      <div class="form-group">
+      <!-- Email input -->
+      <div class="form-group" *ngIf="loginMode === 'email'">
         <label for="email">Email</label>
         <input 
           type="email" 
@@ -19,6 +42,21 @@
         </div>
       </div>
 
+      <!-- Phone input -->
+      <div class="form-group" *ngIf="loginMode === 'phone'">
+        <label for="phoneNumber">Numéro de téléphone</label>
+        <input 
+          type="tel" 
+          id="phoneNumber" 
+          class="form-control" 
+          formControlName="phoneNumber"
+          placeholder="+33612345678"
+          [class.is-invalid]="phoneNumber?.invalid && phoneNumber?.touched">
+        <div class="invalid-feedback" *ngIf="phoneNumber?.invalid && phoneNumber?.touched">
+          <div *ngIf="phoneNumber?.errors?.['required']">Numéro de téléphone est requis</div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label for="password">Mot de passe</label>
         <input 
@@ -30,7 +68,7 @@
           [class.is-invalid]="password?.invalid && password?.touched">
         <div class="invalid-feedback" *ngIf="password?.invalid && password?.touched">
           <div *ngIf="password?.errors?.['required']">Mot de passe est requis</div>
-          <div *ngIf="password?.errors?.['minlength']">Minimum 6 caractÃ¨res</div>
+          <div *ngIf="password?.errors?.['minlength']">Minimum 6 caractères</div>
         </div>
       </div>
 
@@ -50,11 +88,11 @@
       </button>
 
       <div class="demo-credentials mt-3">
-        <p class="text-muted text-sm">Comptes de dÃ©monstration:</p>
+        <p class="text-muted text-sm">Comptes de démonstration:</p>
         <ul class="text-sm">
-          <li>SUPER_ADMIN: superadmin&#64;demo.local / SuperAdmin&#64;123</li>
-          <li>ADMIN_ORG: admin&#64;demo.local / Admin&#64;123</li>
-          <li>UTILISATEUR: user&#64;demo.local / User&#64;123</li>
+          <li>SUPER_ADMIN: superadmin@demo.local / SuperAdmin@123</li>
+          <li>ADMIN_ORG: admin@demo.local / Admin@123</li>
+          <li>UTILISATEUR: user@demo.local / User@123</li>
         </ul>
       </div>
 
@@ -84,6 +122,28 @@
     text-align: center;
     margin-bottom: 1.5rem;
     color: #333;
+  }
+
+  .login-mode-toggle {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-group {
+    display: flex;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .btn-group .btn {
+    flex: 1;
+    border-radius: 0;
+  }
+
+  .btn-group .btn.active {
+    background-color: #667eea;
+    color: white;
+    border-color: #667eea;
   }
 
   .form-group {
