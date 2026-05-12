@@ -83,6 +83,15 @@
     </div>
 
     <div class="summary-card shadow-sm">
+      <span class="sc-label">En attente validation</span>
+      <div class="sc-value">
+        <mat-icon class="icon-warning">hourglass_top</mat-icon>
+        {{ statistics.pendingValidation || 0 }}
+      </div>
+      <span class="sc-subtext">A valider par responsable qualite</span>
+    </div>
+
+    <div class="summary-card shadow-sm">
       <span class="sc-label">{{ 'list.nonconformities.openInProgress' | t }}</span>
       <div class="sc-value">
         <mat-icon class="icon-warning">pending_actions</mat-icon>
@@ -107,6 +116,24 @@
         {{ statistics.overdueActions }}
       </div>
       <span class="sc-subtext">{{ 'list.nonconformities.deadlinesExceeded' | t }}</span>
+    </div>
+  </div>
+
+  <div class="quality-queue-banner" *ngIf="canManageValidation && statistics">
+    <div class="queue-main">
+      <mat-icon>fact_check</mat-icon>
+      <div>
+        <strong>File de validation qualite</strong>
+        <span>{{ statistics.pendingValidation || 0 }} non-conformite(s) en attente de validation</span>
+      </div>
+    </div>
+    <div class="queue-actions">
+      <button mat-flat-button color="primary" type="button" (click)="focusAwaitingValidation()">
+        Voir a valider
+      </button>
+      <button mat-stroked-button type="button" *ngIf="awaitingValidationMode" (click)="showAllNonConformities()">
+        Voir tous
+      </button>
     </div>
   </div>
 
@@ -216,6 +243,9 @@
                   <mat-icon>published_with_changes</mat-icon>
                 </button>
                 <mat-menu #statusMenu="matMenu" class="nc-status-menu">
+                  <button mat-menu-item (click)="updateStatus(item, 'EN_ATTENTE_VALIDATION')">
+                    <mat-icon class="icon-progress">schedule</mat-icon> En attente validation
+                  </button>
                   <button mat-menu-item (click)="updateStatus(item, 'OUVERTE')">
                     <mat-icon class="icon-open">fiber_manual_record</mat-icon> Ouverte
                   </button>

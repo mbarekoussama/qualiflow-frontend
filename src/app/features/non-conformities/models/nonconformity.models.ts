@@ -1,6 +1,6 @@
 export type NonConformityType = 'INTERNE' | 'EXTERNE';
 export type NonConformitySeverity = 'MINEURE' | 'MAJEURE' | 'CRITIQUE';
-export type NonConformityStatus = 'OUVERTE' | 'EN_COURS' | 'CLOTUREE';
+export type NonConformityStatus = 'EN_ATTENTE_VALIDATION' | 'OUVERTE' | 'EN_COURS' | 'CLOTUREE';
 export type CorrectiveActionStatus = 'A_FAIRE' | 'EN_COURS' | 'TERMINEE' | 'EN_RETARD';
 
 export interface NonConformityQueryParams {
@@ -24,13 +24,19 @@ export interface CreateNonConformityRequest {
   procedureId?: number | null;
   detectedDate: string;
   responsibleUserId: number;
-  status: NonConformityStatus;
+  /** Optional: omit for non-privileged roles — backend forces EN_ATTENTE_VALIDATION */
+  status?: NonConformityStatus;
 }
 
 export type UpdateNonConformityRequest = CreateNonConformityRequest;
 
 export interface UpdateNonConformityStatusRequest {
   status: NonConformityStatus;
+}
+
+export interface ValidateNonConformityRequest {
+  code: string;
+  responsibleUserId: number;
 }
 
 export interface CreateCorrectiveActionRequest {
@@ -114,6 +120,7 @@ export interface PagedNonConformityResponse {
 
 export interface NonConformityStatisticsResponse {
   total: number;
+  pendingValidation: number;
   opened: number;
   inProgress: number;
   closed: number;
@@ -135,6 +142,7 @@ export const NON_CONFORMITY_SEVERITY_OPTIONS: Array<{ value: NonConformitySeveri
 ];
 
 export const NON_CONFORMITY_STATUS_OPTIONS: Array<{ value: NonConformityStatus; label: string }> = [
+  { value: 'EN_ATTENTE_VALIDATION', label: 'En attente de validation' },
   { value: 'OUVERTE', label: 'Ouverte' },
   { value: 'EN_COURS', label: 'En cours' },
   { value: 'CLOTUREE', label: 'Cloturee' }

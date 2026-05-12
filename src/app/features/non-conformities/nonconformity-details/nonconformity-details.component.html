@@ -27,7 +27,10 @@
       <!-- QUICK STATUS CARDS -->
       <div class="summary-cards">
         <div class="summary-card">
-          <span class="sc-label">{{ 'detail.nc.currentStatus' | t }}</span>
+          <div class="sc-header">
+            <span class="sc-label">{{ 'detail.nc.currentStatus' | t }}</span>
+            <mat-icon class="sc-icon">info_outline</mat-icon>
+          </div>
           <div class="sc-value">
             <span class="tag-status" [ngClass]="details.nonConformity.status.toLowerCase()">
               {{ getStatusLabel(details.nonConformity.status) }}
@@ -37,7 +40,7 @@
             <button mat-icon-button [matMenuTriggerFor]="stMenu" [matTooltip]="'detail.nc.changeStatus' | t">
               <mat-icon>swap_vert</mat-icon>
             </button>
-            <mat-menu #stMenu="matMenu">
+            <mat-menu #stMenu="matMenu" class="modern-menu">
               <button mat-menu-item (click)="changeStatus('OUVERTE')">{{ 'detail.nc.open' | t }}</button>
               <button mat-menu-item (click)="changeStatus('EN_COURS')">{{ 'detail.nc.inProgress' | t }}</button>
               <button mat-menu-item (click)="changeStatus('CLOTUREE')">{{ 'detail.nc.closed' | t }}</button>
@@ -46,7 +49,10 @@
         </div>
 
         <div class="summary-card">
-          <span class="sc-label">{{ 'common.severity' | t }}</span>
+          <div class="sc-header">
+            <span class="sc-label">{{ 'common.severity' | t }}</span>
+            <mat-icon class="sc-icon">priority_high</mat-icon>
+          </div>
           <div class="sc-value">
             <span class="tag-badge sev-badge" [ngClass]="details.nonConformity.severity.toLowerCase()">
               {{ getSeverityLabel(details.nonConformity.severity) }}
@@ -55,12 +61,15 @@
         </div>
 
         <div class="summary-card">
-          <span class="sc-label">{{ 'common.responsible' | t }}</span>
+          <div class="sc-header">
+            <span class="sc-label">{{ 'common.responsible' | t }}</span>
+            <mat-icon class="sc-icon">person_outline</mat-icon>
+          </div>
           <div class="sc-value">
             <div class="pilote-avatar" *ngIf="details.nonConformity.responsibleFullName">
               {{ details.nonConformity.responsibleFullName.charAt(0) }}
             </div>
-            {{ details.nonConformity.responsibleFullName || ('common.toDefine' | t) }}
+            <span class="resp-name">{{ details.nonConformity.responsibleFullName || ('common.toDefine' | t) }}</span>
           </div>
         </div>
       </div>
@@ -107,6 +116,64 @@
               <label>{{ 'detail.nc.typeCategory' | t }}</label>
               <p>{{ details.nonConformity.type || '-' }}</p>
             </div>
+          </div>
+        </mat-card>
+
+        <mat-card class="info-card validation-card" *ngIf="canValidatePending">
+          <div class="card-header-clean">
+            <h2>Validation non-conformite</h2>
+            <mat-icon>fact_check</mat-icon>
+          </div>
+
+          <div class="validation-panel">
+            <div class="validation-intro">
+              <div class="validation-copy">
+                <span class="validation-eyebrow">Controle qualite</span>
+                <p>Finalisez le code et confirmez le responsable avant la mise en traitement.</p>
+              </div>
+              <span class="validation-state-pill">En attente</span>
+            </div>
+
+            <form class="validation-form" [formGroup]="validationForm" (ngSubmit)="validatePendingNonConformity()">
+              <div class="validation-grid">
+                <mat-form-field appearance="outline" class="validation-field validation-code-field">
+                  <mat-label>Code non-conformite</mat-label>
+                  <input matInput formControlName="code" />
+                  <mat-hint>Exemple: NC-009</mat-hint>
+                  <mat-error *ngIf="validationForm.controls.code.hasError('required')">
+                    Le code est obligatoire.
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="validation-field validation-owner-field">
+                  <mat-label>Responsable</mat-label>
+                  <mat-select formControlName="responsibleUserId">
+                    <mat-option [value]="0">Choisir</mat-option>
+                    <mat-option *ngFor="let user of users" [value]="user.id">
+                      {{ user.firstName }} {{ user.lastName }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-hint>Affectation du suivi principal</mat-hint>
+                  <mat-error
+                    *ngIf="validationForm.controls.responsibleUserId.hasError('min') || validationForm.controls.responsibleUserId.hasError('required')">
+                    Selectionnez un responsable.
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="validation-actions">
+                <div class="validation-note">
+                  <mat-icon>info</mat-icon>
+                  <span>Le code et le responsable seront enregistres au moment de la validation.</span>
+                </div>
+
+                <button mat-flat-button color="primary" class="validate-btn" type="submit"
+                  [disabled]="validationForm.invalid || savingValidation">
+                  <mat-icon>{{ savingValidation ? 'hourglass_top' : 'task_alt' }}</mat-icon>
+                  {{ savingValidation ? 'Validation...' : 'Valider la non-conformite' }}
+                </button>
+              </div>
+            </form>
           </div>
         </mat-card>
 

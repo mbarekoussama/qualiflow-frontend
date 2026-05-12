@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -73,6 +73,7 @@ export class ProcessListComponent implements OnInit {
   pageNumber = 1;
   pageSize = 10;
   pilots: UserResponse[] = [];
+  viewMode: 'cards' | 'table' = 'table';
 
   constructor(
     private readonly fb: FormBuilder,

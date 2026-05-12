@@ -225,10 +225,6 @@ export class DocumentsListComponent implements OnInit {
     this.refresh();
   }
 
-  openImport(): void {
-    this.router.navigate(['/documents/new'], { queryParams: { mode: 'import' } });
-  }
-
   createDocument(): void {
     this.router.navigate(['/documents/new']);
   }

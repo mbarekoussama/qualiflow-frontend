@@ -20,29 +20,47 @@
 
     <!-- STATS GRID -->
     <div class="stats-grid" *ngIf="statistics">
-      <div class="stat-card">
-        <div class="st-label">Total Indicateurs</div>
-        <div class="st-value">{{ statistics.total }}</div>
-        <div class="st-foot">Inventaire complet</div>
+      <div class="stat-card glass-card">
+        <div class="st-icon-box">
+          <mat-icon>dashboard</mat-icon>
+        </div>
+        <div class="st-content">
+          <div class="st-label">Total Indicateurs</div>
+          <div class="st-value">{{ statistics.total }}</div>
+          <div class="st-foot">Inventaire complet</div>
+        </div>
       </div>
-      <div class="stat-card active-bg">
-        <div class="st-label">En activité</div>
-        <div class="st-value">{{ statistics.active }}</div>
-        <div class="st-foot">Suivi opérationnel</div>
+      <div class="stat-card glass-card active-bg">
+        <div class="st-icon-box">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="st-content">
+          <div class="st-label">En activité</div>
+          <div class="st-value">{{ statistics.active }}</div>
+          <div class="st-foot">Suivi opérationnel</div>
+        </div>
       </div>
-      <div class="stat-card alert-bg" [class.danger]="statistics.inAlert > 0">
-        <div class="st-label">En Alerte</div>
-        <div class="st-value">{{ statistics.inAlert }}</div>
-        <div class="st-foot">{{ statistics.inAlert > 0 ? 'Action corrective requise' : 'Aucune dérive' }}</div>
+      <div class="stat-card glass-card alert-bg" [class.danger]="statistics.inAlert > 0">
+        <div class="st-icon-box">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="st-content">
+          <div class="st-label">En Alerte</div>
+          <div class="st-value">{{ statistics.inAlert }}</div>
+          <div class="st-foot">{{ statistics.inAlert > 0 ? 'Action corrective requise' : 'Aucune dérive' }}</div>
+        </div>
       </div>
     </div>
 
     <!-- DASHBOARD PANELS -->
     <div class="dashboard-panels">
       <!-- ALERTS PANEL -->
-      <div class="panel-card">
+      <div class="panel-card glass-card">
         <div class="panel-header">
-          <h3>Alertes critiques</h3>
+          <div class="ph-title">
+            <mat-icon>notifications_active</mat-icon>
+            <h3>Alertes critiques</h3>
+          </div>
           <span class="count-badge" *ngIf="alerts.length > 0">{{ alerts.length }}</span>
         </div>
 
@@ -71,9 +89,12 @@
       </div>
 
       <!-- TRENDS PANEL -->
-      <div class="panel-card">
+      <div class="panel-card glass-card">
         <div class="panel-header">
-          <h3>Tendances récentes</h3>
+          <div class="ph-title">
+            <mat-icon>trending_up</mat-icon>
+            <h3>Tendances récentes</h3>
+          </div>
         </div>
         <div class="panel-body">
           <div class="empty-msg" *ngIf="trends.length === 0">
@@ -91,10 +112,13 @@
                 <div class="name">{{ trend.indicator.name }}</div>
               </div>
               <div class="trend-visual">
-                <svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width:100%; height:100%;">
-                  <polyline [attr.points]="getTrendPoints(trend.chart.values)"
-                    [class.alert]="trend.indicator.isInAlert"></polyline>
-                </svg>
+                <apx-chart
+                  [series]="trend.chartOptions.series"
+                  [chart]="trend.chartOptions.chart"
+                  [stroke]="trend.chartOptions.stroke"
+                  [fill]="trend.chartOptions.fill"
+                  [tooltip]="trend.chartOptions.tooltip">
+                </apx-chart>
               </div>
             </div>
           </div>

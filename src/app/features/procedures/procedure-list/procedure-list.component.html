@@ -9,6 +9,15 @@
                 </p>
             </div>
             <div class="header-actions">
+                <div class="view-mode-toggle">
+                  <button class="toggle-btn" [class.active]="viewMode === 'cards'" (click)="viewMode = 'cards'" matTooltip="Vue Cartes">
+                    <mat-icon>grid_view</mat-icon>
+                  </button>
+                  <button class="toggle-btn" [class.active]="viewMode === 'table'" (click)="viewMode = 'table'" matTooltip="Vue Tableau">
+                    <mat-icon>view_list</mat-icon>
+                  </button>
+                </div>
+
                 <button *ngIf="canWrite" mat-flat-button color="primary" class="btn-create" (click)="createProcedure()">
                     <mat-icon>add</mat-icon>
                     {{ 'list.procedures.new' | t }}
@@ -89,7 +98,42 @@
                 <p>{{ 'list.procedures.emptyText' | t }}</p>
             </div>
 
-            <div class="table-container" *ngIf="procedures.length > 0">
+            <!-- CARDS VIEW -->
+            <div class="procedure-cards-grid" *ngIf="procedures.length > 0 && viewMode === 'cards'">
+              <div class="procedure-card glass-card" *ngFor="let item of procedures; trackBy: trackByProcedureId" (click)="viewProcedure(item)">
+                <div class="card-header">
+                  <div class="code-badge">{{ item.code }}</div>
+                  <span class="status-dot" [ngClass]="item.status === 'ACTIF' ? 'active' : 'inactive'"></span>
+                </div>
+                
+                <div class="card-main">
+                  <h3>{{ item.title }}</h3>
+                  <div class="process-ref">
+                    <mat-icon>account_tree</mat-icon>
+                    <span>{{ item.processCode }} - {{ item.processName }}</span>
+                  </div>
+                </div>
+
+                <div class="card-footer">
+                  <div class="responsible-info" *ngIf="item.responsibleFullName">
+                    <div class="resp-avatar">{{ item.responsibleFullName.charAt(0) }}</div>
+                    <span>{{ item.responsibleFullName }}</span>
+                  </div>
+                  <div class="responsible-info" *ngIf="!item.responsibleFullName">
+                    <mat-icon>person_outline</mat-icon>
+                    <span class="empty-text">À définir</span>
+                  </div>
+                  <div class="actions">
+                    <button mat-icon-button (click)="$event.stopPropagation(); editProcedure(item)" *ngIf="canWrite">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TABLE VIEW -->
+            <div class="table-container" *ngIf="procedures.length > 0 && viewMode === 'table'">
                 <table mat-table [dataSource]="procedures" class="procedure-table">
                     <!-- Code Column -->
                     <ng-container matColumnDef="code">

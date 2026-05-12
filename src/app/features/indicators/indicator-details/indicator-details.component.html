@@ -28,22 +28,43 @@
     <div class="content-scroll">
         <!-- SUMMARY CARDS -->
         <div class="summary-row">
-            <div class="s-item">
-                <span class="l">{{ 'common.status' | t }}</span>
-                <span class="v" [style.color]="details.indicator.status === 'ACTIF' ? '#00875a' : '#64748b'">{{
-                    statusLabel }}</span>
+            <div class="s-card glass-card">
+                <div class="sc-icon blue">
+                    <mat-icon>info</mat-icon>
+                </div>
+                <div class="sc-content">
+                    <span class="l">{{ 'common.status' | t }}</span>
+                    <span class="v" [style.color]="details.indicator.status === 'ACTIF' ? '#00875a' : '#64748b'">
+                        {{ statusLabel }}
+                    </span>
+                </div>
             </div>
-            <div class="s-item">
-                <span class="l">{{ 'detail.indicator.frequency' | t }}</span>
-                <span class="v">{{ frequencyLabel }}</span>
+            <div class="s-card glass-card">
+                <div class="sc-icon purple">
+                    <mat-icon>event_repeat</mat-icon>
+                </div>
+                <div class="sc-content">
+                    <span class="l">{{ 'detail.indicator.frequency' | t }}</span>
+                    <span class="v">{{ frequencyLabel }}</span>
+                </div>
             </div>
-            <div class="s-item">
-                <span class="l">{{ 'detail.indicator.targetObjective' | t }}</span>
-                <span class="v">{{ details.indicator.targetValue }} <small>{{ details.indicator.unit }}</small></span>
+            <div class="s-card glass-card">
+                <div class="sc-icon green">
+                    <mat-icon>track_changes</mat-icon>
+                </div>
+                <div class="sc-content">
+                    <span class="l">{{ 'detail.indicator.targetObjective' | t }}</span>
+                    <span class="v">{{ details.indicator.targetValue }} <small>{{ details.indicator.unit }}</small></span>
+                </div>
             </div>
-            <div class="s-item" [class.danger]="details.isInAlert">
-                <span class="l">{{ 'detail.indicator.alertState' | t }}</span>
-                <span class="v">{{ details.isInAlert ? ('list.indicators.alert' | t) : ('list.indicators.compliant' | t) }}</span>
+            <div class="s-card glass-card" [class.danger]="details.isInAlert">
+                <div class="sc-icon red">
+                    <mat-icon>{{ details.isInAlert ? 'warning' : 'verified_user' }}</mat-icon>
+                </div>
+                <div class="sc-content">
+                    <span class="l">{{ 'detail.indicator.alertState' | t }}</span>
+                    <span class="v">{{ details.isInAlert ? ('list.indicators.alert' | t) : ('list.indicators.compliant' | t) }}</span>
+                </div>
             </div>
         </div>
 
@@ -60,9 +81,12 @@
         <div class="tab-content">
             <!-- OVERVIEW -->
             <div class="overview-grid" *ngIf="activeTab === 'overview'">
-                <div class="info-panel">
+                <div class="info-panel glass-card">
                     <div class="panel-section">
-                        <div class="section-title">{{ 'detail.indicator.generalInfo' | t }}</div>
+                        <div class="section-header">
+                            <mat-icon>description</mat-icon>
+                            <div class="section-title">{{ 'detail.indicator.generalInfo' | t }}</div>
+                        </div>
                         <div class="detail-row">
                             <label>{{ 'detail.indicator.description' | t }}</label>
                             <p>{{ details.indicator.description || ('detail.indicator.noDescription' | t) }}</p>
@@ -84,9 +108,12 @@
                     </div>
                 </div>
 
-                <div class="info-panel">
+                <div class="info-panel glass-card">
                     <div class="panel-section">
-                        <div class="section-title">{{ 'detail.indicator.recentAlerts' | t }}</div>
+                        <div class="section-header">
+                            <mat-icon>notifications</mat-icon>
+                            <div class="section-title">{{ 'detail.indicator.recentAlerts' | t }}</div>
+                        </div>
                         <div class="empty-state-mini" *ngIf="details.alerts.length === 0">
                             <mat-icon>check_circle</mat-icon>
                             <span>{{ 'detail.indicator.noAlerts' | t }}</span>
@@ -107,13 +134,11 @@
             </div>
 
             <!-- CHART -->
-            <div class="chart-container-flat" *ngIf="activeTab === 'chart'">
+            <div class="chart-container-flat glass-card" *ngIf="activeTab === 'chart'">
                 <div class="panel-section">
-                    <div class="section-title">{{ 'detail.indicator.performanceTrend' | t }}</div>
-                    <div class="chart-legend">
-                        <span class="l-item target">{{ 'detail.indicator.target' | t }}</span>
-                        <span class="l-item threshold">{{ 'list.indicators.alert' | t }}</span>
-                        <span class="l-item actual">{{ 'detail.indicator.actual' | t }}</span>
+                    <div class="section-header">
+                        <mat-icon>show_chart</mat-icon>
+                        <div class="section-title">{{ 'detail.indicator.performanceTrend' | t }}</div>
                     </div>
 
                     <div class="empty-state-mini" *ngIf="!chart || chart.values.length === 0">
@@ -121,22 +146,26 @@
                         <span>{{ 'detail.indicator.notEnoughData' | t }}</span>
                     </div>
 
-                    <div class="visual-chart" *ngIf="chart && chart.values.length > 0">
-                        <svg viewBox="0 0 100 40" preserveAspectRatio="none">
-                            <line x1="0" [attr.y1]="targetY" x2="100" [attr.y2]="targetY" class="line-target"></line>
-                            <line x1="0" [attr.y1]="thresholdY" x2="100" [attr.y2]="thresholdY" class="line-threshold">
-                            </line>
-                            <polyline [attr.points]="chartPoints" class="line-series"></polyline>
-                        </svg>
-                        <div class="chart-labels">
-                            <span *ngFor="let label of chart.labels">{{ label }}</span>
-                        </div>
+                    <div class="visual-chart-wrap" *ngIf="chartOptions">
+                        <apx-chart
+                            [series]="chartOptions.series"
+                            [chart]="chartOptions.chart"
+                            [xaxis]="chartOptions.xaxis"
+                            [yaxis]="chartOptions.yaxis"
+                            [stroke]="chartOptions.stroke"
+                            [fill]="chartOptions.fill"
+                            [markers]="chartOptions.markers"
+                            [grid]="chartOptions.grid"
+                            [annotations]="chartOptions.annotations"
+                            [tooltip]="chartOptions.tooltip"
+                            [dataLabels]="chartOptions.dataLabels">
+                        </apx-chart>
                     </div>
                 </div>
             </div>
 
             <!-- VALUES -->
-            <div class="values-container-flat" *ngIf="activeTab === 'values'">
+            <div class="values-container-flat glass-card" *ngIf="activeTab === 'values'">
                 <app-indicator-values [indicatorId]="indicatorId" [canWrite]="canWrite"
                     (valuesChanged)="onValuesChanged()">
                 </app-indicator-values>

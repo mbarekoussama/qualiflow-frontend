@@ -124,12 +124,22 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <!-- Status selector: only visible to ADMIN_ORG / RESPONSABLE_QUALITE -->
+        <mat-form-field *ngIf="canSetStatus" appearance="outline">
           <mat-label>{{ 'form.nc.initialStatus' | t }}</mat-label>
           <mat-select formControlName="status">
             <mat-option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</mat-option>
           </mat-select>
         </mat-form-field>
+
+        <!-- Non-privileged users: NC is automatically queued for validation -->
+        <div *ngIf="!canSetStatus && !isEdit" class="awaiting-info-badge">
+          <mat-icon>hourglass_top</mat-icon>
+          <div>
+            <strong>En attente de validation</strong>
+            <span>Votre signalement sera soumis au responsable qualité pour validation.</span>
+          </div>
+        </div>
       </div>
     </mat-card>
 

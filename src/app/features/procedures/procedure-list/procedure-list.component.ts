@@ -70,6 +70,7 @@ export class ProcedureListComponent implements OnInit {
   total = 0;
   pageNumber = 1;
   pageSize = 10;
+  viewMode: 'cards' | 'table' = 'table';
 
   constructor(
     private readonly fb: FormBuilder,

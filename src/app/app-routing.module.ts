@@ -449,6 +449,14 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'organization/audit-log',
+        loadComponent: () => import('./features/organizations/organization-audit-log/organization-audit-log.component').then(m => m.OrganizationAuditLogComponent),
+        data: {
+          title: 'Journal d\'actions',
+          requiredRoles: ['ADMIN_ORG']
+        }
+      },
+      {
         path: 'organizations',
         redirectTo: 'super-admin/organizations',
         pathMatch: 'full'

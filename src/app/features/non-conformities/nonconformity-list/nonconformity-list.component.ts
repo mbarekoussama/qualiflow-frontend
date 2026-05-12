@@ -73,6 +73,7 @@ export class NonconformityListComponent implements OnInit {
 
   loading = false;
   showFilters = true;
+  awaitingValidationMode = false;
   items: NonConformityListItemResponse[] = [];
   processes: ProcessListItemResponse[] = [];
   users: UserResponse[] = [];
@@ -130,7 +131,11 @@ export class NonconformityListComponent implements OnInit {
   }
 
   get canCreate(): boolean {
-    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'UTILISATEUR']);
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']);
+  }
+
+  get canManageValidation(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
   }
 
   toggleFilters(): void {
@@ -139,9 +144,12 @@ export class NonconformityListComponent implements OnInit {
 
   refresh(): void {
     this.loading = true;
+    const pageRequest$ = this.awaitingValidationMode
+      ? this.nonConformityService.getAwaitingValidation(this.buildQuery())
+      : this.nonConformityService.getNonConformities(this.buildQuery());
 
     forkJoin({
-      page: this.nonConformityService.getNonConformities(this.buildQuery()),
+      page: pageRequest$,
       stats: this.nonConformityService.getStatistics()
     }).subscribe({
       next: ({ page, stats }) => {
@@ -154,6 +162,22 @@ export class NonconformityListComponent implements OnInit {
         this.notificationService.showError('Erreur lors du chargement des non-conformites.');
       }
     });
+  }
+
+  focusAwaitingValidation(): void {
+    if (!this.canManageValidation) {
+      return;
+    }
+
+    this.awaitingValidationMode = true;
+    this.pageNumber = 1;
+    this.refresh();
+  }
+
+  showAllNonConformities(): void {
+    this.awaitingValidationMode = false;
+    this.pageNumber = 1;
+    this.refresh();
   }
 
   onSearch(): void {

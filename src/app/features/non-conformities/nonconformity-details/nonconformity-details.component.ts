@@ -28,7 +28,8 @@ import {
   NonConformityDetailsResponse,
   NonConformitySeverity,
   NonConformityStatus,
-  UpdateCorrectiveActionRequest
+  UpdateCorrectiveActionRequest,
+  ValidateNonConformityRequest
 } from '../models/nonconformity.models';
 import { NonConformityService } from '../services/nonconformity.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
@@ -70,9 +71,14 @@ export class NonconformityDetailsComponent implements OnInit {
     completionDate: this.fb.control<string>(''),
     status: this.fb.nonNullable.control<CorrectiveActionStatus>('A_FAIRE', Validators.required)
   });
+  readonly validationForm = this.fb.group({
+    code: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+    responsibleUserId: this.fb.nonNullable.control<number>(0, [Validators.required, Validators.min(1)])
+  });
 
   loading = false;
   savingAction = false;
+  savingValidation = false;
   nonConformityId!: number;
   details: NonConformityDetailsResponse | null = null;
   users: UserResponse[] = [];
@@ -112,6 +118,10 @@ export class NonconformityDetailsComponent implements OnInit {
     return this.details !== null;
   }
 
+  get canValidatePending(): boolean {
+    return this.canWrite && this.details?.nonConformity.status === 'EN_ATTENTE_VALIDATION';
+  }
+
   get actionFormTitle(): string {
     return this.editingActionId ? 'Modifier action corrective' : 'Ajouter action corrective';
   }
@@ -135,6 +145,10 @@ export class NonconformityDetailsComponent implements OnInit {
       next: ({ details, users }) => {
         this.details = details;
         this.users = users.items.filter(user => user.isActive);
+        this.validationForm.patchValue({
+          code: details.nonConformity.code || '',
+          responsibleUserId: details.nonConformity.responsibleUserId || 0
+        });
         this.loading = false;
       },
       error: () => {
@@ -196,6 +210,36 @@ export class NonconformityDetailsComponent implements OnInit {
       error: () => {
         this.savingAction = false;
         this.notificationService.showError('Enregistrement de l action corrective impossible.');
+      }
+    });
+  }
+
+  validatePendingNonConformity(): void {
+    if (!this.details || !this.canValidatePending) {
+      return;
+    }
+
+    if (this.validationForm.invalid) {
+      this.validationForm.markAllAsTouched();
+      return;
+    }
+
+    this.savingValidation = true;
+    const raw = this.validationForm.getRawValue();
+    const payload: ValidateNonConformityRequest = {
+      code: raw.code.trim(),
+      responsibleUserId: raw.responsibleUserId
+    };
+
+    this.nonConformityService.validateNonConformity(this.nonConformityId, payload).subscribe({
+      next: () => {
+        this.savingValidation = false;
+        this.notificationService.showSuccess('Non-conformite validee.');
+        this.loadData();
+      },
+      error: () => {
+        this.savingValidation = false;
+        this.notificationService.showError('Validation impossible.');
       }
     });
   }

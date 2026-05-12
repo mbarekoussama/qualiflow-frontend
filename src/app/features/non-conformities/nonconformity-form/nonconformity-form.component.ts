@@ -65,7 +65,7 @@ export class NonconformityFormComponent implements OnInit {
     procedureId: this.fb.control<number | null>(null),
     detectedDate: this.fb.nonNullable.control('', Validators.required),
     responsibleUserId: this.fb.nonNullable.control<number>(0, [Validators.required, Validators.min(1)]),
-    status: this.fb.nonNullable.control<NonConformityStatus>('OUVERTE', Validators.required)
+    status: this.fb.nonNullable.control<NonConformityStatus>('EN_ATTENTE_VALIDATION', Validators.required)
   });
 
   loading = false;
@@ -183,6 +183,11 @@ export class NonconformityFormComponent implements OnInit {
     return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
   }
 
+  /** Only ADMIN_ORG and RESPONSABLE_QUALITE can choose the initial NC status. */
+  get canSetStatus(): boolean {
+    return this.authService.hasRole(['ADMIN_ORG', 'RESPONSABLE_QUALITE']);
+  }
+
   get filteredProcedures(): ProcedureListItemResponse[] {
     const processId = this.form.controls.processId.value;
     if (!processId) {
@@ -288,7 +293,8 @@ export class NonconformityFormComponent implements OnInit {
       procedureId: raw.procedureId ?? null,
       detectedDate: raw.detectedDate ? `${raw.detectedDate}T00:00:00Z` : new Date().toISOString(),
       responsibleUserId: raw.responsibleUserId,
-      status: raw.status
+      // Non-privileged roles send no status: backend forces EN_ATTENTE_VALIDATION
+      status: this.canSetStatus ? raw.status : undefined
     };
   }
 

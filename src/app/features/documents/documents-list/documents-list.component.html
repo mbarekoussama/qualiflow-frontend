@@ -19,10 +19,6 @@
           <mat-icon>arrow_back</mat-icon>
           Retour aux documents
         </button>
-        <button *ngIf="canSubmit && !showingTrash" mat-stroked-button class="btn-import" (click)="openImport()">
-          <mat-icon>upload_file</mat-icon>
-          {{ 'list.documents.import' | t }}
-        </button>
         <button *ngIf="canSubmit && !showingTrash" mat-flat-button color="primary" class="btn-create" (click)="createDocument()">
           <mat-icon>add</mat-icon>
           {{ 'list.documents.new' | t }}

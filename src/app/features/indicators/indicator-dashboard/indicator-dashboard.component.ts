@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { catchError, forkJoin, of } from 'rxjs';
+import { NgApexchartsModule } from 'ng-apexcharts';
 import {
   IndicatorAlertResponse,
   IndicatorChartResponse,
@@ -17,6 +18,7 @@ import { IndicatorService } from '../services/indicator.service';
 interface IndicatorTrendViewModel {
   indicator: IndicatorListItemResponse;
   chart: IndicatorChartResponse;
+  chartOptions: any;
 }
 
 @Component({
@@ -28,7 +30,8 @@ interface IndicatorTrendViewModel {
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    NgApexchartsModule
   ],
   templateUrl: './indicator-dashboard.component.html',
   styleUrls: ['./indicator-dashboard.component.scss']
@@ -56,23 +59,55 @@ export class IndicatorDashboardComponent implements OnInit {
     this.router.navigate(['/indicators', indicatorId]);
   }
 
-  getTrendPoints(values: number[]): string {
-    if (values.length === 0) {
-      return '';
-    }
-
-    const maxValue = Math.max(...values, 1);
-    const minValue = Math.min(...values, 0);
-    const range = Math.max(1, maxValue - minValue);
-    const width = 100;
-    const height = 34;
-
-    return values.map((value, index) => {
-      const x = values.length === 1 ? width / 2 : (index / (values.length - 1)) * width;
-      const normalized = (value - minValue) / range;
-      const y = height - (normalized * height);
-      return `${x},${y}`;
-    }).join(' ');
+  private getSparklineOptions(values: number[] | undefined, isAlert: boolean): any {
+    const data = (values || []).map(v => Number(v));
+    return {
+      series: [{
+        name: 'Valeur',
+        data: data
+      }],
+      chart: {
+        type: 'area',
+        height: 40,
+        sparkline: {
+          enabled: true
+        },
+        animations: {
+          enabled: true,
+          easing: 'easeinout',
+          speed: 800
+        }
+      },
+      stroke: {
+        curve: 'smooth',
+        width: 2,
+        colors: [isAlert ? '#ef4444' : '#22c55e']
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.45,
+          opacityTo: 0.05,
+          stops: [20, 100],
+          colorStops: [
+            {
+              offset: 0,
+              color: isAlert ? '#ef4444' : '#22c55e',
+              opacity: 0.4
+            },
+            {
+              offset: 100,
+              color: isAlert ? '#ef4444' : '#22c55e',
+              opacity: 0
+            }
+          ]
+        }
+      },
+      tooltip: {
+        enabled: false
+      }
+    };
   }
 
   private loadDashboard(): void {
@@ -126,7 +161,8 @@ export class IndicatorDashboardComponent implements OnInit {
           next: charts => {
             this.trends = selected.map((indicator, index) => ({
               indicator,
-              chart: charts[index]
+              chart: charts[index],
+              chartOptions: this.getSparklineOptions(charts[index].values, indicator.isInAlert)
             }));
             this.loading = false;
           },

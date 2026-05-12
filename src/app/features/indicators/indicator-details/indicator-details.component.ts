@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs';
+import { NgApexchartsModule } from 'ng-apexcharts';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -37,7 +38,8 @@ type IndicatorTab = 'overview' | 'chart' | 'values';
     MatTooltipModule,
     MatDialogModule,
     IndicatorValuesComponent,
-    TranslatePipe
+    TranslatePipe,
+    NgApexchartsModule
   ],
   templateUrl: './indicator-details.component.html',
   styleUrls: ['./indicator-details.component.scss']
@@ -101,33 +103,7 @@ export class IndicatorDetailsComponent implements OnInit {
       ?? this.details.indicator.measurementFrequency;
   }
 
-  get chartPoints(): string {
-    if (!this.chart || this.chart.values.length === 0) {
-      return '';
-    }
-
-    const values = this.chart.values;
-    const maxValue = Math.max(...values, this.chart.targetValue, this.chart.thresholdValue, 1);
-    const minValue = Math.min(...values, this.chart.targetValue, this.chart.thresholdValue, 0);
-    const range = Math.max(1, maxValue - minValue);
-    const width = 100;
-    const height = 34;
-
-    return values.map((value, index) => {
-      const x = values.length === 1 ? width / 2 : (index / (values.length - 1)) * width;
-      const normalized = (value - minValue) / range;
-      const y = height - (normalized * height);
-      return `${x},${y}`;
-    }).join(' ');
-  }
-
-  get targetY(): number {
-    return this.computeReferenceY(this.chart?.targetValue);
-  }
-
-  get thresholdY(): number {
-    return this.computeReferenceY(this.chart?.thresholdValue);
-  }
+  chartOptions: any = null;
 
   goBack(): void {
     this.router.navigate(['/indicators']);
@@ -190,6 +166,7 @@ export class IndicatorDetailsComponent implements OnInit {
       next: ({ details, chart }) => {
         this.details = details;
         this.chart = chart;
+        this.updateChartOptions();
         this.loading = false;
       },
       error: () => {
@@ -200,18 +177,85 @@ export class IndicatorDetailsComponent implements OnInit {
     });
   }
 
-  private computeReferenceY(referenceValue?: number | null): number {
-    if (!this.chart || this.chart.values.length === 0 || referenceValue === null || referenceValue === undefined) {
-      return 34;
+  private updateChartOptions(): void {
+    if (!this.chart) {
+      this.chartOptions = null;
+      return;
     }
 
-    const values = this.chart.values;
-    const maxValue = Math.max(...values, this.chart.targetValue, this.chart.thresholdValue, 1);
-    const minValue = Math.min(...values, this.chart.targetValue, this.chart.thresholdValue, 0);
-    const range = Math.max(1, maxValue - minValue);
-    const normalized = (referenceValue - minValue) / range;
-    return 34 - (normalized * 34);
+    const isAlert = this.details?.indicator.isInAlert;
+    const seriesData = (this.chart.values || []).map(v => Number(v));
+
+    this.chartOptions = {
+      series: [{ name: 'Mesure', data: seriesData }],
+      chart: {
+        type: 'area',
+        height: 350,
+        toolbar: { show: false },
+        zoom: { enabled: false },
+        fontFamily: 'inherit',
+        animations: { enabled: true, easing: 'easeinout', speed: 800 }
+      },
+      dataLabels: { enabled: false },
+      stroke: { curve: 'smooth', width: 3, colors: [isAlert ? '#ef4444' : '#22c55e'] },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.45, opacityTo: 0.05, stops: [20, 100],
+          colorStops: [
+            { offset: 0, color: isAlert ? '#ef4444' : '#22c55e', opacity: 0.4 },
+            { offset: 100, color: isAlert ? '#ef4444' : '#22c55e', opacity: 0 }
+          ]
+        }
+      },
+      markers: {
+        size: 5,
+        colors: [isAlert ? '#ef4444' : '#22c55e'],
+        strokeColors: '#fff', strokeWidth: 2,
+        hover: { size: 7 }
+      },
+      xaxis: {
+        categories: this.chart.labels,
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+        labels: { style: { colors: '#94a3b8', fontSize: '12px' } }
+      },
+      yaxis: {
+        labels: { style: { colors: '#94a3b8', fontSize: '12px' } }
+      },
+      grid: {
+        borderColor: 'rgba(0,0,0,0.05)',
+        strokeDashArray: 4,
+        padding: { top: 0, right: 0, bottom: 0, left: 10 }
+      },
+      annotations: {
+        yaxis: [
+          {
+            y: this.chart.targetValue,
+            borderColor: '#3b82f6',
+            label: {
+              borderColor: '#3b82f6',
+              style: { color: '#fff', background: '#3b82f6' },
+              text: 'Cible: ' + this.chart.targetValue
+            }
+          },
+          {
+            y: this.chart.thresholdValue,
+            borderColor: '#f59e0b',
+            borderDashArray: 5,
+            label: {
+              borderColor: '#f59e0b',
+              style: { color: '#fff', background: '#f59e0b' },
+              text: 'Alerte: ' + this.chart.thresholdValue
+            }
+          }
+        ]
+      },
+      tooltip: { theme: 'light', x: { show: true } }
+    };
   }
+
 
   getStatusLabel(status: IndicatorStatus): string {
     return this.statusOptions.find(option => option.value === status)?.label ?? status;

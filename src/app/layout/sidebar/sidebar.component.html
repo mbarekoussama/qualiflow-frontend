@@ -1,4 +1,4 @@
-﻿<nav class="sidebar" [class.open]="sidebarOpen">
+<nav class="sidebar" [class.open]="sidebarOpen">
   <div class="nav-section">
     <div class="nav-section-title">{{ 'sidebar.general' | t }}</div>
     <a [routerLink]="homeRoute" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
@@ -134,6 +134,13 @@
         <path d="M16 3.13a4 4 0 010 7.75"></path>
       </svg>
       {{ 'sidebar.usersRoles' | t }}
+    </a>
+
+    <a routerLink="/organization/audit-log" class="nav-item" routerLinkActive="active" (click)="onNavClick()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      {{ 'sidebar.auditLog' | t }}
     </a>
   </div>
 

@@ -1,4 +1,4 @@
-﻿<section class="process-catalog-page">
+<section class="process-catalog-page">
   <!-- MODERN HEADER -->
   <div class="glass-header shadow-sm">
     <div class="header-main">
@@ -11,6 +11,15 @@
         </p>
       </div>
       <div class="header-actions">
+        <div class="view-mode-toggle">
+          <button class="toggle-btn" [class.active]="viewMode === 'cards'" (click)="viewMode = 'cards'" matTooltip="Vue Cartes">
+            <mat-icon>grid_view</mat-icon>
+          </button>
+          <button class="toggle-btn" [class.active]="viewMode === 'table'" (click)="viewMode = 'table'" matTooltip="Vue Tableau">
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+
         <button *ngIf="canWrite" mat-flat-button color="primary" class="btn-create" (click)="createProcess()">
           <mat-icon>add</mat-icon>
           {{ 'list.processes.new' | t }}
@@ -88,7 +97,49 @@
         <p>{{ 'list.processes.emptyText' | t }}</p>
       </div>
 
-      <div class="table-container" *ngIf="items.length > 0">
+      <!-- CARDS VIEW -->
+      <div class="process-cards-grid" *ngIf="items.length > 0 && viewMode === 'cards'">
+        <div class="process-card glass-card" *ngFor="let item of items; trackBy: trackByProcessId" (click)="viewProcess(item)">
+          <div class="card-header">
+            <div class="code-badge">{{ item.code }}</div>
+            <span class="status-dot" [ngClass]="item.status === 'ACTIF' ? 'active' : 'inactive'"></span>
+          </div>
+          
+          <div class="card-main">
+            <h3>{{ item.name }}</h3>
+            <span class="type-tag">{{ getTypeLabel(item.type) }}</span>
+          </div>
+
+          <div class="card-performance">
+            <div class="perf-label">
+              <span>Performance</span>
+              <span [ngClass]="'text-' + getTone(item)">{{ getScore(item) }}%</span>
+            </div>
+            <div class="perf-bar">
+              <div class="perf-fill" [ngClass]="'bg-' + getTone(item)" [style.width.%]="getScore(item)"></div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="pilot-info" *ngIf="item.pilotFullName">
+              <div class="pilot-avatar">{{ item.pilotFullName.charAt(0) }}</div>
+              <span>{{ item.pilotFullName }}</span>
+            </div>
+            <div class="pilot-info" *ngIf="!item.pilotFullName">
+              <mat-icon>person_outline</mat-icon>
+              <span class="empty-text">Non assigné</span>
+            </div>
+            <div class="actions">
+              <button mat-icon-button (click)="$event.stopPropagation(); editProcess(item)" *ngIf="canWrite">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE VIEW -->
+      <div class="table-container" *ngIf="items.length > 0 && viewMode === 'table'">
         <table mat-table [dataSource]="items" class="process-table" [trackBy]="trackByProcessId">
           <!-- Code Column -->
           <ng-container matColumnDef="code">

@@ -197,3 +197,38 @@ mat-form-field {
     gap: 8px;
   }
 }
+
+/* ── AWAITING VALIDATION BADGE (for non-privileged users) ── */
+.awaiting-info-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 14px 16px;
+  grid-column: 1 / -1;
+
+  mat-icon {
+    color: #d97706;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  strong {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 2px;
+  }
+
+  span {
+    font-size: 0.8rem;
+    color: #b45309;
+    line-height: 1.4;
+  }
+}

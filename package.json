@@ -24,6 +24,8 @@
     "@angular/platform-browser-dynamic": "^17.3.12",
     "@angular/router": "^17.3.12",
     "@microsoft/signalr": "^8.0.7",
+    "apexcharts": "^5.11.0",
+    "ng-apexcharts": "^1.10.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"

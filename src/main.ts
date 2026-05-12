@@ -1,4 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+import 'apexcharts';
 import { AppComponent } from './app/app.component';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';

@@ -12,7 +12,8 @@ import {
   PagedNonConformityResponse,
   UpdateCorrectiveActionRequest,
   UpdateNonConformityRequest,
-  UpdateNonConformityStatusRequest
+  UpdateNonConformityStatusRequest,
+  ValidateNonConformityRequest
 } from '../models/nonconformity.models';
 
 @Injectable({
@@ -25,6 +26,10 @@ export class NonConformityService {
 
   getNonConformities(params: NonConformityQueryParams = {}): Observable<PagedNonConformityResponse> {
     return this.apiService.get<PagedNonConformityResponse>(this.endpoint, params);
+  }
+
+  getAwaitingValidation(params: NonConformityQueryParams = {}): Observable<PagedNonConformityResponse> {
+    return this.apiService.get<PagedNonConformityResponse>(`${this.endpoint}/awaiting-validation`, params);
   }
 
   getNonConformityById(id: number): Observable<NonConformityDetailsResponse> {
@@ -45,6 +50,10 @@ export class NonConformityService {
 
   updateNonConformityStatus(id: number, payload: UpdateNonConformityStatusRequest): Observable<NonConformityResponse> {
     return this.apiService.patch<NonConformityResponse>(`${this.endpoint}/${id}/status`, payload);
+  }
+
+  validateNonConformity(id: number, payload: ValidateNonConformityRequest): Observable<NonConformityResponse> {
+    return this.apiService.patch<NonConformityResponse>(`${this.endpoint}/${id}/validate`, payload);
   }
 
   getStatistics(): Observable<NonConformityStatisticsResponse> {
