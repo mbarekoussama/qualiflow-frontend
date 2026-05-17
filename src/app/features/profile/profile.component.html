@@ -22,7 +22,8 @@
     </div>
 
     <div class="tabs-wrapper" [class.organization-only]="organizationOnlyView">
-        <mat-tab-group animationDuration="400ms" headerPosition="above" [class.organization-only-tabs]="organizationOnlyView">
+        <mat-tab-group animationDuration="400ms" headerPosition="above"
+            [class.organization-only-tabs]="organizationOnlyView">
             <!-- TAB 1: MON PROFIL -->
             <mat-tab *ngIf="!organizationOnlyView">
                 <ng-template mat-tab-label>
@@ -171,7 +172,7 @@
                                             J'ai oublié mon mot de passe actuel.
                                         </button>
 
-                                        <button  mat-flat-button class="btn-security" (click)="changePassword()"
+                                        <button mat-flat-button class="btn-security" (click)="changePassword()"
                                             [disabled]="changingPassword || sendingResetEmail">
                                             <mat-spinner diameter="20" *ngIf="changingPassword"></mat-spinner>
                                             <mat-icon *ngIf="!changingPassword">vpn_key</mat-icon>
@@ -180,7 +181,8 @@
                                     </div>
                                 </form>
 
-                                <form [formGroup]="resetWithCodeForm" class="modern-form" *ngIf="forgotPasswordStep > 0">
+                                <form [formGroup]="resetWithCodeForm" class="modern-form"
+                                    *ngIf="forgotPasswordStep > 0">
                                     <div *ngIf="forgotPasswordStep === 1">
                                         <mat-form-field appearance="outline" class="full-width">
                                             <mat-label>Code de validation</mat-label>
@@ -217,9 +219,11 @@
                                             <button mat-flat-button color="primary" type="button"
                                                 (click)="resetPasswordWithCode()"
                                                 [disabled]="resettingPasswordWithCode">
-                                                <mat-spinner diameter="20" *ngIf="resettingPasswordWithCode"></mat-spinner>
+                                                <mat-spinner diameter="20"
+                                                    *ngIf="resettingPasswordWithCode"></mat-spinner>
                                                 <mat-icon *ngIf="!resettingPasswordWithCode">lock_reset</mat-icon>
-                                                <span *ngIf="!resettingPasswordWithCode">Réinitialiser le mot de passe</span>
+                                                <span *ngIf="!resettingPasswordWithCode">Réinitialiser le mot de
+                                                    passe</span>
                                             </button>
                                         </div>
                                     </div>
@@ -233,7 +237,8 @@
                                     <mat-icon>mark_email_read</mat-icon>
                                     <div>
                                         <mat-card-title>Modifier l'email</mat-card-title>
-                                        <mat-card-subtitle>Changement sécurisé avec code de vérification</mat-card-subtitle>
+                                        <mat-card-subtitle>Changement sécurisé avec code de
+                                            vérification</mat-card-subtitle>
                                     </div>
                                 </div>
                             </mat-card-header>
@@ -241,11 +246,13 @@
                                 <form [formGroup]="emailChangeForm" class="modern-form">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-label>Nouvel email</mat-label>
-                                        <input matInput type="email" formControlName="newEmail" placeholder="nouvel-email@domaine.com">
+                                        <input matInput type="email" formControlName="newEmail"
+                                            placeholder="nouvel-email@domaine.com">
                                     </mat-form-field>
 
                                     <div class="card-actions-right" style="margin-bottom: 12px;">
-                                        <button mat-stroked-button color="primary" type="button" (click)="requestEmailChangeCode()" [disabled]="requestingEmailCode">
+                                        <button mat-stroked-button color="primary" type="button"
+                                            (click)="requestEmailChangeCode()" [disabled]="requestingEmailCode">
                                             <mat-spinner diameter="20" *ngIf="requestingEmailCode"></mat-spinner>
                                             <span *ngIf="!requestingEmailCode">Envoyer le code</span>
                                         </button>
@@ -253,11 +260,13 @@
 
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-label>Code de vérification</mat-label>
-                                        <input matInput type="text" maxlength="6" formControlName="code" placeholder="Code à 6 chiffres">
+                                        <input matInput type="text" maxlength="6" formControlName="code"
+                                            placeholder="Code à 6 chiffres">
                                     </mat-form-field>
 
                                     <div class="card-actions-right">
-                                        <button mat-flat-button color="primary" type="button" (click)="confirmEmailChange()" [disabled]="confirmingEmailChange">
+                                        <button mat-flat-button color="primary" type="button"
+                                            (click)="confirmEmailChange()" [disabled]="confirmingEmailChange">
                                             <mat-spinner diameter="20" *ngIf="confirmingEmailChange"></mat-spinner>
                                             <mat-icon *ngIf="!confirmingEmailChange">verified</mat-icon>
                                             <span *ngIf="!confirmingEmailChange">Confirmer le nouvel email</span>
@@ -405,7 +414,8 @@
                                         <mat-form-field appearance="outline">
                                             <mat-label>Site officiel</mat-label>
                                             <mat-icon matIconPrefix>language</mat-icon>
-                                            <input title="website" matInput formControlName="website" placeholder="https://votre-site.com">
+                                            <input title="website" matInput formControlName="website"
+                                                placeholder="https://votre-site.com">
                                         </mat-form-field>
                                     </div>
 

@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { PublicService, OrganizationRequestResponse } from '../../../core/services/public.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { ORGANIZATION_TYPE_OPTIONS } from '../../super-admin/models/organization.models';
 
 @Component({
   selector: 'app-organization-request-dialog',
@@ -32,6 +33,8 @@ export class OrganizationRequestDialogComponent {
   requestForm: FormGroup;
   loading = false;
   codeSent = false;
+  emailValidated = false;
+  organizationTypes = ORGANIZATION_TYPE_OPTIONS;
 
   countries = [
     { name: 'Maroc', code: '+212' },
@@ -59,6 +62,7 @@ export class OrganizationRequestDialogComponent {
       country: ['', Validators.required],
       jobTitle: ['', Validators.required],
       organizationName: ['', Validators.required],
+      organizationType: ['', Validators.required],
       message: ['', Validators.required],
       validationCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
     });
@@ -91,6 +95,30 @@ export class OrganizationRequestDialogComponent {
       error: () => {
         this.loading = false;
         this.notificationService.showError("Erreur lors de l'envoi du code.");
+      }
+    });
+  }
+
+  onVerifyCode(): void {
+    const email = this.requestForm.get('email')?.value;
+    const code = this.requestForm.get('validationCode')?.value;
+    if (!email || !code || this.requestForm.get('validationCode')?.invalid) return;
+
+    this.loading = true;
+    this.publicService.verifyCode(email, code).subscribe({
+      next: (res) => {
+        this.loading = false;
+        if (res.success) {
+          this.emailValidated = true;
+          this.notificationService.showSuccess(res.message);
+          this.requestForm.get('validationCode')?.disable();
+        } else {
+          this.notificationService.showError(res.message);
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.notificationService.showError(err.error?.message || "Le code de validation est incorrect ou a expiré.");
       }
     });
   }

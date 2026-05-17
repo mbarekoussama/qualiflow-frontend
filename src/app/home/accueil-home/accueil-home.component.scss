@@ -5,7 +5,7 @@
   gap: 4rem;
   min-height: 90vh;
   padding: 4rem 6vw;
-  background: radial-gradient(circle at 0% 0%, rgba(31, 166, 122, 0.05) 0%, transparent 50%);
+  background: radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
 }
 
 .badge-new {
@@ -25,7 +25,7 @@
   .pulse {
     width: 8px;
     height: 8px;
-    background: #00875a;
+    background: #10b981;
     border-radius: 50%;
     animation: p-pulse 2s infinite;
   }
@@ -34,17 +34,17 @@
 @keyframes p-pulse {
   0% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 135, 90, 0.7);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
   }
 
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 6px rgba(0, 135, 90, 0);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
   }
 
   100% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 135, 90, 0);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
   }
 }
 
@@ -57,7 +57,7 @@
   letter-spacing: -1px;
 
   span {
-    background: linear-gradient(120deg, #00875a, #00c283);
+    background: linear-gradient(120deg, #10b981, #34d399);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -210,8 +210,8 @@
       width: 40px;
       height: 40px;
       border-radius: 10px;
-      background: rgba(0, 135, 90, 0.1);
-      color: #00875a;
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -257,7 +257,7 @@
     transform: translate(-50%, -50%);
     width: 120%;
     height: 120%;
-    background: radial-gradient(circle, rgba(0, 135, 90, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
     z-index: -1;
   }
 }
@@ -297,8 +297,8 @@
       display: inline-block;
       padding: 4px 12px;
       border-radius: 100px;
-      background: rgba(0, 135, 90, 0.1);
-      color: #00875a;
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
       font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
@@ -329,7 +329,7 @@
     background: white;
     transform: translateY(-10px);
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05);
-    border-color: #00875a;
+    border-color: #10b981;
   }
 
   .feature-icon {

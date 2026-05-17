@@ -10,6 +10,7 @@ export interface OrganizationRequest {
   country: string;
   jobTitle: string;
   organizationName: string;
+  organizationType: string;
   message: string;
   validationCode: string;
 }
@@ -29,6 +30,10 @@ export class PublicService {
 
   sendVerificationCode(email: string): Observable<OrganizationRequestResponse> {
     return this.http.post<OrganizationRequestResponse>(`${this.apiUrl}/send-verification-code`, { email });
+  }
+
+  verifyCode(email: string, code: string): Observable<OrganizationRequestResponse> {
+    return this.http.post<OrganizationRequestResponse>(`${this.apiUrl}/verify-code`, { email, code });
   }
 
   submitOrganizationRequest(request: OrganizationRequest): Observable<OrganizationRequestResponse> {

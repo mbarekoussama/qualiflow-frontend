@@ -20,6 +20,7 @@ export class HeaderHomeComponent {
     { label: 'Accueil', section: 'accueil' },
     { label: 'Services', section: 'services' },
     { label: 'ISO 21001', section: 'iso' },
+    { label: 'Demander un Espace', section: 'request-org' },
     { label: 'Contact', section: 'contact' }
   ];
 

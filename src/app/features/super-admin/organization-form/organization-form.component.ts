@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -107,6 +107,44 @@ export class OrganizationFormComponent implements OnInit {
           this.loading = false;
           this.notificationService.showError('Impossible de charger l organisation.');
           this.router.navigate(['/super-admin/organizations']);
+        }
+      });
+    } else {
+      this.route.queryParams.subscribe(params => {
+        if (params['name']) {
+          this.form.patchValue({ name: params['name'] });
+          const generatedCode = params['name']
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .toUpperCase()
+            .replace(/[^A-Z0-9]/g, '')
+            .substring(0, 10);
+          this.form.patchValue({ code: generatedCode });
+        }
+        if (params['email']) {
+          this.form.patchValue({ email: params['email'] });
+          this.form.patchValue({ firstAdminEmail: params['email'] });
+        }
+        if (params['phone']) {
+          this.form.patchValue({ phone: params['phone'] });
+        }
+        if (params['type']) {
+          const typeVal = params['type'].toUpperCase();
+          if (typeVal === 'UNIVERSITE' || typeVal === 'UNIVERSITÉ' || typeVal.includes('UNIV')) {
+            this.form.patchValue({ type: 'UNIVERSITE' });
+          } else {
+            this.form.patchValue({ type: 'INSTITUT' });
+          }
+        }
+        if (params['fullName']) {
+          const fullName = params['fullName'].trim();
+          const parts = fullName.split(' ');
+          const firstName = parts[0] || '';
+          const lastName = parts.slice(1).join(' ') || '';
+          this.form.patchValue({
+            firstAdminFirstName: firstName,
+            firstAdminLastName: lastName,
+            createFirstAdmin: true
+          });
         }
       });
     }

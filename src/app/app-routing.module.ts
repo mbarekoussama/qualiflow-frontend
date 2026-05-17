@@ -76,6 +76,11 @@ export const routes: Routes = [
             data: { title: 'Dashboard Super Admin', roles: ['SUPER_ADMIN'] }
           },
           {
+            path: 'requests',
+            loadComponent: () => import('./features/super-admin/requests-list/requests-list.component').then(m => m.RequestsListComponent),
+            data: { title: 'Demandes d\'organisation', roles: ['SUPER_ADMIN'] }
+          },
+          {
             path: 'organizations',
             loadComponent: () => import('./features/super-admin/organizations-list/organizations-list.component').then(m => m.OrganizationsListComponent),
             data: { title: 'Instituts / Organisations', roles: ['SUPER_ADMIN'] }

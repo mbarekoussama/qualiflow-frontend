@@ -129,6 +129,10 @@ export class SuperAdminDashboardComponent implements OnInit {
     });
   }
 
+  goToRequests(): void {
+    this.router.navigate(['/super-admin/requests']);
+  }
+
   getMaxValue(values: number[]): number {
     if (!values.length) {
       return 1;

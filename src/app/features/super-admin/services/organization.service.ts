@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import {
@@ -54,5 +54,12 @@ export class OrganizationService {
 
   changeOrganizationUserRole(organizationId: number, userId: number, role: string): Observable<void> {
     return this.apiService.patch<void>(`${this.endpoint}/${organizationId}/users/${userId}/role`, { role });
+  }
+  getOrganizationRequests(): Observable<any[]> {
+    return this.apiService.get<any[]>(`${this.endpoint}/requests`);
+  }
+
+  deleteOrganizationRequest(id: number): Observable<void> {
+    return this.apiService.delete<void>(`${this.endpoint}/requests/${id}`);
   }
 }

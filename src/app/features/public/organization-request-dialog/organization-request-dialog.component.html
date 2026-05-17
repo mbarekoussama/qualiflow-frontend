@@ -43,10 +43,16 @@
           <mat-error *ngIf="requestForm.get('email')?.hasError('email')">Email invalide</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width" *ngIf="codeSent">
+        <mat-form-field appearance="outline" class="full-width with-button" *ngIf="codeSent">
           <mat-label>Code de validation (6 chiffres)</mat-label>
           <input matInput formControlName="validationCode" placeholder="Enter code" maxlength="6">
           <mat-icon matPrefix>verified_user</mat-icon>
+          <button mat-flat-button color="primary" matSuffix 
+                  (click)="onVerifyCode()" 
+                  type="button"
+                  [disabled]="requestForm.get('validationCode')?.invalid || emailValidated">
+            {{ emailValidated ? 'E-mail validé' : 'Valider' }}
+          </button>
           <mat-error *ngIf="requestForm.get('validationCode')?.hasError('required')">Le code est obligatoire</mat-error>
         </mat-form-field>
 
@@ -76,6 +82,17 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Type de l'organisation</mat-label>
+          <mat-select formControlName="organizationType">
+            <mat-option *ngFor="let opt of organizationTypes" [value]="opt.value">
+              {{ opt.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>lan</mat-icon>
+          <mat-error *ngIf="requestForm.get('organizationType')?.hasError('required')">Le type d'organisation est obligatoire</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Votre message / Besoins spécifiques</mat-label>
           <textarea matInput formControlName="message" rows="4" placeholder="Décrivez brièvement vos besoins..."></textarea>
           <mat-icon matPrefix>message</mat-icon>
@@ -86,7 +103,7 @@
 
     <mat-dialog-actions align="end">
       <button mat-button (click)="onClose()" type="button" [disabled]="loading">Annuler</button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="requestForm.invalid || loading" class="submit-btn">
+      <button mat-flat-button color="primary" type="submit" [disabled]="requestForm.invalid || loading" class="submit-btn" *ngIf="emailValidated">
         <mat-icon *ngIf="!loading">send</mat-icon>
         <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
         <span>Envoyer la demande</span>

@@ -41,6 +41,13 @@
       </svg>
       {{ 'sidebar.organizations' | t }}
     </a>
+
+    <a routerLink="/super-admin/requests" class="nav-item" routerLinkActive="active" (click)="onNavClick()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M9 12h6M9 16h6M7 6h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V8a2 2 0 012-2z" />
+      </svg>
+      Demandes d'achat
+    </a>
   </div>
 
   <div class="nav-section" *ngIf="canAccessQuality">
