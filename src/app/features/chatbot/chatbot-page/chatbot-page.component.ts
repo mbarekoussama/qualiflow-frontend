@@ -12,11 +12,13 @@ import {
   ChatMessageRole
 } from '../models/chatbot.models';
 import { ChatbotService } from '../services/chatbot.service';
+import { MatIconModule } from '@angular/material/icon';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-chatbot-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './chatbot-page.component.html',
   styleUrls: ['./chatbot-page.component.scss']
 })
@@ -35,14 +37,20 @@ export class ChatbotPageComponent implements OnInit {
   loadingMessages = false;
   sending = false;
   errorMessage = '';
+  sidebarOpen = false;
 
   constructor(
     private readonly chatbotService: ChatbotService,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
     void this.loadConversations(true);
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 
   async startNewConversation(): Promise<void> {
@@ -50,6 +58,7 @@ export class ChatbotPageComponent implements OnInit {
     this.messages = [];
     this.errorMessage = '';
     this.questionControl.setValue('');
+    this.sidebarOpen = false;
     this.scrollToBottom();
   }
 
@@ -61,6 +70,7 @@ export class ChatbotPageComponent implements OnInit {
 
     this.sending = true;
     this.errorMessage = '';
+    this.scrollToBottom();
 
     try {
       let conversationId = this.selectedConversationId;
@@ -111,6 +121,7 @@ export class ChatbotPageComponent implements OnInit {
 
     this.loadingMessages = true;
     this.errorMessage = '';
+    this.sidebarOpen = false;
 
     try {
       const details = await firstValueFrom(this.chatbotService.getConversationById(conversationId));
@@ -177,6 +188,50 @@ export class ChatbotPageComponent implements OnInit {
       event.preventDefault();
       void this.sendQuestion();
     }
+  }
+
+  copyToClipboard(text: string): void {
+    void navigator.clipboard.writeText(text);
+    this.notificationService.showSuccess('Copié dans le presse-papier');
+  }
+
+  renderMarkdown(text: string): SafeHtml {
+    if (!text) return '';
+    
+    let html = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+    // Simple table detection and conversion
+    if (html.includes('|')) {
+      const lines = html.split('\n');
+      let inTable = false;
+
+      const processedLines = lines.map(line => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+          const cells = trimmed.split('|').filter((_c, i, arr) => i > 0 && i < arr.length - 1);
+          if (trimmed.includes('---')) return ''; // Skip separator row
+          
+          if (!inTable) {
+            inTable = true;
+            return '<table><thead><tr>' + cells.map(c => `<th>${c.trim()}</th>`).join('') + '</tr></thead><tbody>';
+          }
+          return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
+        } else {
+          if (inTable) {
+            inTable = false;
+            return '</tbody></table>' + line;
+          }
+          return line;
+        }
+      });
+      
+      html = processedLines.join('\n');
+      if (inTable) html += '</tbody></table>';
+    }
+
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
   private async loadConversations(selectFirst: boolean): Promise<void> {

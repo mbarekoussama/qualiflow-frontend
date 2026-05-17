@@ -20,16 +20,38 @@ import {
   ProcedureStatisticsResponse
 } from '../procedures/models/procedure.models';
 import { ProcedureService } from '../procedures/services/procedure.service';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    NgApexchartsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   loading = true;
+
+  // Chart Options
+  qualityStatsChart: any;
+  processTypeChart: any;
+  ncSeverityChart: any;
 
   canReadProcesses = false;
   canReadProcedures = false;
@@ -148,6 +170,7 @@ export class DashboardComponent implements OnInit {
         this.procedureStats = result.procedureStats;
         this.nonConformityStats = result.nonConformityStats;
         this.documentStats = result.documentStats;
+        this.initCharts();
         this.loading = false;
       },
       error: () => {
@@ -156,16 +179,63 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  private initCharts(): void {
+    const palette = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+
+    // 1. Quality Overview (Bar)
+    this.qualityStatsChart = {
+      series: [{
+        name: 'Quantité',
+        data: [
+          this.processStats?.total ?? 0,
+          this.procedureStats?.total ?? 0,
+          this.nonConformityStats?.opened ?? 0,
+          this.documentStats?.total ?? 0
+        ]
+      }],
+      chart: { type: 'bar', height: 250, toolbar: { show: false } },
+      plotOptions: { bar: { borderRadius: 8, distributed: true, columnWidth: '50%' } },
+      colors: palette,
+      xaxis: { categories: ['Processus', 'Procédures', 'NC Ouvertes', 'Documents'] },
+      legend: { show: false },
+      dataLabels: { enabled: false }
+    };
+
+    // 2. Non-Conformity Severity (Donut)
+    this.ncSeverityChart = {
+      series: [
+        this.nonConformityStats?.critical ?? 0,
+        this.nonConformityStats?.bySeverity?.['MAJEURE'] ?? 0,
+        this.nonConformityStats?.bySeverity?.['MINEURE'] ?? 0
+      ],
+      labels: ['Critique', 'Majeure', 'Mineure'],
+      chart: { type: 'donut', height: 250 },
+      colors: ['#ef4444', '#f59e0b', '#64748b'],
+      stroke: { show: false },
+      legend: { position: 'bottom' },
+      plotOptions: { pie: { donut: { size: '75%' } } }
+    };
+
+    // 3. Process Type Breakdown
+    this.processTypeChart = {
+      series: [
+        this.processStats?.active ?? 0,
+        (this.processStats?.total ?? 0) - (this.processStats?.active ?? 0)
+      ],
+      labels: ['Actifs', 'Inactifs'],
+      chart: { type: 'pie', height: 250 },
+      colors: ['#10b981', '#94a3b8'],
+      stroke: { show: false },
+      legend: { position: 'bottom' }
+    };
+  }
+
   getProcessTypeLabel(type: string): string {
     switch (type) {
-      case 'PILOTAGE':
-        return 'Pilotage';
-      case 'REALISATION':
-        return 'Realisation';
-      case 'SUPPORT':
-        return 'Support';
-      default:
-        return type;
+      case 'PILOTAGE': return 'Pilotage';
+      case 'REALISATION': return 'Realisation';
+      case 'SUPPORT': return 'Support';
+      default: return type;
     }
   }
 
@@ -187,62 +257,42 @@ export class DashboardComponent implements OnInit {
 
   getNonConformityStatusLabel(status: string): string {
     switch (status) {
-      case 'OUVERTE':
-        return 'Ouverte';
-      case 'EN_COURS':
-        return 'En cours';
-      case 'CLOTUREE':
-        return 'Cloturee';
-      default:
-        return status;
+      case 'OUVERTE': return 'Ouverte';
+      case 'EN_COURS': return 'En cours';
+      case 'CLOTUREE': return 'Cloturee';
+      default: return status;
     }
   }
 
   getNonConformityStatusClass(status: string): string {
     switch (status) {
-      case 'CLOTUREE':
-        return 'status-ok';
-      case 'EN_COURS':
-        return 'status-warning';
-      default:
-        return 'status-danger';
+      case 'CLOTUREE': return 'status-ok';
+      case 'EN_COURS': return 'status-warning';
+      default: return 'status-danger';
     }
   }
 
   getSeverityLabel(severity: string): string {
     switch (severity) {
-      case 'MINEURE':
-        return 'Mineure';
-      case 'MAJEURE':
-        return 'Majeure';
-      case 'CRITIQUE':
-        return 'Critique';
-      default:
-        return severity;
+      case 'MINEURE': return 'Mineure';
+      case 'MAJEURE': return 'Majeure';
+      case 'CRITIQUE': return 'Critique';
+      default: return severity;
     }
   }
 
   getSeverityClass(severity: string): string {
     switch (severity) {
-      case 'CRITIQUE':
-        return 'status-danger';
-      case 'MAJEURE':
-        return 'status-warning';
-      default:
-        return 'status-muted';
+      case 'CRITIQUE': return 'status-danger';
+      case 'MAJEURE': return 'status-warning';
+      default: return 'status-muted';
     }
   }
 
   formatDate(value?: string | null): string {
-    if (!value) {
-      return '-';
-    }
-
+    if (!value) return '-';
     const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) {
-      return '-';
-    }
-
+    if (Number.isNaN(parsed.getTime())) return '-';
     return parsed.toLocaleDateString('fr-FR');
   }
 

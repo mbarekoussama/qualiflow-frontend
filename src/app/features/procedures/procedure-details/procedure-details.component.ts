@@ -63,6 +63,7 @@ export class ProcedureDetailsComponent implements OnInit {
   procedureId!: number;
   details: ProcedureDetailsResponse | null = null;
   editingInstructionId: number | null = null;
+  isAddingInstruction = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -72,7 +73,7 @@ export class ProcedureDetailsComponent implements OnInit {
     private readonly authService: AuthService,
     private readonly notificationService: NotificationService,
     private readonly dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const rawId = this.route.snapshot.paramMap.get('id');
@@ -144,6 +145,7 @@ export class ProcedureDetailsComponent implements OnInit {
     request$.subscribe({
       next: () => {
         this.savingInstruction = false;
+        this.isAddingInstruction = false;
         this.notificationService.showSuccess(this.editingInstructionId ? 'Instruction mise a jour.' : 'Instruction ajoutee.');
         this.cancelInstructionEdit();
         this.loadDetails();
@@ -157,6 +159,7 @@ export class ProcedureDetailsComponent implements OnInit {
 
   editInstruction(instruction: InstructionResponse): void {
     this.editingInstructionId = instruction.id;
+    this.isAddingInstruction = false;
     this.instructionForm.patchValue({
       code: instruction.code,
       title: instruction.title,
@@ -168,6 +171,7 @@ export class ProcedureDetailsComponent implements OnInit {
 
   cancelInstructionEdit(): void {
     this.editingInstructionId = null;
+    this.isAddingInstruction = false;
     this.instructionForm.reset({
       code: '',
       title: '',
@@ -206,6 +210,18 @@ export class ProcedureDetailsComponent implements OnInit {
 
   getStatusLabel(status: ProcedureStatus): string {
     return status === 'ACTIF' ? 'Actif' : 'Inactif';
+  }
+
+  startAddInstruction(): void {
+    this.isAddingInstruction = true;
+    this.editingInstructionId = null;
+    this.instructionForm.reset({
+      code: '',
+      title: '',
+      description: '',
+      status: 'ACTIF',
+      orderIndex: (this.details?.instructions.length ?? 0) + 1
+    });
   }
 
   trackByInstructionId(_index: number, item: InstructionResponse): number {

@@ -69,3 +69,50 @@ main {
   opacity: 1;
   transform: translateY(0);
 }
+
+.fixed-request-container {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 1000;
+}
+
+.request-fab {
+  background: linear-gradient(135deg, #1fa67a 0%, #167d5c 100%) !important;
+  color: white !important;
+  width: 64px !important;
+  height: 64px !important;
+  box-shadow: 0 10px 30px rgba(31, 166, 122, 0.4) !important;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  &:hover {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 15px 40px rgba(31, 166, 122, 0.6) !important;
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite;
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@media (max-width: 768px) {
+  .fixed-request-container {
+    bottom: 24px;
+    right: 24px;
+  }
+  .request-fab {
+    width: 56px !important;
+    height: 56px !important;
+  }
+}

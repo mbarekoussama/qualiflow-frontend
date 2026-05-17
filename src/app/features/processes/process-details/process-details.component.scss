@@ -53,7 +53,43 @@
   gap: 6px;
   color: var(--text-muted);
   font-size: 0.85rem;
+}
 
+.back-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  margin-left: -12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    background: rgba(31, 166, 122, 0.08);
+    color: var(--xl-green-mid);
+
+    mat-icon {
+      transform: translateX(-4px);
+      color: var(--xl-green-mid);
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
 }
 
 .new-process-btn {

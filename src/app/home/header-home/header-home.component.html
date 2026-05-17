@@ -4,13 +4,21 @@
     <span class="brand-text">QualiFlow</span>
   </a>
 
-  <nav class="nav-links" aria-label="Navigation principale">
+  <button class="menu-toggle" (click)="toggleMenu()" aria-label="Toggle menu">
+    <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
+  </button>
+
+  <nav class="nav-links" [class.open]="isMenuOpen" aria-label="Navigation principale">
     <a *ngFor="let item of navItems" 
        (click)="selectSection(item.section)" 
        [class.active]="activeSection === item.section"
        href="javascript:void(0)">
        {{ item.label }}
     </a>
+    <div class="mobile-actions">
+      <a class="btn btn-ghost" routerLink="/login" (click)="isMenuOpen = false">Se connecter</a>
+      <a class="btn btn-primary" routerLink="/register" (click)="isMenuOpen = false">Commencer</a>
+    </div>
   </nav>
 
   <div class="actions">

@@ -8,8 +8,9 @@
     <div class="page-header-bar">
       <div class="page-header-left">
         <div class="page-subtitle">
-          <button type="button" class="btn-back" (click)="backToList()">
-            <mat-icon>arrow_back</mat-icon> Retour
+          <button type="button" class="back-link-btn" (click)="backToList()">
+            <mat-icon>arrow_back</mat-icon>
+            <span>{{ 'common.backToList' | t }}</span>
           </button>
         </div>
         <h1 class="page-title">{{ details.process.code }} — {{ details.process.name }}</h1>

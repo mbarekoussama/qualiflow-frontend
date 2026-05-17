@@ -140,3 +140,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 600px) {
+  .contact-form, .contact-info {
+    padding: 1.5rem;
+  }
+}

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatTabsModule } from '@angular/material/tabs';
+import { NgApexchartsModule } from 'ng-apexcharts';
 import { NotificationService } from '../../../core/services/notification.service';
 import {
   DashboardAlertResponse,
@@ -42,7 +43,8 @@ import { OrganizationService } from '../services/organization.service';
     MatSelectModule,
     MatProgressSpinnerModule,
     MatListModule,
-    MatTabsModule
+    MatTabsModule,
+    NgApexchartsModule
   ],
   templateUrl: './super-admin-dashboard.component.html',
   styleUrls: ['./super-admin-dashboard.component.scss']
@@ -50,7 +52,14 @@ import { OrganizationService } from '../services/organization.service';
 export class SuperAdminDashboardComponent implements OnInit {
   readonly now = new Date();
 
-  readonly chartColorPalette = ['#0f7a3f', '#0369a1', '#7c3aed', '#b45309', '#be123c', '#334155'];
+  // Chart Options
+  statusChartOptions: any;
+  roleChartOptions: any;
+  trendChartOptions: any;
+  visitorChartOptions: any;
+  deviceChartOptions: any;
+
+  readonly chartColorPalette = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#64748b'];
   readonly devicePalette = ['#22c55e', '#3b82f6', '#ef4444'];
   readonly locationPalette = ['#22c55e', '#ef4444', '#3b82f6', '#f59e0b', '#8b5cf6'];
 
@@ -173,7 +182,7 @@ export class SuperAdminDashboardComponent implements OnInit {
     }).subscribe({
       next: (response) => {
         this.dashboard = response;
-        this.buildTrafficWidgets(response);
+        this.initCharts(response);
         this.loading = false;
       },
       error: () => {
@@ -382,17 +391,127 @@ export class SuperAdminDashboardComponent implements OnInit {
     return item.label;
   }
 
+  private initCharts(response: SuperAdminDashboardResponse): void {
+    // 1. Organizations by Status (Donut)
+    const statusData = this.asDataPoints(response.charts.organizationsByStatus);
+    this.statusChartOptions = {
+      series: statusData.map(d => d.value),
+      labels: statusData.map(d => d.label),
+      chart: { type: 'donut', height: 280, animations: { enabled: true, easing: 'easeinout', speed: 800 } },
+      colors: this.chartColorPalette,
+      stroke: { show: false },
+      dataLabels: { enabled: false },
+      legend: { position: 'bottom', labels: { useSeriesColors: true } },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: '75%',
+            labels: {
+              show: true,
+              name: { show: true, fontSize: '14px', fontWeight: 600 },
+              value: { show: true, fontSize: '20px', fontWeight: 800, formatter: (val: any) => val },
+              total: { show: true, label: 'Total', formatter: () => response.kpis.totalOrganizations.toString() }
+            }
+          }
+        }
+      }
+    };
+
+    // 2. Users by Role (RadialBar)
+    const roleData = this.asDataPoints(response.charts.usersByRole);
+    this.roleChartOptions = {
+      series: roleData.map(d => Math.round((d.value / Math.max(1, response.kpis.totalUsers)) * 100)),
+      labels: roleData.map(d => d.label),
+      chart: { type: 'radialBar', height: 280 },
+      plotOptions: {
+        radialBar: {
+          offsetY: 0,
+          startAngle: 0,
+          endAngle: 270,
+          hollow: { margin: 5, size: '30%', background: 'transparent' },
+          dataLabels: { name: { show: false }, value: { show: false } }
+        }
+      },
+      colors: this.chartColorPalette,
+      legend: {
+        show: true,
+        floating: true,
+        fontSize: '12px',
+        position: 'left',
+        offsetX: 0,
+        offsetY: 10,
+        labels: { useSeriesColors: true },
+        formatter: (seriesName: string, opts: any) => seriesName + ":  " + opts.w.globals.series[opts.seriesIndex] + "%",
+        itemMargin: { vertical: 3 }
+      }
+    };
+
+    // 3. Trends (Combined Area/Column)
+    const orgTrends = this.asTrendPoints(response.charts.monthlyOrganizationsCreated);
+    const userTrends = this.asTrendPoints(response.charts.monthlyUsersCreated);
+    const ncTrends = this.asTrendPoints(response.charts.monthlyNonConformities);
+
+    this.trendChartOptions = {
+      series: [
+        { name: 'Organisations', type: 'column', data: orgTrends.map(d => d.value) },
+        { name: 'Utilisateurs', type: 'area', data: userTrends.map(d => d.value) },
+        { name: 'Non-conformités', type: 'line', data: ncTrends.map(d => d.value) }
+      ],
+      chart: { height: 350, type: 'line', stacked: false, toolbar: { show: false } },
+      stroke: { width: [0, 2, 3], curve: 'smooth' },
+      plotOptions: { bar: { columnWidth: '50%' } },
+      fill: {
+        opacity: [0.85, 0.25, 1],
+        gradient: {
+          inverseColors: false,
+          shade: 'light',
+          type: "vertical",
+          opacityFrom: 0.85,
+          opacityTo: 0.55,
+          stops: [0, 100, 100, 100]
+        }
+      },
+      labels: orgTrends.map(d => d.period),
+      markers: { size: 0 },
+      xaxis: { type: 'category' },
+      yaxis: { min: 0 },
+      tooltip: { shared: true, intersect: false },
+      colors: ['#10b981', '#3b82f6', '#ef4444']
+    };
+
+    // 4. Visitors (Area Spline)
+    this.visitorChartOptions = {
+      series: [{ name: 'Nouveaux Utilisateurs', data: userTrends.map(d => d.value) }],
+      chart: { height: 280, type: 'area', toolbar: { show: false }, sparkline: { enabled: false } },
+      dataLabels: { enabled: false },
+      stroke: { curve: 'smooth', width: 3 },
+      fill: {
+        type: 'gradient',
+        gradient: { shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.05, stops: [20, 100, 100, 100] }
+      },
+      xaxis: { categories: userTrends.map(d => d.period), labels: { style: { colors: '#64748b' } } },
+      yaxis: { labels: { style: { colors: '#64748b' } } },
+      colors: ['#3b82f6'],
+      grid: { borderColor: 'rgba(0,0,0,0.05)', strokeDashArray: 4 }
+    };
+
+    // 5. Device Breakdown (Donut)
+    this.buildTrafficWidgets(response);
+    this.deviceChartOptions = {
+      series: this.deviceBreakdown.map(d => d.count),
+      labels: this.deviceBreakdown.map(d => d.label),
+      chart: { type: 'donut', height: 180, sparkline: { enabled: true } },
+      colors: this.devicePalette,
+      stroke: { show: false },
+      plotOptions: { pie: { donut: { size: '70%' } } },
+      tooltip: { enabled: true }
+    };
+  }
+
   private buildTrafficWidgets(response: SuperAdminDashboardResponse): void {
     this.visitorSeries = this.asTrendPoints(response.charts.monthlyUsersCreated);
-
-    const roleCounts = this.asDataPoints(response.charts.usersByRole)
-      .map(item => item.value)
-      .filter(value => value > 0);
-    const fallbackCounts = [
-      Math.max(1, response.kpis.totalUsers),
-      Math.max(1, response.kpis.totalOrganizationAdmins),
-      Math.max(1, response.kpis.openNonConformities + response.kpis.overdueCorrectiveActions)
-    ];
+    const roleCounts = this.asDataPoints(response.charts.usersByRole).map(item => item.value);
+    const fallbackCounts = [Math.max(1, response.kpis.totalUsers), 5, 2];
     const rawDeviceCounts = [0, 1, 2].map(index => roleCounts[index] ?? fallbackCounts[index]);
     const devicePercents = this.toPercentages(rawDeviceCounts);
 
@@ -402,16 +521,10 @@ export class SuperAdminDashboardComponent implements OnInit {
       color: this.devicePalette[index],
       count: rawDeviceCounts[index]
     }));
-    this.devicesTotal = rawDeviceCounts.reduce((total, current) => total + current, 0);
+    this.devicesTotal = rawDeviceCounts.reduce((t, c) => t + c, 0);
 
     const top = this.asTopOrganizations(response.topOrganizations).slice(0, 5);
-    const fallbackLocations = this.asDataPoints(response.charts.organizationsByStatus).slice(0, 5).map(row => ({
-      label: row.label,
-      value: row.value
-    }));
-    const locations = (top.length > 0
-      ? top.map(item => ({ label: item.organizationName, value: item.usersCount }))
-      : fallbackLocations).slice(0, 5);
+    const locations = top.map(item => ({ label: item.organizationName, value: item.usersCount }));
     const locationValues = locations.map(item => item.value);
     const locationPercents = this.toPercentages(locationValues);
 
@@ -421,7 +534,7 @@ export class SuperAdminDashboardComponent implements OnInit {
       color: this.locationPalette[index % this.locationPalette.length],
       count: item.value
     }));
-    this.locationTotal = locationValues.reduce((total, current) => total + current, 0);
+    this.locationTotal = locationValues.reduce((t, c) => t + c, 0);
   }
 
   private toPercentages(values: number[]): number[] {

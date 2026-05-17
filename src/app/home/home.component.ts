@@ -10,6 +10,12 @@ import { ServicesHomeComponent } from './services-home/services-home.component';
 import { StatsHomeComponent } from './stats-home/stats-home.component';
 import { WhyHomeComponent } from './why-home/why-home.component';
 
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { OrganizationRequestDialogComponent } from '../features/public/organization-request-dialog/organization-request-dialog.component';
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -23,7 +29,11 @@ import { WhyHomeComponent } from './why-home/why-home.component';
     WhyHomeComponent,
     StatsHomeComponent,
     ContactHomeComponent,
-    FooterHomeComponent
+    FooterHomeComponent,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
@@ -32,7 +42,15 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   currentSection: 'all' | 'accueil' | 'services' | 'iso' | 'contact' = 'all';
   private observer?: IntersectionObserver;
 
-  constructor() {}
+  constructor(private readonly dialog: MatDialog) { }
+
+  openRequestDialog(): void {
+    this.dialog.open(OrganizationRequestDialogComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      panelClass: 'glass-dialog-panel'
+    });
+  }
 
   setSection(section: string): void {
     this.currentSection = section as any;
