@@ -98,7 +98,19 @@ export class NonconformityFormComponent implements OnInit {
     this.nonConformityId = idParam ? Number(idParam) : null;
     this.isEdit = this.nonConformityId !== null && !Number.isNaN(this.nonConformityId);
 
+    if (!this.canLoadUsers) {
+      this.form.controls.responsibleUserId.disable();
+    }
+
     this.form.controls.processId.valueChanges.subscribe(processId => {
+      // Auto-select responsible from process pilot if present and not loading
+      if (!this.loading && processId) {
+        const selectedProcess = this.processes.find(item => item.id === processId);
+        if (selectedProcess?.pilotUserId) {
+          this.form.controls.responsibleUserId.setValue(selectedProcess.pilotUserId);
+        }
+      }
+
       const selectedProcedureId = this.form.controls.procedureId.value;
       if (!selectedProcedureId) {
         return;
@@ -121,9 +133,12 @@ export class NonconformityFormComponent implements OnInit {
         return;
       }
 
-      const selectedProcedure = this.procedures.find(item => item.id === procedureId);
-      if (selectedProcedure?.responsibleUserId) {
-        this.form.controls.responsibleUserId.setValue(selectedProcedure.responsibleUserId);
+      // Auto-select responsible from procedure if present and not loading
+      if (!this.loading) {
+        const selectedProcedure = this.procedures.find(item => item.id === procedureId);
+        if (selectedProcedure?.responsibleUserId) {
+          this.form.controls.responsibleUserId.setValue(selectedProcedure.responsibleUserId);
+        }
       }
     });
 
@@ -283,12 +298,76 @@ export class NonconformityFormComponent implements OnInit {
       }
     }
 
+    // Dynically register process pilots in the selectable users list so they can be resolved
+    for (const p of this.processes) {
+      if (p.pilotUserId) {
+        const exists = this.users.some(u => u.id === p.pilotUserId);
+        if (!exists) {
+          const names = (p.pilotFullName || 'Pilote Processus').split(' ');
+          const firstName = names[0] || 'Pilote';
+          const lastName = names.slice(1).join(' ') || 'Processus';
+          this.users.push({
+            id: p.pilotUserId,
+            organizationId: p.organizationId,
+            firstName,
+            lastName,
+            email: '',
+            role: 'UTILISATEUR',
+            isActive: true,
+            createdAt: p.createdAt
+          });
+        }
+      }
+    }
+
+    // Dynamically register procedure responsibles in the selectable users list
+    for (const proc of this.procedures) {
+      if (proc.responsibleUserId) {
+        const exists = this.users.some(u => u.id === proc.responsibleUserId);
+        if (!exists) {
+          const names = (proc.responsibleFullName || 'Responsable Procédure').split(' ');
+          const firstName = names[0] || 'Responsable';
+          const lastName = names.slice(1).join(' ') || 'Procédure';
+          this.users.push({
+            id: proc.responsibleUserId,
+            organizationId: proc.organizationId,
+            firstName,
+            lastName,
+            email: '',
+            role: 'UTILISATEUR',
+            isActive: true,
+            createdAt: proc.createdAt
+          });
+        }
+      }
+    }
+
     if (!this.isEdit && this.users.length > 0) {
       this.form.controls.responsibleUserId.setValue(this.users[0].id);
     }
   }
 
   private patchForm(nc: NonConformityResponse): void {
+    // Dynamically register non-conformity responsible in case they are not in the list
+    if (nc.responsibleUserId) {
+      const exists = this.users.some(u => u.id === nc.responsibleUserId);
+      if (!exists) {
+        const names = (nc.responsibleFullName || 'Responsable').split(' ');
+        const firstName = names[0] || 'Responsable';
+        const lastName = names.slice(1).join(' ') || 'Traitement';
+        this.users.push({
+          id: nc.responsibleUserId,
+          organizationId: nc.organizationId,
+          firstName,
+          lastName,
+          email: '',
+          role: 'UTILISATEUR',
+          isActive: true,
+          createdAt: new Date().toISOString()
+        });
+      }
+    }
+
     this.form.patchValue({
       code: nc.code,
       title: nc.title,

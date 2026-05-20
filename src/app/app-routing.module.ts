@@ -183,6 +183,14 @@ export const routes: Routes = [
             }
           },
           {
+            path: 'map',
+            loadComponent: () => import('./features/procedures/procedure-map/procedure-map.component').then(m => m.ProcedureMapComponent),
+            data: {
+              title: 'Cartographie des procédures',
+              roles: ['ADMIN_ORG', 'RESPONSABLE_QUALITE', 'CHEF_SERVICE', 'UTILISATEUR']
+            }
+          },
+          {
             path: 'new',
             loadComponent: () => import('./features/procedures/procedure-form/procedure-form.component').then(m => m.ProcedureFormComponent),
             data: {
