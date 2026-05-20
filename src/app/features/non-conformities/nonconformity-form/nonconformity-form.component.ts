@@ -19,6 +19,7 @@ import { ProcedureListItemResponse } from '../../procedures/models/procedure.mod
 import { ProcedureService } from '../../procedures/services/procedure.service';
 import {
   CreateNonConformityRequest,
+  NonConformityAttachmentResponse,
   NON_CONFORMITY_SEVERITY_OPTIONS,
   NON_CONFORMITY_STATUS_OPTIONS,
   NON_CONFORMITY_TYPE_OPTIONS,
@@ -76,6 +77,9 @@ export class NonconformityFormComponent implements OnInit {
   processes: ProcessListItemResponse[] = [];
   procedures: ProcedureListItemResponse[] = [];
   users: UserResponse[] = [];
+  selectedFiles: File[] = [];
+  existingAttachments: NonConformityAttachmentResponse[] = [];
+  activeTab = 0;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -150,6 +154,7 @@ export class NonconformityFormComponent implements OnInit {
         next: ({ base, details }) => {
           this.applyReferences(base.processes.items, base.procedures.items, base.users.items);
           this.patchForm(details.nonConformity);
+          this.existingAttachments = details.attachments || [];
           this.loading = false;
         },
         error: () => {
@@ -221,9 +226,28 @@ export class NonconformityFormComponent implements OnInit {
 
     request$.subscribe({
       next: (response) => {
-        this.saving = false;
-        this.notificationService.showSuccess(this.isEdit ? 'Non-conformite mise a jour.' : 'Non-conformite creee.');
-        this.router.navigate(['/non-conformities', response.id]);
+        if (this.selectedFiles.length > 0) {
+          const uploadRequests = this.selectedFiles.map(file =>
+            this.nonConformityService.uploadAttachment(response.id, file)
+          );
+
+          forkJoin(uploadRequests).subscribe({
+            next: () => {
+              this.saving = false;
+              this.notificationService.showSuccess(this.isEdit ? 'Non-conformite mise a jour.' : 'Non-conformite creee.');
+              this.router.navigate(['/non-conformities', response.id]);
+            },
+            error: () => {
+              this.saving = false;
+              this.notificationService.showWarning(this.isEdit ? 'Non-conformite mise a jour, mais certaines pièces jointes n\'ont pas pu être importées.' : 'Non-conformite creee, mais certaines pièces jointes n\'ont pas pu être importées.');
+              this.router.navigate(['/non-conformities', response.id]);
+            }
+          });
+        } else {
+          this.saving = false;
+          this.notificationService.showSuccess(this.isEdit ? 'Non-conformite mise a jour.' : 'Non-conformite creee.');
+          this.router.navigate(['/non-conformities', response.id]);
+        }
       },
       error: () => {
         this.saving = false;
@@ -252,7 +276,6 @@ export class NonconformityFormComponent implements OnInit {
             email: currentUser.email,
             role: currentUser.role,
             function: currentUser.function,
-            department: currentUser.department,
             isActive: true,
             createdAt: currentUser.createdAt
           }
@@ -312,5 +335,48 @@ export class NonconformityFormComponent implements OnInit {
     const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
     const day = `${date.getUTCDate()}`.padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  onFileSelected(event: any): void {
+    const files: FileList = event.target.files;
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        this.selectedFiles.push(files.item(i)!);
+      }
+    }
+  }
+
+  removeFile(index: number): void {
+    this.selectedFiles.splice(index, 1);
+  }
+
+  deleteExistingAttachment(id: number): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette pièce jointe ?')) {
+      this.nonConformityService.deleteAttachment(id).subscribe({
+        next: () => {
+          this.existingAttachments = this.existingAttachments.filter(a => a.id !== id);
+          this.notificationService.showSuccess('Pièce jointe supprimée.');
+        },
+        error: () => {
+          this.notificationService.showError('Impossible de supprimer la pièce jointe.');
+        }
+      });
+    }
+  }
+
+  setActiveTab(index: number): void {
+    this.activeTab = index;
+  }
+
+  nextTab(): void {
+    if (this.activeTab < 2) {
+      this.activeTab++;
+    }
+  }
+
+  prevTab(): void {
+    if (this.activeTab > 0) {
+      this.activeTab--;
+    }
   }
 }
